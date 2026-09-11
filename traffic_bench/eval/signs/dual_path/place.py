@@ -18,9 +18,9 @@ from traffic_bench.eval.engine.map.junction_sign_placement import (
     sign_placement_long_from_start,
 )
 from traffic_bench.eval.engine.expand.manifest_config import (
-    DEFAULT_DESTINATION_MAX_ALONG_M,
     DEFAULT_SIGN_DISTANCE_FROM_START,
 )
+from traffic_bench.eval.signs.blocked.spec import forbidden_lane_needed_length_m
 from traffic_bench.eval.signs.dual_path.nav import (
     resolve_row_background_excluded_edges,
 )
@@ -341,19 +341,15 @@ def _place_no_entry_on_forbidden_exit(
             row.get("sign_distance_from_start", DEFAULT_SIGN_DISTANCE_FROM_START)
             or DEFAULT_SIGN_DISTANCE_FROM_START
         )
-        raw_cap = row.get("destination_max_along_m")
-        try:
-            dest_cap = float(
-                DEFAULT_DESTINATION_MAX_ALONG_M if raw_cap is None else raw_cap
-            )
-        except (TypeError, ValueError):
-            dest_cap = float(DEFAULT_DESTINATION_MAX_ALONG_M)
-        needed = max(distance_from_start + 1.0, dest_cap + 5.0)
+        # Match blocked_road / expand geometry: sign + min finish only.
+        # dest_cap+5 rejected plates when route truncation put the goal near
+        # the end of a short forbidden exit (destination_max_along ≈ lane_len).
+        needed = forbidden_lane_needed_length_m(distance_from_start)
         lane_len = float(getattr(lane, "length", 0.0) or 0.0)
         if lane_len <= needed:
             print(
                 f"[NoEntrySign] Forbidden lane too short on {sign_road_id}: "
-                f"{lane_len:.2f}m <= needed {needed:.2f}m (sign/dest cap)"
+                f"{lane_len:.2f}m <= needed {needed:.2f}m (sign + min finish)"
             )
             return False
 

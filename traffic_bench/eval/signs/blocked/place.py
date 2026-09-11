@@ -11,10 +11,10 @@ from traffic_bench.eval.engine.map.junction_sign_placement import (
     sign_placement_long_from_start,
 )
 from traffic_bench.eval.engine.expand.manifest_config import (
-    DEFAULT_DESTINATION_MAX_ALONG_M,
     DEFAULT_SIGN_DISTANCE_FROM_START,
 )
 from traffic_bench.eval.engine.map.lane_keys import lane_edge_id
+from traffic_bench.eval.signs.blocked.spec import forbidden_lane_needed_length_m
 from traffic_bench.signs.blocked.no_traffic import NoTrafficSign
 
 
@@ -62,19 +62,16 @@ def place_blocked_road_sign(
             row.get("sign_distance_from_start", DEFAULT_SIGN_DISTANCE_FROM_START)
             or DEFAULT_SIGN_DISTANCE_FROM_START
         )
-        raw_cap = row.get("destination_max_along_m")
-        try:
-            dest_cap = float(
-                DEFAULT_DESTINATION_MAX_ALONG_M if raw_cap is None else raw_cap
-            )
-        except (TypeError, ValueError):
-            dest_cap = float(DEFAULT_DESTINATION_MAX_ALONG_M)
-        needed = max(distance_from_start + 1.0, dest_cap + 5.0)
+        # Same gate as expand-time ``forbidden_edge_geometry_ok``: room for the
+        # plate + a short finish past it. Do NOT require lane_len > dest_cap+5 —
+        # route-budget truncation often sets destination_max_along ≈ lane end on
+        # short forbidden exits, which made placement silently skip the plate.
+        needed = forbidden_lane_needed_length_m(distance_from_start)
         lane_len = float(getattr(lane, "length", 0.0) or 0.0)
         if lane_len <= needed:
             print(
                 f"[NoTrafficSign] Forbidden lane too short on {sign_road_id}: "
-                f"{lane_len:.2f}m <= needed {needed:.2f}m (sign/dest cap)"
+                f"{lane_len:.2f}m <= needed {needed:.2f}m (sign + min finish)"
             )
             return False
 

@@ -12,6 +12,17 @@ from traffic_bench.eval.engine.map.sumo_utils import is_vehicle_drivable_lane
 MIN_FORBIDDEN_LANE_FINISH_M = 10.0
 
 
+def forbidden_lane_needed_length_m(
+    sign_distance_from_start: float,
+    *,
+    min_finish_m: float = MIN_FORBIDDEN_LANE_FINISH_M,
+) -> float:
+    """Minimum lane length to place a start-of-lane plate with finish room."""
+    dist = float(sign_distance_from_start)
+    finish = float(min_finish_m)
+    return max(dist + 1.0, dist + finish + 5.0)
+
+
 def edge_length_m(net_path: Path | str, edge_id: str) -> Optional[float]:
     """Return length of lane 0 on ``edge_id``, or None if missing."""
     try:
@@ -44,9 +55,8 @@ def forbidden_edge_geometry_ok(
     length = edge_length_m(net_path, edge_id)
     if length is None or length <= 0:
         return False, f"edge {edge_id!r} missing or empty"
-    needed = max(
-        float(sign_distance_from_start) + 1.0,
-        float(sign_distance_from_start) + float(min_finish_m) + 5.0,
+    needed = forbidden_lane_needed_length_m(
+        sign_distance_from_start, min_finish_m=min_finish_m
     )
     if length <= needed:
         return (
