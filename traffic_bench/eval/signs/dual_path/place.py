@@ -17,10 +17,6 @@ from traffic_bench.eval.engine.map.junction_sign_placement import (
     sign_placement_long,
     sign_placement_long_from_start,
 )
-from traffic_bench.eval.engine.expand.manifest_config import (
-    DEFAULT_SIGN_DISTANCE_FROM_START,
-)
-from traffic_bench.eval.signs.blocked.spec import forbidden_lane_needed_length_m
 from traffic_bench.eval.signs.dual_path.nav import (
     resolve_row_background_excluded_edges,
 )
@@ -337,21 +333,29 @@ def _place_no_entry_on_forbidden_exit(
             print(f"[NoEntrySign] Lane not found for forbidden edge {sign_road_id}")
             return False
 
-        distance_from_start = float(
-            row.get("sign_distance_from_start", DEFAULT_SIGN_DISTANCE_FROM_START)
-            or DEFAULT_SIGN_DISTANCE_FROM_START
-        )
-        # Match blocked_road / expand geometry: sign + min finish only.
-        # dest_cap+5 rejected plates when route truncation put the goal near
-        # the end of a short forbidden exit (destination_max_along ≈ lane_len).
-        needed = forbidden_lane_needed_length_m(distance_from_start)
+        # Docs / expand summary say ≈5 m; blocked_road default is 10.
+        # First-exit stubs are often 10–15 m, so a hard 25 m (sign+finish) gate
+        # silently skipped the plate — same symptom as blocked_road dest_cap rejects.
+        raw_dist = row.get("sign_distance_from_start")
+        if raw_dist is None:
+            distance_from_start = 5.0
+        else:
+            try:
+                distance_from_start = float(raw_dist)
+            except (TypeError, ValueError):
+                distance_from_start = 5.0
+            if distance_from_start <= 0.0:
+                distance_from_start = 5.0
+
         lane_len = float(getattr(lane, "length", 0.0) or 0.0)
-        if lane_len <= needed:
+        if lane_len < 2.0:
             print(
                 f"[NoEntrySign] Forbidden lane too short on {sign_road_id}: "
-                f"{lane_len:.2f}m <= needed {needed:.2f}m (sign + min finish)"
+                f"{lane_len:.2f}m"
             )
             return False
+        # Clamp into the exit so short stubs still get a visible plate.
+        distance_from_start = min(distance_from_start, max(0.5, lane_len - 1.0))
 
         _clear_sign_manager(sign_mgr)
         sign_cls = resolve_sign_class(pdd_code)
@@ -371,7 +375,7 @@ def _place_no_entry_on_forbidden_exit(
         print(
             f"[NoEntrySign] Placed {pdd_code} ({spec.title}) on forbidden edge "
             f"{sign_road_id} at {distance_from_start:.2f}m from lane start "
-            f"(long_offset={longitudinal_offset:.2f})"
+            f"(lane_len={lane_len:.2f}, long_offset={longitudinal_offset:.2f})"
         )
         return sign is not None
     except Exception as e:
