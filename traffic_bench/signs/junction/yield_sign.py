@@ -691,6 +691,18 @@ class YieldSign(BaseTrafficSign):
         if geom is not None:
             return geom
 
+        return self._shared_route_conflict_point(
+            ego_vehicle, foe_vehicle, ego_path, foe_path
+        )
+
+    def _shared_route_conflict_point(
+        self,
+        ego_vehicle,
+        foe_vehicle,
+        ego_path: list[np.ndarray],
+        foe_path: list[np.ndarray],
+    ) -> np.ndarray | None:
+        """Shared-exit fallback after geometric conflict was checked."""
         shared = self._shared_future_edges(ego_vehicle, foe_vehicle)
         if shared:
             merge = self._first_point_on_shared_edge(foe_vehicle, shared, foe_path)
@@ -769,7 +781,13 @@ class YieldSign(BaseTrafficSign):
             return True
         return False
 
-    def _is_foe_blocking_ego(self, ego_vehicle, foe_vehicle) -> bool:
+    def _is_foe_blocking_ego(
+        self,
+        ego_vehicle,
+        foe_vehicle,
+        *,
+        ego_path: list[np.ndarray] | None = None,
+    ) -> bool:
         """Main-zone arm + sticky path-clearance until the conflict is passed.
 
         Semantics:
@@ -787,23 +805,32 @@ class YieldSign(BaseTrafficSign):
         if foe_id is None:
             return False
 
+        sticky = self._path_sticky_foes.get(foe_id)
         in_main = self._is_vehicle_in_main_road_conflict_zone(foe_vehicle)
         if not in_main:
             self._path_released_foes.discard(foe_id)
+            # A foe can only become sticky while it is in the coarse main-road
+            # zone.  Outside that zone, an untracked foe cannot block the ego,
+            # so avoid building and comparing both 100 m route polylines.
+            if sticky is None:
+                return False
 
         if foe_id in self._path_released_foes:
             return False
 
-        ego_path = self._route_polyline(ego_vehicle)
+        if ego_path is None:
+            ego_path = self._route_polyline(ego_vehicle)
         foe_path = self._route_polyline(foe_vehicle)
         # Arming may use shared-exit merge; release must not — otherwise a
         # common destination keeps the foe sticky after the entry crossing.
         geom_conflict = self._paths_conflict_point(ego_path, foe_path)
-        arm_conflict = self._resolve_path_conflict_point(
-            ego_vehicle, foe_vehicle, ego_path, foe_path
+        arm_conflict = (
+            geom_conflict
+            if geom_conflict is not None
+            else self._shared_route_conflict_point(
+                ego_vehicle, foe_vehicle, ego_path, foe_path
+            )
         )
-
-        sticky = self._path_sticky_foes.get(foe_id)
 
         # Arm tracking on first entry into the main zone with a path conflict.
         if in_main and sticky is None:
@@ -986,13 +1013,18 @@ class YieldSign(BaseTrafficSign):
         if not self.main_road_lanes:
             return False, []
 
+        # Ego does not move during this check.  Reuse its sampled route for all
+        # foes instead of rebuilding the same polyline once per vehicle.
+        ego_path = self._route_polyline(ego_vehicle)
         live_ids = set()
         conflicting = []
         for v in self._get_all_vehicles():
             if v.id == ego_vehicle.id:
                 continue
             live_ids.add(v.id)
-            if self._is_foe_blocking_ego(ego_vehicle, v):
+            if self._is_foe_blocking_ego(
+                ego_vehicle, v, ego_path=ego_path
+            ):
                 conflicting.append(v)
 
         # Drop sticky / released entries for despawned vehicles.
@@ -1050,10 +1082,16 @@ class YieldSign(BaseTrafficSign):
             return state.get("last_violation_result", False)
 
         in_zone_now = self._is_vehicle_in_zone(vehicle)
-        has_traffic, _ = self._check_main_road_traffic(vehicle)
-
-        violation = not in_zone_now and state["had_traffic_while_in_zone"]
-        state["had_traffic_while_in_zone"] = has_traffic and in_zone_now
+        if in_zone_now:
+            has_traffic, _ = self._check_main_road_traffic(vehicle)
+            violation = False
+            state["had_traffic_while_in_zone"] = has_traffic
+        else:
+            # Current traffic cannot affect the result outside the obligation
+            # zone.  Only traffic remembered from the previous in-zone step
+            # determines whether leaving the zone is a violation.
+            violation = bool(state["had_traffic_while_in_zone"])
+            state["had_traffic_while_in_zone"] = False
 
         state["last_violation_step"] = current_step
         state["last_violation_result"] = violation

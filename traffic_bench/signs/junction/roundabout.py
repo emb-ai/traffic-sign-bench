@@ -521,13 +521,22 @@ class RoundaboutYieldSign(YieldSign):
         self._path_sticky_foes.pop(foe_id, None)
         self._main_seen_foes.discard(foe_id)
 
-    def _is_foe_blocking_ego(self, ego_vehicle, foe_vehicle) -> bool:
+    def _is_foe_blocking_ego(
+        self,
+        ego_vehicle,
+        foe_vehicle,
+        *,
+        ego_path: list[np.ndarray] | None = None,
+    ) -> bool:
         """4.3 conflict: in locked main OR post-exit while ray-meet remains.
 
         1. Non-gated foe inside the locked nearest main edge → always blocking.
         2. After it leaves that edge: keep blocking while an approaching
            ego×aux heading-ray meet still exists; drop when the meet clears.
         3. Ray meet is also stored for the yellow GIF marker.
+
+        ``ego_path`` is accepted for compatibility with the base bulk checker;
+        roundabouts use heading rays instead of sampled route polylines.
         """
         self._ensure_active_main_zones(ego_vehicle)
 

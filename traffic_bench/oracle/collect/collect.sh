@@ -74,8 +74,11 @@ PY
 }
 
 # Exit 0 if stored collection is a continuation of current_manifest.
-# Rule: every scene_uid in stored ⊆ current; optional by_scene evidence
-# under out_base must also ⊆ current (guards a reused folder from another run).
+# Compatible when one UID set contains the other:
+#   stored ⊆ current  — grow / full resume (legacy)
+#   current ⊆ stored  — resume a remaining subset into the same final/
+# by_scene under out_base must not introduce foreign UIDs outside the
+# larger of the two manifests.
 _manifests_compatible() {
     local stored="$1" current="$2" out_base="${3:-}"
     "$PYTHON_BIN" - "$stored" "$current" "$out_base" <<'PY'
@@ -123,15 +126,28 @@ current = uids(curr_p)
 if not current:
     log("[final] FAIL: current manifest has no valid rows")
     sys.exit(1)
+
+# Allow grow (stored ⊆ current) or subset-resume (current ⊆ stored).
+mode = "fresh"
 if stored:
-    extra = stored - current
-    if extra:
-        sample = ", ".join(sorted(extra)[:3])
+    if stored <= current:
+        mode = "grow" if stored < current else "equal"
+    elif current <= stored:
+        mode = "subset"
+    else:
+        only_stored = stored - current
+        only_current = current - stored
+        sample_s = ", ".join(sorted(only_stored)[:2])
+        sample_c = ", ".join(sorted(only_current)[:2])
         log(
-            f"[final] FAIL: {len(extra)} UID(s) in stored manifest not in current "
-            f"(e.g. {sample})"
+            f"[final] FAIL: manifests are not nested "
+            f"(stored\\current={len(only_stored)} e.g. {sample_s}; "
+            f"current\\stored={len(only_current)} e.g. {sample_c})"
         )
         sys.exit(1)
+
+# Universe of UIDs we consider "ours" for this final/ folder.
+universe = stored | current if stored else current
 
 evidence = set()
 if out_base:
@@ -140,11 +156,11 @@ if out_base:
     for p in root.glob("*/by_scene/*"):
         if p.is_dir():
             disk.add(p.name)
-    stray = disk - current
+    stray = disk - universe
     if stray:
         sample = ", ".join(sorted(stray)[:3])
         log(
-            f"[final] FAIL: {len(stray)} by_scene UID(s) not in current manifest "
+            f"[final] FAIL: {len(stray)} by_scene UID(s) not in stored∪current "
             f"(e.g. {sample})"
         )
         sys.exit(1)
@@ -152,10 +168,13 @@ if out_base:
     if not stored and disk and not evidence:
         log("[final] FAIL: on-disk scenes do not overlap current manifest")
         sys.exit(1)
+    if mode == "subset" and disk and not evidence:
+        log("[final] FAIL: subset resume has no on-disk overlap with current")
+        sys.exit(1)
 
 overlap = stored & current if stored else evidence
 log(
-    f"[final] OK: stored={len(stored)} current={len(current)} "
+    f"[final] OK ({mode}): stored={len(stored)} current={len(current)} "
     f"overlap={len(overlap)} on_disk={len(evidence)}"
 )
 sys.exit(0)
@@ -721,15 +740,70 @@ MANIFESTS_DIR="$OUT_BASE/_manifests"
 mkdir -p "$OUT_BASE" "$LOG_DIR" "$MERGED_DIR" "$MANIFESTS_DIR"
 exec > >(tee -a "$LOG_DIR/progress.log") 2>&1
 
-# When resuming final/, verify stored manifest ⊆ current, then refresh
-# _manifests to the current file (allows growing the scene set).
+# When resuming final/, verify manifests are nested (grow or subset), then
+# refresh _manifests to the union so a remaining-only run does not shrink
+# the stored scene set.
 if [ -s "$MANIFESTS_DIR/real_manifest.jsonl" ] && [ "$RESUME" = "1" ]; then
     if ! _manifests_compatible "$MANIFESTS_DIR/real_manifest.jsonl" "$MANIFEST" "$OUT_BASE"; then
         echo "[FAIL] existing _manifests/ incompatible with MANIFEST=$MANIFEST"
         exit 1
     fi
-    cp -f "$MANIFEST" "$MANIFESTS_DIR/real_manifest.jsonl"
-    echo "[manifests] resume OK — refreshed $MANIFESTS_DIR/real_manifest.jsonl"
+    "$PYTHON_BIN" - "$MANIFESTS_DIR/real_manifest.jsonl" "$MANIFEST" <<'PY'
+import json, sys
+from pathlib import Path
+
+def scene_uid(row: dict):
+    if row.get("scene_uid"):
+        return str(row["scene_uid"])
+    sid = row.get("scene_id")
+    if sid is None:
+        return None
+    seed = int(row.get("seed") or row.get("deterministic_seed") or 0)
+    return (
+        f"{sid}_lane{int(row.get('spawn_lane_num', 0) or 0)}"
+        f"_seed{seed}_v{int(row.get('var_idx', 0) or 0)}"
+    )
+
+def load(path: Path):
+    rows, order, by_uid = [], [], {}
+    if not path.is_file():
+        return rows, order, by_uid
+    for ln in path.read_text(encoding="utf-8").splitlines():
+        ln = ln.strip()
+        if not ln:
+            continue
+        try:
+            row = json.loads(ln)
+        except json.JSONDecodeError:
+            continue
+        if row.get("valid") is False:
+            continue
+        uid = scene_uid(row)
+        if not uid:
+            continue
+        if uid not in by_uid:
+            order.append(uid)
+        by_uid[uid] = row
+    return list(by_uid[u] for u in order), order, by_uid
+
+stored_p, curr_p = Path(sys.argv[1]), Path(sys.argv[2])
+_, order_s, by_s = load(stored_p)
+_, order_c, by_c = load(curr_p)
+order, by_uid = [], {}
+for uid in order_s + order_c:
+    if uid in by_uid:
+        continue
+    order.append(uid)
+    by_uid[uid] = by_c.get(uid) or by_s[uid]
+with open(stored_p, "w", encoding="utf-8") as fh:
+    for uid in order:
+        fh.write(json.dumps(by_uid[uid], ensure_ascii=False, default=str) + "\n")
+print(
+    f"[manifests] resume OK — union stored={len(order_s)} current={len(order_c)} "
+    f"→ {len(order)} rows in {stored_p}",
+    flush=True,
+)
+PY
 else
     cp -f "$MANIFEST" "$MANIFESTS_DIR/real_manifest.jsonl"
     echo "[manifests] $MANIFESTS_DIR/real_manifest.jsonl"
