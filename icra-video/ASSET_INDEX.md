@@ -16,7 +16,9 @@ Status legend — **current**: consistent with the current paper; **old**: old-p
 
 | # | Source path | Repo | Type | What it shows | Scene | Scientific meaning | Status | Reuse | Notes |
 |---|---|---|---|---|---|---|---|---|---|
-| 1 | `docs/static/gifs/pairs/3.1/plant2_base.gif` | TRB | GIF 640², 77 fr | PlanT-2 baseline enters a **no-entry** road; on-screen verifier ends at *Violations: 9* | 01, 11 | confirmed (counter in frame) | current | ✅ | Docs demo pair; scene id not recorded in filename |
+| 0a | `data/runs/crosswalk/debug/2026-09-21_16-44-42/gifs/*s1356480710_plant2_default.gif` | TRB | GIF 800² | PlanT-2 reaches the destination without collision but violates `PedestrianYieldRule` once | 01 | episode JSON: DS 90.00, efficiency 295.3, smooth-frame ratio 8.0%, collision 0% | current | ✅ | converted to a 10 s MP4 with the final violating frame held, not looped |
+| 0b | `icra-video/gifs/solution/*.gif` (36 files) | TRB | GIF 800² | diverse benchmark rollouts used as a 6×6 zoom-out mosaic | 02 | visual benchmark coverage | current | ✅ | all 36 converted to deterministic 8 s MP4 clips |
+| 1 | `docs/static/gifs/pairs/3.1/plant2_base.gif` | TRB | GIF 640², 77 fr | PlanT-2 baseline enters a **no-entry** road; on-screen verifier ends at *Violations: 9* | 11 | confirmed (counter in frame) | current | ✅ | Docs demo pair; scene id not recorded in filename |
 | 2 | `docs/static/gifs/pairs/3.1/plant2_expert.gif` | TRB | GIF | rule-compliant expert on the same map turns away, *Violations: 0* | — | confirmed | current | ✅ | expert = privileged rule-compliant planner, **not** PlanT-2-FT |
 | 3 | `docs/static/gifs/pairs/3.1/idm_base.gif` | TRB | GIF 720² | IDM enters no-entry road, *Violations: 10* | 09 | confirmed | current | ✅ | |
 | 4 | `docs/static/gifs/pairs/5.15.1/plant2_{base,expert}.gif` | TRB | GIF 560² | lane-direction sign: base ends *Violations: 1*, expert *0* | 08, 09 | confirmed | current | ✅ | used for the COMPLIANT / VIOLATION checker HUD |

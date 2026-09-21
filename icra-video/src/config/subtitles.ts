@@ -5,12 +5,18 @@ import type { SubLine } from "../lib/Subtitles";
 
 export const SUBTITLES: Record<SceneKey, SubLine[]> = {
   s01_hook: [
-    { from: 0.5, to: 5, text: "A planner can look successful under conventional driving outcomes…" },
-    { from: 5, to: 10.5, text: "…while violating a specific traffic rule. Aggregate metrics do not measure target-rule compliance." },
+    { from: 0.5, to: 10.0, text: "PlanT-2 reaches the destination without a collision and receives a high driving score of 90." },
+    { from: 10.2, to: 15.2, text: "Yet under conventional metrics, critical traffic-rule violations go completely unnoticed." },
+    { from: 15.3, to: 20.5, text: "At step 50, ego fails to yield to pedestrians on the crosswalk. Existing benchmarks do not make compliance directly verifiable." },
   ],
   s02_benchmark: [
-    { from: 0.5, to: 6, text: "TrafficSignBench turns sign-associated rules into explicit closed-loop tests." },
-    { from: 6, to: 12.5, text: "34 traffic signs, 29 functional scenario types, 29,000 closed-loop scenarios in four semantic groups." },
+    { from: 0.4, to: 5.5, text: "To address this gap, we introduce TrafficSignBench — a large-scale benchmark for systematic compliance evaluation." },
+    { from: 5.8, to: 11.5, text: "It combines 34 traffic signs, automatic rule checkers, and 29,000 rule-targeted closed-loop scenarios across 17 planners." },
+  ],
+  s02b_taxonomy: [
+    { from: 0.3, to: 5, text: "We begin with the eight sign classes of a Vienna-Convention reference system." },
+    { from: 5, to: 10, text: "We retain explicit obligations with machine-verifiable outcomes, excluding primarily advisory, contextual, or conditional signs." },
+    { from: 10, to: 17.7, text: "The resulting 34 implemented signs are reorganized into priority, speed, obstacles, and routing." },
   ],
   s03_realmaps: [
     { from: 0.5, to: 6, text: "The benchmark is grounded in real road geometry: sign-free fragments of the Moscow road network." },
@@ -30,7 +36,7 @@ export const SUBTITLES: Record<SceneKey, SubLine[]> = {
     { from: 5, to: 10.5, text: "Maps are split by unique OpenStreetMap ID before sign assignment." },
   ],
   s07_portability: [
-    { from: 0.5, to: 8.5, text: "Sign appearance varies across jurisdictions; the rule semantics largely do not — 92% average overlap among Vienna-Convention signatories." },
+    { from: 0.3, to: 7.7, text: "The core set reaches 92% average semantic overlap among analysed Vienna-Convention signatories; adaptation often only requires replacing sign appearance." },
   ],
   s08_interface: [
     { from: 0.5, to: 7, text: "Planners receive structured sign semantics; an online checker verifies every rollout." },

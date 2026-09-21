@@ -1,20 +1,21 @@
-# VOICEOVER — draft (editable), ≈ 175 s, ~420 words at a calm scientific pace
+# VOICEOVER — draft (editable), 179 s, calm scientific pace
 
 Timings are the scene windows from `src/config/timing.ts`. The video is readable without audio; the narration adds causality, not new facts. Every number is from the current paper.
 
 | # | Window | Narration |
 |---|---|---|
-| 01 | 0:00–0:11 | A planner can look successful under conventional driving outcomes — and still violate a specific traffic rule. Here, a learned planner drives straight into a no-entry road. Aggregate driving metrics do not explicitly measure target-rule compliance. |
-| 02 | 0:11–0:24 | TrafficSignBench turns sign-associated rules into explicit closed-loop tests: thirty-four traffic signs, twenty-nine functional scenario types, and twenty-nine thousand closed-loop scenarios, organised in four semantic groups — priority, speed, obstacles and routing. |
-| 03 | 0:24–0:44 | The benchmark is grounded in real road geometry. Sign-free fragments are harvested from the Moscow road network — twenty-six thousand real-map crops: junctions, dual-path maps and corridors. Each crop becomes a simulator scene, and each scene an executable rule test. |
-| 04 | 0:44–1:03 | Random agent placement rarely probes the intended rule. So interactions are rule-targeted. For yielding, a gated convoy on the main road is released exactly as the ego approaches the conflict zone. For crosswalks, pedestrians follow controlled timing presets, including late arrivals and chained groups. Rule-targeted interactions make the rule matter. |
-| 05 | 1:03–1:17 | Routing restrictions require a rule-aware route decision. On dual-path maps, the destination is chosen so that the prohibited branch is the shortest path. The shortest route violates the active restriction; compliance requires replanning onto the longer route. |
-| 06 | 1:17–1:28 | Twenty-nine scenario types, one hundred real-map crops each, ten variants per map — twenty-nine thousand scenarios, varying spawn lane, initial speed, route length, traffic density and background dynamics. Maps are split eighty–twenty by unique OpenStreetMap ID before any sign is assigned. |
-| 07 | 1:28–1:37 | Sign appearance varies across jurisdictions, but the underlying rule semantics are largely shared: on average, ninety-two percent of the implemented signs have a semantic equivalent across the analysed Vienna-Convention signatories. |
-| 08 | 1:37–1:52 | Planners receive structured sign semantics and output a trajectory; an online checker verifies every rollout. The primary metric, SCD, counts an episode only when the sign is obeyed *and* the destination is reached. |
-| 09 | 1:52–2:01 | Under this criterion, standard planners reach only two point nine to nine percent overall SCD. Can the gap be closed? |
-| 10 | 2:01–2:19 | We adapt PlanT-2 without touching its backbone. Traffic signs enter as object tokens with learned class projections. A persistent sign-state token stores the active sign class and its posted value. A learnable speed token feeds a discrete ego-speed head, trained jointly with the path and waypoint heads. This adds one hundred forty-eight thousand parameters — 0.4 percent. The model is fine-tuned on oracle expert trajectories. |
-| 11 | 2:19–2:33 | Overall SCD rises from five point nine to seventy-two point three percent, across every semantic group. The benchmark exposes an actionable capability gap. |
-| 12 | 2:33–2:46 | Is it the sign channel? Removing sign identity from the planner input — while the physical plates stay in the scene — drops SCD from seventy-two point eight to fifteen point four percent on five hundred eighty paired episodes. |
-| 13 | 2:46–2:54 | What remains hard? Twenty-five percent of episodes obey the sign but miss the destination; only three percent violate the sign. Remaining failures are primarily navigational. |
-| 14 | 2:54–2:57 | TrafficSignBench: explicit rule-conditioned closed-loop evaluation. |
+| 01 | 0:00–0:21 | PlanT-2 reaches its destination without a collision and receives a high driving score of ninety. Yet under conventional metrics, critical traffic-rule violations go completely unnoticed. At step 50, ego fails to yield to pedestrians on the crosswalk. Existing simulation benchmarks do not make traffic-rule compliance systematic, scalable, and directly verifiable. |
+| 02 | 0:21–0:33 | To address this gap, we introduce TrafficSignBench: the first large-scale benchmark to jointly combine a broad taxonomy of thirty-four signs, automatic rule checkers, and twenty-nine thousand rule-targeted closed-loop scenarios. We use it to evaluate seventeen planners. |
+| 03 | 0:33–0:51 | We begin with the eight sign classes of a Vienna-Convention reference system. We retain explicit obligations with machine-verifiable outcomes, while excluding signs whose meaning is primarily advisory, contextual, or conditional. All thirty-four retained signs are executable in simulation and reorganized by demanded planning capability into priority, speed, obstacles, and routing. |
+| 04 | 0:51–0:59 | Shared rules transcend visual borders. Semantic overlap averages ninety-two percent across analysed Vienna signatories. TrafficSignBench can adapt by swapping sign appearance while reusing the same rule-verification logic. |
+| 05 | 0:44–1:02 | The benchmark is grounded in real road geometry. Sign-free fragments are harvested from the Moscow road network — twenty-six thousand real-map crops: junctions, dual-path maps and corridors. Each crop becomes a simulator scene, and each scene an executable rule test. |
+| 06 | 1:02–1:19 | Random agent placement rarely probes the intended rule. So interactions are rule-targeted. For yielding, a gated convoy is released as the ego approaches. For crosswalks, pedestrians follow controlled timing presets. |
+| 07 | 1:19–1:32 | On dual-path maps, the destination makes the prohibited branch the shortest path. Compliance requires replanning onto the longer route. |
+| 08 | 1:32–1:42 | Twenty-nine scenario types, one hundred crops each, ten variants per map: twenty-nine thousand scenarios. Maps are split by OpenStreetMap ID before sign assignment. |
+| 09 | 1:42–1:56 | Planners receive structured sign semantics and output a trajectory; an online checker verifies every rollout. SCD counts an episode only when the sign is obeyed and the destination is reached. |
+| 10 | 1:56–2:05 | Standard planners reach only two point nine to nine percent overall SCD. Can the gap be closed? |
+| 11 | 2:05–2:22 | We adapt PlanT-2 without changing its backbone. Sign and state tokens plus a learnable speed token add only 0.4 percent parameters. The model is fine-tuned on oracle expert trajectories. |
+| 12 | 2:22–2:36 | Overall SCD rises from five point nine to seventy-two point three percent. The benchmark exposes an actionable capability gap. |
+| 13 | 2:36–2:48 | Removing sign identity while physical plates remain drops SCD from seventy-two point eight to fifteen point four percent on five hundred eighty paired episodes. |
+| 14 | 2:48–2:56 | Remaining failures are primarily navigational: twenty-five percent obey the sign but miss the destination; only three percent violate it. |
+| 15 | 2:56–2:59 | TrafficSignBench: explicit rule-conditioned closed-loop evaluation. |

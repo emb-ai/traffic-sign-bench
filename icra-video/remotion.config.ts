@@ -11,4 +11,15 @@ import { enableTailwind } from '@remotion/tailwind-v4';
 Config.setRspack(true);
 Config.setVideoImageFormat("jpeg");
 Config.setOverwriteOutput(true);
-Config.overrideBundlerConfig(enableTailwind);
+Config.overrideBundlerConfig((current) => {
+  const withTailwind = enableTailwind(current);
+  return {
+    ...withTailwind,
+    watchOptions: {
+      ...withTailwind.watchOptions,
+      poll: 1000,
+      aggregateTimeout: 300,
+      ignored: ["**/node_modules/**"],
+    },
+  };
+});

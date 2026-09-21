@@ -6,24 +6,41 @@
 export const FPS = 30;
 
 export const SCENE_SECONDS = {
-  s01_hook: 11,
-  s02_benchmark: 13,
-  s03_realmaps: 20,
-  s04_targeted: 19,
-  s05_routing: 14,
-  s06_scale: 11,
-  s07_portability: 9,
-  s08_interface: 15,
+  s01_hook: 21,
+  s02_benchmark: 12,
+  s02b_taxonomy: 18,
+  s07_portability: 8,
+  s03_realmaps: 18,
+  s04_targeted: 17,
+  s05_routing: 13,
+  s06_scale: 10,
+  s08_interface: 14,
   s09_gap: 9,
-  s10_architecture: 18,
+  s10_architecture: 17,
   s11_result: 14,
-  s12_ablation: 13,
+  s12_ablation: 12,
   s13_failures: 8,
   s14_end: 3,
 } as const;
 
 export type SceneKey = keyof typeof SCENE_SECONDS;
-export const SCENE_ORDER: SceneKey[] = Object.keys(SCENE_SECONDS) as SceneKey[];
+export const SCENE_ORDER: SceneKey[] = [
+  "s01_hook",
+  "s02_benchmark",
+  "s02b_taxonomy",
+  "s07_portability",
+  "s03_realmaps",
+  "s04_targeted",
+  "s05_routing",
+  "s06_scale",
+  "s08_interface",
+  "s09_gap",
+  "s10_architecture",
+  "s11_result",
+  "s12_ablation",
+  "s13_failures",
+  "s14_end",
+];
 
 export const TOTAL_SECONDS = SCENE_ORDER.reduce((a, k) => a + SCENE_SECONDS[k], 0);
 export const TOTAL_FRAMES = TOTAL_SECONDS * FPS;
@@ -33,7 +50,7 @@ export const SCENE_FADE = 0.35;
 
 // In-scene reveal times, in seconds from the start of that scene.
 export const T = {
-  s01: { kicker: 0.4, headline: 1.0, checks: 2.0, ruleFail: 5.0, mainText: 7.0 },
+  s01: { headline: 0.25, example: 0.75, checks: 10.3, ruleFail: 15.3, mainText: 16.6 },
   s02: { title: 0.2, cards: 1.0, cardStep: 0.35, numbers: 5.5 },
   s03: {
     fullMap: 0.0,
@@ -50,7 +67,7 @@ export const T = {
   s04: { yieldClipTrim: 4.0, convoyLabel: 3.0, yieldLabel: 6.0, crosswalkStart: 11.0, mainText: 8.0 },
   s05: { map: 0.0, baseline: 1.5, compliant: 3.5, rollout: 6.5, mainText: 4.5 },
   s06: { formula: 0.5, axes: 3.0, axisStep: 0.35, split: 6.0, splitStep: 0.6 },
-  s07: { figure: 0.3, flags: 2.0, flagStep: 0.3, result: 5.0 },
+  s07: { figure: 0.3, flags: 1.5, flagStep: 0.18, result: 4.7 },
   s08: { chain: 0.5, chainStep: 0.7, hud: 4.5, scd: 8.5, scdStep: 1.2 },
   s09: { clips: 0.3, numbers: 3.0, question: 6.5 },
   s10: {
