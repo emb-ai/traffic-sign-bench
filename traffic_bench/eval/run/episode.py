@@ -25,7 +25,6 @@ from traffic_bench.eval.engine.sim.checkpoints import (
 from traffic_bench.eval.engine.sim.top_down_text_patch import apply_top_down_violations_text_patch
 from traffic_bench.eval.engine.sim.top_down_path_conflict_patch import (
     apply_top_down_path_conflict_overlay_patch,
-    is_path_conflict_overlay_enabled,
     set_path_conflict_overlay_enabled,
 )
 from traffic_bench.eval.engine.sim.top_down_local_film_patch import apply_top_down_local_film_patch
@@ -172,8 +171,6 @@ from traffic_bench.eval.run.policy import _load_policy_models, resolve_model_pat
 from traffic_bench.eval.run.score import (
     _compute_smoothness,
     _infraction_penalty,
-    _is_aux_in_main_zone,
-    _is_ego_in_yield_zone,
     _min_ttc_seconds,
     _nearby_speed_percentage,
     _route_completion_percent,
@@ -903,24 +900,11 @@ def run_one_episode(
 
             text_dict: dict = {}
             if save_gif:
-                aux_vehicles = []
-                if aux_agent_mgr is not None:
-                    try:
-                        aux_vehicles = list(aux_agent_mgr.auxiliary_vehicles)
-                    except Exception:
-                        aux_vehicles = []
                 text_dict = {
                     "Step": step,
                     "Speed": f"{vehicle.speed_km_h:.2f} km/h" if vehicle else "n/a",
                     "Violations": sign_violations + crosswalk_violations,
-                    "is_aux_in_main_zone": _is_aux_in_main_zone(
-                        sign_mgr, aux_vehicles, ego_vehicle=vehicle
-                    ),
-                    "is_ego_in_yield_zone": _is_ego_in_yield_zone(sign_mgr, vehicle),
                 }
-                if draw_path_conflict or is_path_conflict_overlay_enabled():
-                    text_dict["zones"] = "green=yield yellow=main"
-                    text_dict["paths"] = "cyan/magenta rays; nearest main"
 
             # Render before breaking so arrive/terminate frames are in the GIF.
             if save_gif:

@@ -1,0 +1,19 @@
+==================================================
+TrafficRuleBench Scene Statistics Summary
+==================================================
+
+Total Scenarios               : 17990
+Training Scenarios            : 14410
+Test Scenarios                : 3580
+Unique Map Crops              : 1270
+Sign Types                    : 19
+Avg Background Vehicles       : 27.0
+Avg Initial Speed (m/s)       : 6.1
+Avg Route Length (m)          : 100
+
+==================================================
+Distribution Alignment (nuPlan vs Generated)
+==================================================
+
+Traffic Density KS statistic: 0.3163
+Initial Speed KS statistic: 0.3099

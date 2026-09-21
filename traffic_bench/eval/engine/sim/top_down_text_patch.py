@@ -4,9 +4,10 @@ from __future__ import annotations
 
 _APPLIED = False
 
-DEFAULT_FONT_SIZE = 25
-VIOLATIONS_FONT_SIZE = 34
-VIOLATIONS_LINE_INTERVAL = 30
+DEFAULT_FONT_SIZE = 30
+VIOLATIONS_FONT_SIZE = 38
+VIOLATIONS_LINE_INTERVAL = 36
+TEXT_TOP = 275
 
 
 def apply_top_down_violations_text_patch(
@@ -31,6 +32,7 @@ def apply_top_down_violations_text_patch(
         font_default = pygame.font.SysFont("didot.ttc", int(default_size))
         font_violations = pygame.font.SysFont("didot.ttc", int(violations_size))
         x, y = self._text_render_pos
+        y = max(int(y), TEXT_TOP)
         for key, value in text.items():
             is_violations = "violation" in str(key).lower()
             font = font_violations if is_violations else font_default

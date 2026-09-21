@@ -33,6 +33,14 @@ MAIN_ZONE_COLOR = (255, 210, 40)     # yellow — aux main conflict arc
 ZONE_COLOR = MAIN_ZONE_COLOR         # legacy alias
 ENTRY_POINT_COLOR = (255, 230, 60)   # bright yellow — entry XY
 
+# Generic verifier overlays used by the paper visualisation.
+MONITORED_ZONE_COLOR = (55, 87, 255)   # blue — checker-active region
+ALLOWED_COLOR = (36, 180, 118)         # green — compliant lane / outgoing edge
+PROHIBITED_COLOR = (226, 72, 72)       # red — forbidden lane / outgoing edge
+NO_STOP_COLOR = (242, 164, 55)         # amber — no-stop region
+CROSSWALK_COLOR = (42, 184, 205)       # cyan — physical crossing polygon
+VELOCITY_COLOR = (255, 255, 255)       # white — ego velocity vector
+
 
 def _xy_list(points) -> list[tuple[float, float]]:
     out: list[tuple[float, float]] = []
@@ -174,7 +182,7 @@ def _zone_polygon(zone) -> list[tuple[float, float]]:
     return left + list(reversed(right))
 
 
-def _draw_polygon_frame(canvas, points, color) -> None:
+def _draw_polygon_frame(canvas, points, color, *, alpha: int = 110) -> None:
     import pygame
 
     pts = _xy_list(points)
@@ -186,13 +194,13 @@ def _draw_polygon_frame(canvas, points, color) -> None:
         flags = canvas.get_flags() if hasattr(canvas, "get_flags") else 0
         if flags & pygame.SRCALPHA:
             overlay = pygame.Surface(canvas.get_size(), pygame.SRCALPHA)
-            pygame.draw.polygon(overlay, (*color, 110), pix_pts)
+            pygame.draw.polygon(overlay, (*color, int(alpha)), pix_pts)
             canvas.blit(overlay, (0, 0))
         else:
             # Opaque canvas: draw a temporary SRCALPHA layer and blit with alpha.
             try:
                 overlay = pygame.Surface(canvas.get_size(), pygame.SRCALPHA)
-                pygame.draw.polygon(overlay, (*color, 110), pix_pts)
+                pygame.draw.polygon(overlay, (*color, int(alpha)), pix_pts)
                 canvas.blit(overlay, (0, 0))
             except Exception:
                 pass
@@ -213,6 +221,389 @@ def _draw_zone_frame(canvas, zone) -> None:
         _draw_polyline_frame(canvas, _zone_polyline(zone), color, 6)
 
 
+def _draw_lane_window_color(
+    canvas,
+    lane,
+    start: float,
+    end: float,
+    color,
+    *,
+    alpha: int = 110,
+) -> None:
+    """Draw a checker ribbon with an explicit colour."""
+    zone = {
+        "lane": lane,
+        "long_start": float(start),
+        "long_end": float(end),
+    }
+    poly = _zone_polygon(zone)
+    if poly:
+        _draw_polygon_frame(canvas, poly, color, alpha=alpha)
+    else:
+        _draw_polyline_frame(canvas, _zone_polyline(zone), color, 6)
+
+
+def _draw_map_arrow(canvas, start, end, color, width: int = 5) -> None:
+    import math
+    import pygame
+
+    try:
+        p0 = canvas.pos2pix(float(start[0]), float(start[1]))
+        p1 = canvas.pos2pix(float(end[0]), float(end[1]))
+    except Exception:
+        return
+    pygame.draw.line(canvas, color, p0, p1, width)
+    dx, dy = float(p1[0] - p0[0]), float(p1[1] - p0[1])
+    norm = math.hypot(dx, dy)
+    if norm < 1.0:
+        return
+    ux, uy = dx / norm, dy / norm
+    size = 13.0
+    wing = 6.0
+    base_x, base_y = p1[0] - ux * size, p1[1] - uy * size
+    points = [
+        p1,
+        (base_x - uy * wing, base_y + ux * wing),
+        (base_x + uy * wing, base_y - ux * wing),
+    ]
+    pygame.draw.polygon(canvas, color, points)
+
+
+def _draw_point_marker(canvas, point, color, radius: int = 10) -> None:
+    import pygame
+
+    try:
+        pix = canvas.pos2pix(float(point[0]), float(point[1]))
+    except Exception:
+        return
+    pygame.draw.circle(canvas, color, pix, radius, 0)
+    pygame.draw.circle(canvas, (255, 255, 255), pix, radius, 2)
+
+
+def _draw_ego_velocity(canvas, ego) -> None:
+    """Draw velocity direction; length is proportional to current speed."""
+    import math
+
+    try:
+        pos = ego.position
+        heading = float(ego.heading_theta)
+        speed_ms = max(0.0, float(ego.speed_km_h) / 3.6)
+        length_m = min(18.0, max(5.0, speed_ms * 1.25))
+        end = (
+            float(pos[0]) + math.cos(heading) * length_m,
+            float(pos[1]) + math.sin(heading) * length_m,
+        )
+    except Exception:
+        return
+    _draw_map_arrow(canvas, pos, end, VELOCITY_COLOR, width=6)
+
+
+def _network_lanes(engine):
+    """Yield ``(lane_id, lane)`` from SUMO's flat road-network graph."""
+    try:
+        network = engine.current_map.road_network
+        graph = getattr(network, "graph", {}) or {}
+    except Exception:
+        return
+    seen = set()
+    for lane_id, info in graph.items():
+        lane = getattr(info, "lane", None)
+        if lane is None:
+            try:
+                lane = network.get_lane(lane_id)
+            except Exception:
+                lane = None
+        if lane is None or id(lane) in seen:
+            continue
+        seen.add(id(lane))
+        yield lane_id, lane
+
+
+def _lane_for_id(engine, lane_id):
+    try:
+        return engine.current_map.road_network.get_lane(lane_id)
+    except Exception:
+        return None
+
+
+def _right_lane_closure(engine, initial_lane_ids, *, max_lanes: int = 2) -> list:
+    """Return up to two successive lanes to the right for detour display."""
+    try:
+        network = engine.current_map.road_network
+        graph = getattr(network, "graph", {}) or {}
+    except Exception:
+        return list(initial_lane_ids or ())[:max_lanes]
+
+    queue = list(initial_lane_ids or ())
+    result = []
+    seen = set()
+    while queue and len(result) < max_lanes:
+        lane_id = queue.pop(0)
+        if lane_id in seen:
+            continue
+        seen.add(lane_id)
+        result.append(lane_id)
+        info = graph.get(lane_id)
+        lane = _lane_for_id(engine, lane_id)
+        rights = (
+            getattr(info, "right_lanes", None)
+            or getattr(lane, "right_lanes", None)
+            or ()
+        )
+        queue.extend(rights)
+    return result
+
+
+def _draw_speed_verifier(canvas, engine, ego, sign) -> bool:
+    from traffic_bench.signs.speed.limit import SpeedLimitSign
+
+    if not isinstance(sign, SpeedLimitSign):
+        return False
+    edges = [str(edge) for edge in (getattr(sign, "zone_edges", None) or [])]
+    if not edges:
+        sign_lane_id = getattr(sign.lane, "index", None)
+        try:
+            sign_edge = str(sign._sumo_edge_id_from_lane_index(sign_lane_id))
+        except Exception:
+            sign_edge = None
+        drawn = False
+        for lane_id, lane in _network_lanes(engine):
+            try:
+                edge_id = str(sign._sumo_edge_id_from_lane_index(lane_id))
+            except Exception:
+                continue
+            if sign_edge is None or edge_id != sign_edge:
+                continue
+            _draw_lane_window_color(
+                canvas,
+                lane,
+                float(sign.zone_start),
+                float(sign.zone_end),
+                NO_STOP_COLOR,
+                alpha=62,
+            )
+            drawn = True
+        if not drawn:
+            _draw_lane_window_color(
+                canvas,
+                sign.lane,
+                float(sign.zone_start),
+                float(sign.zone_end),
+                NO_STOP_COLOR,
+                alpha=62,
+            )
+    else:
+        first, last = str(edges[0]), str(edges[-1])
+        for lane_id, lane in _network_lanes(engine):
+            try:
+                edge_id = str(sign._sumo_edge_id_from_lane_index(lane_id))
+            except Exception:
+                continue
+            if edge_id not in edges:
+                continue
+            start = float(sign.zone_start) if edge_id == first else 0.0
+            end = (
+                float(sign.zone_end_s)
+                if edge_id == last
+                else float(getattr(lane, "length", 0.0))
+            )
+            _draw_lane_window_color(
+                canvas, lane, start, end, NO_STOP_COLOR, alpha=62
+            )
+    _draw_ego_velocity(canvas, ego)
+    return True
+
+
+def _draw_detour_verifier(canvas, engine, ego, sign) -> bool:
+    from traffic_bench.signs.detour.plate import DetourSign
+
+    if not isinstance(sign, DetourSign):
+        return False
+    _draw_lane_window_color(
+        canvas,
+        sign.lane,
+        float(sign.zone_start),
+        float(sign.zone_end),
+        NO_STOP_COLOR,
+        alpha=72,
+    )
+    allowed_ids = _right_lane_closure(
+        engine,
+        getattr(sign, "_allowed_lane_indices", set()) or set(),
+        max_lanes=2,
+    )
+    for lane_id in allowed_ids:
+        lane = _lane_for_id(engine, lane_id)
+        if lane is None:
+            continue
+        _draw_lane_window_color(
+            canvas,
+            lane,
+            float(sign.zone_start),
+            float(sign.zone_end),
+            ALLOWED_COLOR,
+            alpha=72,
+        )
+    try:
+        obstacle = sign.lane.position(float(sign.obstacle_long), 0.0)
+        _draw_point_marker(canvas, obstacle, PROHIBITED_COLOR, radius=11)
+    except Exception:
+        pass
+    return True
+
+
+def _draw_one_way_verifier(canvas, engine, ego, sign) -> bool:
+    from traffic_bench.signs.dual_path.one_way import OneWayEntrySign
+
+    if not isinstance(sign, OneWayEntrySign):
+        return False
+    try:
+        sign._ensure_sumo_outgoing_context()
+        mapped = sign._sumo_outgoing_mapped or {}
+    except Exception:
+        mapped = {}
+    all_outgoing = set(mapped.get("all_outgoing") or ())
+    by_dir = mapped.get("by_dir") or {}
+    forbidden = set(by_dir.get("l") or ())
+    allowed = set(by_dir.get("r") or ()) or (all_outgoing - forbidden)
+
+    for lane_id, lane in _network_lanes(engine):
+        try:
+            edge_id = str(sign._sumo_edge_id_from_lane_index(lane_id))
+        except Exception:
+            continue
+        color = (
+            PROHIBITED_COLOR
+            if edge_id in forbidden
+            else ALLOWED_COLOR
+            if edge_id in allowed
+            else None
+        )
+        if color is None:
+            continue
+        length = min(22.0, float(getattr(lane, "length", 0.0)))
+        _draw_lane_window_color(canvas, lane, 0.0, length, color)
+    return True
+
+
+def _draw_crosswalk_verifier(canvas, sign_mgr, ego) -> bool:
+    drawn = False
+    for rule in getattr(sign_mgr, "rules", ()) or ():
+        if type(rule).__name__ != "PedestrianYieldRule":
+            continue
+        try:
+            _engine, states = rule._get_crosswalk_state(ego)
+            thresholds = rule._resolve_all_thresholds(_engine)
+        except Exception:
+            continue
+        for state in (states or {}).values():
+            try:
+                polygon = state.get("polygon")
+                no_stop_zone = rule._build_renderer_no_stop_zone_polygon(
+                    polygon, float(thresholds["no_stop_before_m"])
+                )
+            except Exception:
+                continue
+            if no_stop_zone is not None:
+                _draw_polygon_frame(
+                    canvas, list(no_stop_zone), NO_STOP_COLOR, alpha=72
+                )
+            color = (
+                PROHIBITED_COLOR
+                if bool(state.get("active", False))
+                else CROSSWALK_COLOR
+            )
+            _draw_polygon_frame(canvas, list(polygon), color, alpha=42)
+            drawn = True
+    return drawn
+
+
+def _draw_generic_verifier_overlays(canvas, engine, sign_mgr, ego) -> None:
+    """Render the exact zones/edge sets consumed by selected rule checkers."""
+    _draw_crosswalk_verifier(canvas, sign_mgr, ego)
+    for sign in getattr(sign_mgr, "signs", ()) or ():
+        if _draw_speed_verifier(canvas, engine, ego, sign):
+            continue
+        if _draw_detour_verifier(canvas, engine, ego, sign):
+            continue
+        _draw_one_way_verifier(canvas, engine, ego, sign)
+
+
+def verifier_hud_lines(sign_mgr, ego) -> dict[str, str]:
+    """Concise, human-readable status for verifier demonstration GIFs."""
+    if sign_mgr is None or ego is None:
+        return {}
+
+    for rule in getattr(sign_mgr, "rules", ()) or ():
+        if type(rule).__name__ != "PedestrianYieldRule":
+            continue
+        try:
+            status = rule.get_status(ego)
+        except Exception:
+            continue
+        return {
+            "Rule": "yield at occupied crossing",
+            "Verifier zone": (
+                f"{float(status['no_stop_before_m']):.0f} m before crossing"
+            ),
+            "Check": (
+                f"pedestrian={'active' if status['target_active'] else 'clear'}; "
+                f"must stop={'yes' if status['must_stop'] else 'no'}"
+            ),
+        }
+
+    from traffic_bench.signs.detour.plate import DetourSign
+    from traffic_bench.signs.dual_path.one_way import OneWayEntrySign
+    from traffic_bench.signs.speed.limit import SpeedLimitSign
+
+    for sign in getattr(sign_mgr, "signs", ()) or ():
+        if isinstance(sign, SpeedLimitSign):
+            try:
+                inside = bool(sign.is_vehicle_in_zone(ego))
+            except Exception:
+                inside = False
+            return {
+                "Rule": f"speed <= {float(sign.speed_limit):.0f} km/h",
+                "Verifier zone": "yellow road segment",
+                "Check": f"inside={'yes' if inside else 'no'}",
+            }
+        if isinstance(sign, DetourSign):
+            try:
+                veh_long = float(sign.lane.local_coordinates(ego.position)[0])
+                inside = float(sign.zone_start) <= veh_long <= float(sign.zone_end)
+                state = (getattr(sign, "_vehicle_states_detour", {}) or {}).get(
+                    ego.id, {}
+                )
+                changed = bool(state.get("changed_correctly", False))
+            except Exception:
+                inside, changed = False, False
+            side = "/".join(sorted(getattr(sign, "allowed_directions", ()) or ()))
+            return {
+                "Rule": f"pass obstacle on {side}",
+                "Verifier zone": "yellow; allowed lanes green",
+                "Check": (
+                    f"inside={'yes' if inside else 'no'}; "
+                    f"changed={'yes' if changed else 'no'}"
+                ),
+            }
+        if isinstance(sign, OneWayEntrySign):
+            names = {"l": "left", "r": "right", "s": "straight", "t": "U-turn"}
+            prohibited = names.get(
+                str(getattr(sign, "not_allowed_direction", "")),
+                str(getattr(sign, "not_allowed_direction", "")),
+            )
+            return {
+                "Rule": f"forbid {prohibited} outgoing edge",
+                "Verifier zone": "approach blue; red forbidden",
+                "Check": "selected outgoing edge at junction exit",
+            }
+
+    return {
+        "Verifier zones": "green=yield; yellow=conflict",
+        "Verifier paths": "cyan=ego; magenta=conflicting traffic",
+    }
+
+
 def _draw_path_conflict_overlays_on_frame(renderer) -> None:
     """Draw overlays onto ``_frame_canvas`` (pre-camera map pixels)."""
     engine = getattr(renderer, "engine", None)
@@ -225,6 +616,8 @@ def _draw_path_conflict_overlays_on_frame(renderer) -> None:
     canvas = getattr(renderer, "_frame_canvas", None)
     if ego is None or canvas is None:
         return
+
+    _draw_generic_verifier_overlays(canvas, engine, sign_mgr, ego)
 
     from traffic_bench.signs.junction import YieldSign
 
