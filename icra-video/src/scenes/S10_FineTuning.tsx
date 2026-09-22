@@ -14,8 +14,8 @@ import { ARCH_SCENE, FT_WARP } from "../config/archScene";
 import { FT_SCENE } from "../config/fineTuningScene";
 import { PAPER } from "../config/paperStyle";
 import { COLORS, SIZE } from "../config/style";
-import { clamp, Headline, Mark, rise, Scene, useT } from "../lib/ui";
-import { ArchitectureBody, archStage, FR } from "./S11_ArchitectureFT";
+import { clamp, ExpertLabel, Headline, Mark, rise, Scene, useT } from "../lib/ui";
+import { ArchitectureBody, FR } from "./S11_ArchitectureFT";
 
 const C = FT_SCENE;
 const TT = C.timing;
@@ -84,8 +84,11 @@ const ExpertMap: React.FC<{ t: number }> = ({ t }) => {
   const lineW = mix(C.intro.trackWidth, C.highlight.candidateWidth, m);
   const egoScale = mix(1.25, 1, m);
   const sign = sceneData.sign;
-  const signScreen = { x: ((sign.x - x0) / w) * box.w, y: ((y1 - sign.y) / h) * box.h };
-  const signPx = mix(56, 44, m);
+  const signScreen = {
+    x: ((sign.x - x0) / w) * box.w,
+    y: ((y1 - sign.y) / h) * box.h + (1 - m) * C.intro.signNudgeY,
+  };
+  const signPx = mix(C.intro.signSize, 36, m);
   // frozen training frame = dump frame 16 of the rank-1 trajectory = downsampled replay index 8 (checked: same pose)
   const rank1 = sceneData.experts.find((e) => e.selected_rank === 1)!;
 
@@ -140,7 +143,19 @@ const ExpertMap: React.FC<{ t: number }> = ({ t }) => {
           })}
         </g>
       </svg>
-      <Img src={staticFile(sceneCfg.signIcon)} style={{ position: "absolute", left: signScreen.x - signPx / 2, top: signScreen.y - signPx / 2, width: signPx, height: signPx }} />
+      <Img
+        src={staticFile(sceneCfg.signIcon)}
+        style={{
+          position: "absolute",
+          left: signScreen.x - signPx / 2,
+          top: signScreen.y - signPx / 2,
+          width: signPx,
+          height: signPx,
+          transform: "signRotate" in sceneCfg && sceneCfg.signRotate
+            ? `rotate(${sceneCfg.signRotate}deg)`
+            : undefined,
+        }}
+      />
       <div style={{ position: "absolute", left: 16, bottom: 12, fontSize: mix(22, 19, m), color: COLORS.muted, backgroundColor: "rgba(255,255,255,0.88)", padding: "4px 10px", borderRadius: 6 }}>
         {sceneCfg.caption}
       </div>
@@ -149,8 +164,8 @@ const ExpertMap: React.FC<{ t: number }> = ({ t }) => {
 };
 
 // Selection table: all 8 experts and every selection criterion in one place (real flags + real F-scores)
-const COLS = { name: 170, rule: 140, dest: 140, quality: 175 };
-const ROW_H = 56;
+const COLS = { name: 210, rule: 165, dest: 175, quality: 210 };
+const ROW_H = 65;
 
 // Paper-figure selection table: Expert | Sign Compliance | Destination | Quality. Every value comes from the verified scene file.
 const SelectionTable: React.FC<{ t: number }> = ({ t }) => {
@@ -172,7 +187,10 @@ const SelectionTable: React.FC<{ t: number }> = ({ t }) => {
   );
   return (
     <div style={{ position: "absolute", left: C.intro.tableLeft, top: C.intro.map.top, width }}>
-      <div style={{ ...PAPER.sectionLabel, color: COLORS.blue, marginBottom: 10, opacity: rise(t, TT.expertsAppear - 0.2, 0.4) }}>{C.text.expertsTitle}</div>
+      <div style={{
+        fontSize: 26, fontWeight: 800, color: COLORS.blue, letterSpacing: 0, marginBottom: 12,
+        opacity: rise(t, TT.expertsAppear - 0.2, 0.4),
+      }}>{C.text.expertsTitle}</div>
       <div style={{ borderRadius: 16, border: PAPER.cardBorder, boxShadow: PAPER.cardShadow, overflow: "hidden", backgroundColor: "#fff" }}>
       <div style={{ display: "flex", alignItems: "center", minHeight: 62, padding: "8px 0 8px 16px", backgroundColor: PAPER.headRow, borderBottom: PAPER.cardBorder }}>
         <span style={{ ...head, textAlign: "left", width: COLS.name, fontSize: 14, fontWeight: 900, letterSpacing: 1.6, color: COLORS.muted, textTransform: "uppercase", opacity: rise(t, TT.expertsAppear, 0.4) }}>{C.text.colExpert}</span>
@@ -200,7 +218,7 @@ const SelectionTable: React.FC<{ t: number }> = ({ t }) => {
             <span style={{ width: COLS.name, display: "flex", alignItems: "center", opacity: op }}>
               <span style={{ width: 28, height: 7, borderRadius: 4, backgroundColor: C.expertColors[k], marginRight: 12, flexShrink: 0 }} />
               <span style={{ position: "relative", lineHeight: 1.05 }}>
-                <span style={{ fontSize: 24, fontWeight: selOn > 0.5 ? 800 : 600 }}>{C.expertNames[k]}</span>
+                <ExpertLabel name={C.expertNames[k]} style={{ fontSize: 24, fontWeight: selOn > 0.5 ? 800 : 600 }} />
                 {isSel && <span style={{ position: "absolute", left: 0, top: 27, fontSize: 12, fontWeight: 800, letterSpacing: 1.6, color: "#8A6A00", opacity: selOn, whiteSpace: "nowrap" }}>{C.text.selectedLabel}</span>}
               </span>
             </span>
@@ -231,8 +249,8 @@ const STEP_COLORS = [COLORS.blue, ARCH_SCENE.colors.supervision, ARCH_SCENE.colo
 const IntroBeat: React.FC<{ t: number }> = ({ t }) => {
   const out = 1 - rise(t, TT.introOut, 0.5);
   if (out <= 0) return null;
-  const cardW = 520;
-  const gap = 90;
+  const cardW = 550;
+  const gap = 60;
   const left = (1920 - (3 * cardW + 2 * gap)) / 2;
   return (
     <div style={{ opacity: out }}>
@@ -243,28 +261,40 @@ const IntroBeat: React.FC<{ t: number }> = ({ t }) => {
         return (
           <React.Fragment key={st.n}>
             <div style={{
-              position: "absolute", left: x, top: 340, width: cardW, height: 400, boxSizing: "border-box", padding: "28px 32px",
-              backgroundColor: "#fff", borderRadius: PAPER.cardRadius, border: PAPER.cardBorder, borderTop: `5px solid ${col}`, boxShadow: PAPER.cardShadow,
+              position: "absolute", left: x, top: 240, width: cardW, height: 650, boxSizing: "border-box", padding: "38px 40px",
+              backgroundColor: "#fff", borderRadius: PAPER.cardRadius, border: PAPER.cardBorder, borderTop: `6px solid ${col}`, boxShadow: PAPER.cardShadow,
               opacity: p, transform: `translateY(${(1 - p) * 18}px)`,
             }}>
-              <div style={{ display: "flex", alignItems: "center", gap: 14 }}>
-                <div style={{ width: 44, height: 44, borderRadius: 22, backgroundColor: col, color: "#fff", fontSize: 24, fontWeight: 900, display: "flex", alignItems: "center", justifyContent: "center" }}>{st.n}</div>
-                <div style={{ fontSize: 34, fontWeight: 900, color: COLORS.ink }}>{st.title}</div>
+              <div style={{ display: "flex", alignItems: "center", gap: 18 }}>
+                <div style={{ width: 56, height: 56, borderRadius: 28, backgroundColor: col, color: "#fff", fontSize: 32, fontWeight: 900, display: "flex", alignItems: "center", justifyContent: "center" }}>{st.n}</div>
+                <div style={{ fontSize: 38, fontWeight: 900, color: COLORS.ink }}>{st.title}</div>
               </div>
-              <div style={{ fontSize: 24, fontWeight: 700, color: "#475569", marginTop: 22, lineHeight: 1.3 }}>{st.body}</div>
-              {/* small pictogram: the 8 expert colours / the selected trajectory / the fine-tuned planner */}
-              <div style={{ position: "absolute", left: 32, bottom: 86, display: "flex", gap: 8, alignItems: "center" }}>
-                {i === 0 && Object.values(C.expertColors).map((c) => <span key={c} style={{ width: 38, height: 8, borderRadius: 4, backgroundColor: c }} />)}
-                {i === 1 && <>
-                  {Object.values(C.expertColors).slice(0, 6).map((c) => <span key={c} style={{ width: 30, height: 6, borderRadius: 3, backgroundColor: c, opacity: C.highlight.fadedOpacity * 3 }} />)}
-                  <span style={{ width: 60, height: 10, borderRadius: 5, backgroundColor: C.expertColors["idm_rule/s1"], boxShadow: `0 0 0 2.5px ${C.highlight.casing}` }} />
-                </>}
-                {i === 2 && <span style={{ padding: "8px 18px", borderRadius: 10, backgroundColor: ARCH_SCENE.colors.backbone, color: "#8FE0B0", fontSize: 20, fontWeight: 900 }}>PlanT-2-FT</span>}
+              <div style={{ fontSize: 29, fontWeight: 800, color: COLORS.ink, marginTop: 28, lineHeight: 1.35 }}>{st.body}</div>
+              <div style={{ fontSize: 23, fontWeight: 500, color: "#64748B", marginTop: 16, lineHeight: 1.4 }}>{st.detail}</div>
+              {/* pictogram: 8 expert colours → top-2 retained → PlanT-2-FT */}
+              <div style={{ position: "absolute", left: 40, bottom: 95, display: "flex", gap: 10, alignItems: "center" }}>
+                {i === 0 && Object.values(C.expertColors).map((c) => (
+                  <span key={c} style={{ width: 50, height: 16, borderRadius: 8, backgroundColor: c }} />
+                ))}
+                {i === 1 && Object.entries(C.expertColors).map(([k, c]) => {
+                  const kept = k === "idm_rule/s1" || k === "ppo_rule/default";
+                  return (
+                    <span
+                      key={k}
+                      style={{
+                        width: 50, height: 16, borderRadius: 8, backgroundColor: c,
+                        opacity: kept ? 1 : C.highlight.fadedOpacity * 3,
+                        boxShadow: kept ? `0 0 0 2.5px ${C.highlight.casing}` : undefined,
+                      }}
+                    />
+                  );
+                })}
+                {i === 2 && <span style={{ padding: "14px 32px", borderRadius: 14, backgroundColor: ARCH_SCENE.colors.backbone, color: "#8FE0B0", fontSize: 28, fontWeight: 900 }}>PlanT-2-FT</span>}
               </div>
-              <div style={{ position: "absolute", left: 32, right: 32, bottom: 26, paddingTop: 12, borderTop: `1px solid ${PAPER.rowLine}`, fontSize: 21, fontWeight: 800, color: col }}>{st.foot}</div>
+              <div style={{ position: "absolute", left: 40, right: 40, bottom: 28, paddingTop: 16, borderTop: `1px solid ${PAPER.rowLine}`, fontSize: 25, fontWeight: 800, color: col }}>{st.foot}</div>
             </div>
             {i < 2 && (
-              <div style={{ position: "absolute", left: x + cardW + 18, top: 510, fontSize: 48, color: COLORS.faint, opacity: rise(t, TT.introSteps + (i + 1) * TT.introStepGap - 0.2, 0.4) }}>→</div>
+              <div style={{ position: "absolute", left: x + cardW + 10, top: 520, fontSize: 58, color: COLORS.faint, opacity: rise(t, TT.introSteps + (i + 1) * TT.introStepGap - 0.2, 0.4) }}>→</div>
             )}
           </React.Fragment>
         );
@@ -275,19 +305,30 @@ const IntroBeat: React.FC<{ t: number }> = ({ t }) => {
 
 // ─── 36,828: under the selection table (same slide) ──────────────────────────
 const DatasetBeat: React.FC<{ t: number }> = ({ t }) => (
-  <div style={{ position: "absolute", left: C.intro.tableLeft, top: 852, width: 660 }}>
+  <div style={{ position: "absolute", left: C.intro.tableLeft, top: 890, width: 776 }}>
     <div style={{ borderTop: `1px solid ${COLORS.border}`, paddingTop: 14, opacity: rise(t, TT.datasetCountReveal, 0.5) }}>
-      <div style={{ fontSize: 20, color: COLORS.muted, fontWeight: 700 }}>{C.text.datasetAcross}</div>
+      <div style={{ fontSize: 22, color: COLORS.muted, fontWeight: 700 }}>{C.text.datasetAcross}</div>
       <div style={{ display: "flex", alignItems: "baseline", gap: 14 }}>
-        <span style={{ fontSize: 58, fontWeight: 900, lineHeight: 1.1, color: COLORS.ink }}>{C.text.datasetNumber}</span>
-        <span style={{ fontSize: 24, fontWeight: 800, color: COLORS.ink }}>{C.text.datasetLabel}</span>
+        <span style={{ fontSize: 62, fontWeight: 900, lineHeight: 1.1, color: COLORS.ink }}>{C.text.datasetNumber}</span>
+        <span style={{ fontSize: 26, fontWeight: 800, color: COLORS.ink }}>{C.text.datasetLabel}</span>
       </div>
     </div>
-    <div style={{ display: "flex", alignItems: "baseline", gap: 12, opacity: rise(t, TT.datasetFT, 0.5) }}>
-      <span style={{ fontSize: 24, fontWeight: 800, color: ARCH_SCENE.colors.supervision }}>{C.text.datasetFT}</span>
+    <div style={{ display: "flex", alignItems: "baseline", gap: 12, marginTop: 4, opacity: rise(t, TT.datasetFT, 0.5) }}>
+      <span style={{ fontSize: 26, fontWeight: 800, color: ARCH_SCENE.colors.supervision }}>{C.text.datasetFT}</span>
     </div>
   </div>
 );
+
+const HeaderView: React.FC<{ kicker: string; title: string; subtitle: string; opacity: number }> = ({ kicker, title, subtitle, opacity }) => {
+  if (opacity <= 0.001) return null;
+  return (
+    <div style={{ position: "absolute", left: SIZE.margin, right: SIZE.margin, top: 44, opacity, pointerEvents: "none" }}>
+      <div style={{ display: "inline-block", padding: "4px 14px", borderRadius: 999, ...PAPER.pill, color: COLORS.blue, fontSize: 13, fontWeight: 900, letterSpacing: 2.2, textTransform: "uppercase", marginBottom: 8 }}>{kicker}</div>
+      <Headline size={50}>{title}</Headline>
+      <div style={{ marginTop: 6, color: COLORS.muted, fontSize: 24, fontWeight: 700 }}>{subtitle}</div>
+    </div>
+  );
+};
 
 export const S10_FineTuning: React.FC<{ selectionScene?: string }> = ({ selectionScene }) => {
   const sel = SEL_SCENES[selectionScene ?? C.selection.scene];
@@ -296,20 +337,21 @@ export const S10_FineTuning: React.FC<{ selectionScene?: string }> = ({ selectio
   const tl = t - TT.archStart; // local time of the architecture half
   const partA = rise(t, TT.expertsAppear - 0.5, 0.5) * (1 - rise(t, TT.archStart - 0.5, 0.5));
   const tableOp = 1;
-  const stage = t < TT.expertsAppear - 0.4 ? "intro" : t < TT.archStart - 0.2 ? "collect" : archStage(tl);
-  // headline changes (opening → step 1 → architecture half) are softened
-  const cueAt = (x: number) => (t < x - 0.4 || t > x + 0.2 ? 1 : 0.35);
-  const titleOp = cueAt(TT.archStart) * cueAt(TT.expertsAppear - 0.4);
+
+  // Header transitions: clean cross-fades between major stages; the training steps header stays 100% static
+  const introHeaderOp = rise(t, TT.title, 0.4) * (1 - rise(t, TT.introOut, 0.4));
+  const collectHeaderOp = rise(t, TT.introOut, 0.4) * (1 - rise(t, TT.archStart - 0.4, 0.4));
+  const archHeaderOp = rise(t, TT.archStart - 0.3, 0.4) * (1 - rise(tl, ARCH_SCENE.timing.result - 0.3, 0.4));
+  const resultHeaderOp = rise(tl, ARCH_SCENE.timing.result - 0.3, 0.4);
 
   return (
     <SelCtx.Provider value={sel}>
     <Scene>
-      {/* header in the style of the latest slides: pill kicker, 50 px headline, muted subtitle */}
-      <div style={{ position: "absolute", left: SIZE.margin, right: SIZE.margin, top: 44, opacity: rise(t, TT.title, 0.4) * titleOp }}>
-        <div style={{ display: "inline-block", padding: "4px 14px", borderRadius: 999, ...PAPER.pill, color: COLORS.blue, fontSize: 13, fontWeight: 900, letterSpacing: 2.2, textTransform: "uppercase", marginBottom: 8 }}>{C.text.kickers[stage]}</div>
-        <Headline size={50}>{C.text.titles[stage]}</Headline>
-        <div style={{ marginTop: 6, color: COLORS.muted, fontSize: 24, fontWeight: 700 }}>{C.text.subtitles[stage]}</div>
-      </div>
+      {/* 4 stage headers cross-fade cleanly; during all training steps, the header stands completely static without animating */}
+      <HeaderView kicker={C.text.kickers.intro} title={C.text.titles.intro} subtitle={C.text.subtitles.intro} opacity={introHeaderOp} />
+      <HeaderView kicker={C.text.kickers.collect} title={C.text.titles.collect} subtitle={C.text.subtitles.collect} opacity={collectHeaderOp} />
+      <HeaderView kicker={C.text.kickers.scene} title={C.text.titles.scene} subtitle={C.text.subtitles.scene} opacity={archHeaderOp} />
+      <HeaderView kicker={C.text.kickers.result} title={C.text.titles.result} subtitle={C.text.subtitles.result} opacity={resultHeaderOp} />
 
 
       <IntroBeat t={t} />

@@ -1,4 +1,4 @@
-// Conclusion: the paper's main findings as four cards (benchmark → evaluation → fine-tuning → open challenge),
+// Conclusion: the paper's main findings as three cards (benchmark → evaluation → fine-tuning),
 // in the header/card style of the fine-tuning section. Editable content: src/config/conclusionScene.ts
 import { Img, staticFile } from "remotion";
 import { CONCLUSION as C } from "../config/conclusionScene";
@@ -8,7 +8,9 @@ import { Headline, rise, Scene, useT } from "../lib/ui";
 
 export const S15_Conclusion: React.FC = () => {
   const t = useT();
-  const W = (1920 - 2 * SIZE.margin - 3 * 30) / 4;
+  const n = C.cards.length;
+  const gap = 36;
+  const W = (1920 - 2 * SIZE.margin - (n - 1) * gap) / n;
   return (
     <Scene>
       <div style={{ position: "absolute", left: SIZE.margin, right: SIZE.margin, top: 44, opacity: rise(t, C.timing.header, 0.4) }}>
@@ -20,7 +22,7 @@ export const S15_Conclusion: React.FC = () => {
         const p = rise(t, C.timing.card0 + i * C.timing.cardStep, 0.6);
         return (
           <div key={c.kicker} style={{
-            position: "absolute", left: SIZE.margin + i * (W + 30), top: 290, width: W, height: 480, boxSizing: "border-box", padding: "28px 28px",
+            position: "absolute", left: SIZE.margin + i * (W + gap), top: 290, width: W, height: 480, boxSizing: "border-box", padding: "28px 28px",
             backgroundColor: "#fff", borderRadius: PAPER.cardRadius, border: PAPER.cardBorder, borderTop: `6px solid ${c.color}`, boxShadow: PAPER.cardShadow,
             opacity: p, transform: `translateY(${(1 - p) * 20}px)`,
           }}>

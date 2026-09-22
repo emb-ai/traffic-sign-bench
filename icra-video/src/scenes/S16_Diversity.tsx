@@ -1,6 +1,6 @@
 // Scenario diversity: the corridor crop of the real-maps slide → the same map in the simulator → background traffic at
 // the nuPlan density quantiles the benchmark probes (histogram + moving quantile) → its 10 real test variants → 29,000.
-// Editable content and data provenance: src/config/diversityScene.ts
+// Frames are square 800×800 GIF step-0 crops (ego at spawn). Editable content: src/config/diversityScene.ts
 import { Img, interpolate, staticFile } from "remotion";
 import hist from "../../public/diversity/nuplan_density_hist.json";
 import { DIVERSITY as C } from "../config/diversityScene";
@@ -9,7 +9,7 @@ import { COLORS, GROUP, SIZE } from "../config/style";
 import { clamp, Headline, rise, Scene, useT } from "../lib/ui";
 
 const TT = C.timing;
-const FRAME = { x: SIZE.margin, y: 200, w: 450, h: 750 }; // simulator frames are 480 × 800 crops
+const FRAME = { x: SIZE.margin, y: 220, w: 560, h: 560 }; // simulator frames are square 800 × 800 (step 0)
 const fadeOut = (t: number, at: number, dur = 0.5) => 1 - rise(t, at, dur);
 
 // nuPlan histogram with the benchmark's quantile probe
@@ -68,8 +68,8 @@ export const S16_Diversity: React.FC = () => {
   const lvl = L.map((_, i) => rise(t, TT.levels[i], 0.6));
   const RX = FRAME.x + FRAME.w + 90;
   const RW = 1920 - SIZE.margin - RX;
-  const tileW = 196;
-  const tileH = Math.round((tileW * 800) / 480);
+  const tileW = 210;
+  const tileH = tileW; // square step-0 frames
   const gridX = SIZE.margin;
   return (
     <Scene>

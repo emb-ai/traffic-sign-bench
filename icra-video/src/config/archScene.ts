@@ -112,7 +112,7 @@ export const ARCH_SCENE = {
     allLabels: {
       standard: "standard planners 2.9–9.0%",
       experts: "privileged experts 64.3–80.0%",
-      gap: "PlanT-2-FT 72.3% · 7.7 points below the best expert, CaRLᵉ 80.0%",
+      gap: "PlanT-2-FT 72.3% · 7.7 points below the best expert, CaRLe 80.0%",
     },
   },
 

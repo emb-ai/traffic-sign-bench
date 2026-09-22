@@ -207,3 +207,37 @@ export const Sub: React.FC<{ children?: React.ReactNode; size?: number; style?: 
 export const Footnote: React.FC<{ children?: React.ReactNode; top?: number }> = ({ children, top = 1020 }) => (
   <div style={{ position: "absolute", left: SIZE.margin, top, fontSize: 20, color: COLORS.faint }}>{children}</div>
 );
+
+/** Paper convention: rule-compliant experts carry a superscript e (IDMᵉ, PlanT-2ᵉ, …). */
+const EXPERT_E = /(IDM|PPO|CaRL|PlanT-2)[eᵉ](-s\d+)?/g;
+const SUP_E: React.CSSProperties = {
+  fontSize: "0.55em",
+  fontWeight: 700,
+  verticalAlign: "super",
+  lineHeight: 0,
+};
+
+/** Turn ASCII/unicode expert-e marks in free text into proper superscripts. */
+export const withExpertMarks = (text: string): React.ReactNode => {
+  const nodes: React.ReactNode[] = [];
+  let last = 0;
+  for (const m of text.matchAll(EXPERT_E)) {
+    const i = m.index ?? 0;
+    if (i > last) nodes.push(text.slice(last, i));
+    nodes.push(
+      <React.Fragment key={i}>
+        {m[1]}
+        <sup style={SUP_E}>e</sup>
+        {m[2] ?? ""}
+      </React.Fragment>,
+    );
+    last = i + m[0].length;
+  }
+  if (last < text.length) nodes.push(text.slice(last));
+  return nodes.length === 1 ? nodes[0] : nodes;
+};
+
+/** Expert planner display name with a proper superscript e. */
+export const ExpertLabel: React.FC<{ name: string; style?: React.CSSProperties }> = ({ name, style }) => (
+  <span style={style}>{withExpertMarks(name)}</span>
+);

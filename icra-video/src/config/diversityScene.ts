@@ -4,10 +4,11 @@
 //
 // Data (all real, 2026-09-22):
 //  • Map = the corridor crop of the real-maps slide (seg_1241471060, sign 4.2.1 detour right). Its 10 test variants are
-//    rows 1–10 of traffic-rule-bench-main/data/runs_v7/detour_right/test/real_manifest.jsonl; frames = step 20 of a
-//    40-step rule-compliant IDM rollout of each row, rendered without the text HUD
-//    (server: icra-video/generated/diversity/seg_1241471060, tools/nohud_run.py). Caption values are the row fields
-//    density_percentile, spawn_velocity_ms, route_length_level_m.
+//    rows 1–10 of traffic-rule-bench-main/data/runs_v7/detour_right/test/real_manifest.jsonl; frames = GIF step 0
+//    (square 800×800, ego at spawn) of a rule-compliant IDM rollout of each row, rendered without the text HUD
+//    (server: icra-video/generated/diversity/seg_1241471060, tools/nohud_run.py). Previous 480×800 step-20 crops
+//    live in public/diversity/_old/. Caption values are the row fields density_percentile, spawn_velocity_ms,
+//    route_length_level_m.
 //  • Histogram = nuPlan count_moving_r150_per_lane (moving vehicles within 150 m per lane of the ego road),
 //    traffic_bench/eval/engine/traffic/nuplan_statistics/densities.csv.gz → public/diversity/nuplan_density_hist.json.
 //    The benchmark probes its p25 / p50 / p75 (2.33 / 4.0 / 5.5), see traffic_density_levels.py.

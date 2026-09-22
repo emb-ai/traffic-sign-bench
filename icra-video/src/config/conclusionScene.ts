@@ -2,7 +2,7 @@
 // CONCLUSION — main findings of the paper (Sec. VII conclusion + abstract), one card each.
 // Component: src/scenes/S15_Conclusion.tsx. Every number is from the current paper.
 // ─────────────────────────────────────────────────────────────────────────────
-import { COLORS, GROUP } from "./style";
+import { COLORS } from "./style";
 
 export const CONCLUSION = {
   durationSec: 16,
@@ -35,14 +35,6 @@ export const CONCLUSION = {
       unit: "PlanT-2 → PlanT-2-FT",
       body: "Oracle expert trajectories + sign-aware tokens (+0.4% parameters); 96.6% sign compliance",
       icons: [],
-    },
-    {
-      color: GROUP.routing.text,
-      kicker: "Open challenge",
-      value: "Priority · Routing",
-      unit: "the remaining gap",
-      body: "Interactive right-of-way and sign-conditioned route choice remain unsolved",
-      icons: ["signs/yield.png", "signs/no_entry.png"],
     },
   ],
 };

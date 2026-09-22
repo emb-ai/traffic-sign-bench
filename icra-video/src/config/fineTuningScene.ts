@@ -57,35 +57,53 @@ export const FT_SCENE = {
     kickers: {
       intro: "Rule-supervised fine-tuning",
       collect: "Step 1 · Oracle trajectories",
-      scene: "Step 2 · Sign-aware PlanT-2",
-      model: "Step 2 · Sign-aware PlanT-2",
-      ft: "Step 3 · Rule-supervised fine-tuning",
-      final: "Step 3 · Rule-supervised fine-tuning",
+      scene: "Sign-aware PlanT-2",
+      model: "Sign-aware PlanT-2",
+      ft: "Sign-aware PlanT-2",
+      final: "Sign-aware PlanT-2",
       result: "Results · held-out test scenarios",
     },
     titles: {
       intro: "Learning from privileged rule-compliant experts",
       collect: "Which expert trajectories do we learn from?",
-      scene: "From scene to planner input",
-      model: "Sign-aware PlanT-2",
+      scene: "Rule-supervised fine-tuning",
+      model: "Rule-supervised fine-tuning",
       ft: "Rule-supervised fine-tuning",
-      final: "Sign-aware PlanT-2-FT",
+      final: "Rule-supervised fine-tuning",
       result: "Fine-tuning raises rule compliance",
     },
     subtitles: {
       intro: "Explicit sign constraints turn planners into experts; PlanT-2 learns from their best trajectories",
       collect: "8 privileged experts drive each training scenario; only rule-compliant, completed, high-quality rollouts are kept",
-      scene: "The real scene becomes structured planner inputs",
-      model: "Small sign-aware extensions on an unchanged PlanT-2 backbone",
-      ft: "Selected expert trajectories supervise path, waypoints and speed",
-      final: "Rule-supervised fine-tuning of PlanT-2",
+      scene: "Sign-aware extensions on the unchanged PlanT-2 backbone, supervised by oracle trajectories",
+      model: "Sign-aware extensions on the unchanged PlanT-2 backbone, supervised by oracle trajectories",
+      ft: "Sign-aware extensions on the unchanged PlanT-2 backbone, supervised by oracle trajectories",
+      final: "Sign-aware extensions on the unchanged PlanT-2 backbone, supervised by oracle trajectories",
       result: "PlanT-2 vs PlanT-2-FT on the held-out test scenarios",
     },
     // three step cards of the opening (paper Sec. IV-B … IV-D)
     introSteps: [
-      { n: "1", title: "Privileged experts", body: "IDM · PPO · CaRL · PlanT-2 + explicit sign constraints", foot: "8 rule-compliant experts" },
-      { n: "2", title: "Oracle trajectories", body: "sign obeyed + destination reached, top-2 by quality", foot: "36,828 trajectories · 23,200 scenarios" },
-      { n: "3", title: "PlanT-2-FT", body: "sign-aware tokens on the unchanged PlanT-2 backbone", foot: "+147,976 params · +0.4%" },
+      {
+        n: "1",
+        title: "Privileged experts",
+        body: "IDM · PPO · CaRL · PlanT-2 with explicit sign constraints",
+        detail: "Privileged agents observe sign semantics and obey posted rules without learning.",
+        foot: "8 rule-compliant experts",
+      },
+      {
+        n: "2",
+        title: "Oracle trajectories",
+        body: "Sign obeyed + destination reached, top-2 by quality",
+        detail: "Infractions, collisions and timeouts discarded; highest F-score trajectories retained.",
+        foot: "36,828 trajectories · 23,200 scenarios",
+      },
+      {
+        n: "3",
+        title: "PlanT-2-FT",
+        body: "Sign-aware tokens on the unchanged PlanT-2 backbone",
+        detail: "Sign object, persistent sign state and speed token supervised by oracle rollouts.",
+        foot: "+147,976 params · +0.4%",
+      },
     ],
     expertsTitle: "8 privileged expert planners",
     checkRule: "Rule obeyed?",
@@ -104,7 +122,7 @@ export const FT_SCENE = {
     datasetFT: "→ rule-supervised fine-tuning",
   },
 
-  // Display names of the 8 privileged experts (paper naming, superscript e written as "e")
+  // Display names of the 8 privileged experts (paper: superscript e → rendered by ExpertLabel)
   expertNames: {
     "idm_rule/default": "IDMe",
     "idm_rule/s1": "IDMe-s1",
@@ -122,7 +140,7 @@ export const FT_SCENE = {
     scene: "c0",
     rejectedOpacity: 0.45, // rejected rows / trajectories stay readable
     scenes: {
-      c0: { caption: "sign 4.1.2", signIcon: "signs/direction_right.png", freezeTrackIndex: 8, archFrame: 16 },
+      c0: { caption: "sign 4.1.2", signIcon: "signs/direction_right.png", signRotate: -90, freezeTrackIndex: 8, archFrame: 16 },
       c7: { caption: "sign 4.1.6", signIcon: "signs/direction_left_right.png", freezeTrackIndex: 0, archFrame: 0 },
       c4: { caption: "sign 4.3", signIcon: "signs/roundabout.png", freezeTrackIndex: 0, archFrame: 0 },
       // n04 / n15: one_way_right (5.7.1). n04 has real traffic (NPC tracks from the rank-1 replay), n15 has none.
@@ -148,11 +166,13 @@ export const FT_SCENE = {
   // the right (Expert | Rule obeyed? | Destination reached? | Quality). Just before datasetCountReveal
   // the map morphs into the square left panel used by the dataset stage.
   intro: {
-    map: { left: 90, top: 192, w: 1060, h: 840 }, // px on the 1920×1080 frame
+    map: { left: 90, top: 190, w: 940, h: 830 }, // px on the 1920×1080 frame
     padM: 7, // metres of road around the 8 trajectories (view is then widened to the panel aspect)
-    tableLeft: 1185, // selection table, runs to the right safe margin
+    tableLeft: 1064, // selection table, runs to the right safe margin
     trackWidth: 4.2, // px
     morphSec: 0.8, // map morphs into the frozen-frame box (same place as the frame), ends at datasetCountReveal
+    signSize: 42, // px on the large map
+    signNudgeY: -14, // px, negative = up
   },
 
   highlight: {

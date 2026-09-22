@@ -23,10 +23,11 @@ export const CLIPS = {
   // Interface / checker
   checker_compliant: "converted/pair_5_15_1_plant2_expert.mp4",
   checker_violation: "converted/pair_5_15_1_plant2_base.mp4",
-  // Existing planner gap
-  gap_idm: "converted/pair_3_1_idm_base.mp4",
-  gap_carl: "converted/pair_5_7_1_carl_base.mp4",
-  gap_plant2: "converted/pair_5_15_1_plant2_base.mp4",
+  // Existing planner gap: same yield-sign scene and seed for all four planners
+  gap_idm: "converted/baselines/junc_248073665_rl90_td50_sv0_v2_v2_s2597686124_idm_default.mp4",
+  gap_ppo: "converted/baselines/junc_248073665_rl90_td50_sv0_v2_v2_s2597686124_ppo_lidar_default.mp4",
+  gap_carl: "converted/baselines/junc_248073665_rl90_td50_sv0_v2_v2_s2597686124_carl_default.mp4",
+  gap_plant2: "converted/baselines/junc_248073665_rl90_td50_sv0_v2_v2_s2597686124_plant2_default.mp4",
   // Architecture → rollout
   arch_rollout: "converted/ft_n2_speed_limit_seg_1011196718.mp4",
   // Main result
