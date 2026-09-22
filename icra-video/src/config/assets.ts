@@ -68,6 +68,24 @@ export const REALMAP_SCENE = {
   compliantLengthM: 313.26,
 };
 
+export const REAL_MAPS = {
+  junction: {
+    crop: "real_maps/junction.png",
+    rollout: "real_maps/junction.gif",
+    sign: "signs/yield.png",
+  },
+  dualPath: {
+    crop: "real_maps/dual_path.png",
+    rollout: "real_maps/dual_path.gif",
+    sign: "signs/direction_straight.png",
+  },
+  corridor: {
+    crop: "real_maps/corridor.png",
+    rollout: "real_maps/corridor.gif",
+    sign: "signs/detour_right.png",
+  },
+} as const;
+
 export const SIGNS = {
   no_entry: "signs/no_entry.png",
   yield: "signs/yield.png",

@@ -19,9 +19,9 @@ export const SUBTITLES: Record<SceneKey, SubLine[]> = {
     { from: 10, to: 17.7, text: "The resulting 34 implemented signs are reorganized into priority, speed, obstacles, and routing." },
   ],
   s03_realmaps: [
-    { from: 0.5, to: 6, text: "The benchmark is grounded in real road geometry: sign-free fragments of the Moscow road network." },
-    { from: 6, to: 12, text: "26,020 real-map crops: junctions, dual-path maps and corridors." },
-    { from: 12, to: 19.5, text: "Each crop becomes a simulator scene and an executable rule test." },
+    { from: 0.5, to: 5.2, text: "The benchmark is grounded in real road geometry: 26,020 sign-free crops of the Moscow road network." },
+    { from: 5.2, to: 11.4, text: "Junctions, dual-path maps and corridors preserve three distinct structural families." },
+    { from: 11.4, to: 17.7, text: "A traffic sign turns each real-map crop into a closed-loop executable rule test." },
   ],
   s04_targeted: [
     { from: 0.5, to: 8, text: "Random agent placement rarely activates the rule. Here a gated convoy is released exactly as the ego approaches." },

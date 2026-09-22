@@ -24,16 +24,14 @@ export const SCENE_SECONDS = {
 } as const;
 
 export type SceneKey = keyof typeof SCENE_SECONDS;
+// s04–s06 and s08 stay available as standalone scenes, but are intentionally
+// omitted from the current cut (rule-targeting → online verification).
 export const SCENE_ORDER: SceneKey[] = [
   "s01_hook",
   "s02_benchmark",
   "s02b_taxonomy",
   "s07_portability",
   "s03_realmaps",
-  "s04_targeted",
-  "s05_routing",
-  "s06_scale",
-  "s08_interface",
   "s09_gap",
   "s10_architecture",
   "s11_result",
@@ -53,16 +51,14 @@ export const T = {
   s01: { headline: 0.25, example: 0.75, checks: 10.3, ruleFail: 15.3, mainText: 16.6 },
   s02: { title: 0.2, cards: 1.0, cardStep: 0.35, numbers: 5.5 },
   s03: {
-    fullMap: 0.0,
-    highlight: 2.0,
-    zoomStart: 3.0,
-    zoomEnd: 7.0,
-    cropRender: 6.5,
-    scenePreview: 10.0,
-    rollout: 13.0,
-    counterStart: 2.0,
-    counterEnd: 5.0,
-    breakdown: 6.0,
+    map: 0.1,
+    counterStart: 1.6,
+    counterEnd: 4.2,
+    breakdown: 2.45,
+    selection: 5.25,
+    crops: 5.75,
+    signs: 9.15,
+    rollouts: 11.45,
   },
   s04: { yieldClipTrim: 4.0, convoyLabel: 3.0, yieldLabel: 6.0, crosswalkStart: 11.0, mainText: 8.0 },
   s05: { map: 0.0, baseline: 1.5, compliant: 3.5, rollout: 6.5, mainText: 4.5 },
