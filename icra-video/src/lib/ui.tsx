@@ -1,7 +1,6 @@
 // Small shared presentation layer. Scientific content lives in src/config/.
-import { Video } from "@remotion/media";
 import React from "react";
-import { AbsoluteFill, Easing, Img, interpolate, staticFile, useCurrentFrame, useVideoConfig } from "remotion";
+import { AbsoluteFill, Easing, Img, OffthreadVideo, interpolate, staticFile, useCurrentFrame, useVideoConfig } from "remotion";
 import { COLORS, SIZE } from "../config/style";
 import { SCENE_FADE } from "../config/timing";
 
@@ -96,12 +95,13 @@ export const Clip: React.FC<{
   return (
     <div style={{ position: "absolute", left, top, width: size }}>
       <div style={{ width: size, height: size, borderRadius: SIZE.panelRadius, overflow: "hidden", border: `2px solid ${COLORS.border}`, backgroundColor: "#fff" }}>
-        <Video
+        {/* OffthreadVideo: reliable on NFS; @remotion/media Video was timing out on extract */}
+        <OffthreadVideo
           src={staticFile(src)}
           muted
           loop={loop}
           trimBefore={Math.round(trimBeforeSec * fps)}
-          style={{ width: size, height: size, display: "block" }}
+          style={{ width: size, height: size, display: "block", objectFit: "cover" }}
         />
       </div>
       {label && (

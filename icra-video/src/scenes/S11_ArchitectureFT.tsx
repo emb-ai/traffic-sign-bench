@@ -7,8 +7,7 @@
 // All data: public/finetune/arch/arch.json (real, verified by tools/prepare_arch_assets.py).
 // Editable content: src/config/archScene.ts
 import React from "react";
-import { Video } from "@remotion/media";
-import { Img, Sequence, staticFile } from "remotion";
+import { Img, OffthreadVideo, Sequence, staticFile } from "remotion";
 import archC0 from "../../public/finetune/arch/c0.json";
 import archN04 from "../../public/finetune/arch/n04.json";
 import archN15 from "../../public/finetune/arch/n15.json";
@@ -418,7 +417,7 @@ const ResultBeat: React.FC<{ t: number }> = ({ t }) => {
                 <div key={name} style={{ marginBottom: 8 }}>
                   <div style={{ width: 167, height: 300, borderRadius: 12, overflow: "hidden", border: `3px solid ${col}`, boxSizing: "border-box", backgroundColor: "#fff" }}>
                     <Sequence from={Math.round((FT_SCENE.timing.archStart + TT.result + 1.0) * 30)} layout="none">
-                      <Video src={staticFile(src)} muted loop={name === "PlanT-2"} playbackRate={c.rate} style={{ width: 294, height: 294, marginLeft: -63 }} />
+                      <OffthreadVideo src={staticFile(src)} muted loop={name === "PlanT-2"} playbackRate={c.rate} style={{ width: 294, height: 294, marginLeft: -63 }} />
                     </Sequence>
                   </div>
                   <div style={{ fontSize: 15, fontWeight: 800, color: col, marginTop: 2 }}>{name}</div>
