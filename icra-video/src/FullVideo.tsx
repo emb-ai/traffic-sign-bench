@@ -13,7 +13,7 @@ import { S06_Scale } from "./scenes/S06_Scale";
 import { S07_Portability } from "./scenes/S07_Portability";
 import { S08_Interface } from "./scenes/S08_Interface";
 import { S09_Gap } from "./scenes/S09_Gap";
-import { S10_Architecture } from "./scenes/S10_Architecture";
+import { S10_FineTuning } from "./scenes/S10_FineTuning";
 import { S11_Result } from "./scenes/S11_Result";
 import { S12_Ablation } from "./scenes/S12_Ablation";
 import { S13_Failures } from "./scenes/S13_Failures";
@@ -30,7 +30,7 @@ const SCENES: Record<SceneKey, React.FC> = {
   s07_portability: S07_Portability,
   s08_interface: S08_Interface,
   s09_gap: S09_Gap,
-  s10_architecture: S10_Architecture,
+  s10_architecture: S10_FineTuning,
   s11_result: S11_Result,
   s12_ablation: S12_Ablation,
   s13_failures: S13_Failures,

@@ -1,8 +1,10 @@
 // ─────────────────────────────────────────────────────────────────────────────
 // TIMING — scene durations (seconds) and in-scene reveal times (seconds).
 // "Make Scene 4 three seconds longer" = change one number in SCENE_SECONDS.
-// Total must stay under 180 s. FPS is fixed at 30.
+// FPS is fixed at 30.
 // ─────────────────────────────────────────────────────────────────────────────
+import { FT_SCENE } from "./fineTuningScene";
+
 export const FPS = 30;
 
 export const SCENE_SECONDS = {
@@ -16,16 +18,16 @@ export const SCENE_SECONDS = {
   s06_scale: 10,
   s08_interface: 14,
   s09_gap: 9,
-  s10_architecture: 17,
+  // Colleague fine-tuning section (expert collection → planner input → PlanT-2-FT)
+  s10_architecture: FT_SCENE.durationSec,
   s11_result: 14,
-  s12_ablation: 12,
+  s12_ablation: 12, // kept for standalone / types; omitted from SCENE_ORDER
   s13_failures: 8,
   s14_end: 3,
 } as const;
 
 export type SceneKey = keyof typeof SCENE_SECONDS;
-// s04–s06 and s08 stay available as standalone scenes, but are intentionally
-// omitted from the current cut (rule-targeting → online verification).
+// s04–s06, s08, s12 stay available as components, but are omitted from the current cut.
 export const SCENE_ORDER: SceneKey[] = [
   "s01_hook",
   "s02_benchmark",
@@ -35,7 +37,6 @@ export const SCENE_ORDER: SceneKey[] = [
   "s09_gap",
   "s10_architecture",
   "s11_result",
-  "s12_ablation",
   "s13_failures",
   "s14_end",
 ];

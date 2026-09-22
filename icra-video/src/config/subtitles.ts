@@ -46,9 +46,11 @@ export const SUBTITLES: Record<SceneKey, SubLine[]> = {
     { from: 0.5, to: 8.5, text: "Standard planners reach only 2.9 to 9.0 percent overall SCD. Can the gap be closed?" },
   ],
   s10_architecture: [
-    { from: 0.5, to: 6, text: "PlanT-2 keeps its backbone. Signs enter as object tokens with learned class projections." },
-    { from: 6, to: 11, text: "A persistent sign-state token stores the active sign and posted value; a speed token feeds a discrete speed head." },
-    { from: 11, to: 17.5, text: "Only 0.4% more parameters, fine-tuned on oracle expert trajectories." },
+    { from: 0.3, to: 5.5, text: "How training trajectories are collected: eight privileged experts per scenario, filtered by sign compliance, destination and quality." },
+    { from: 5.5, to: 8.4, text: "Across training scenarios this yields 36,828 high-quality expert trajectories for rule-supervised fine-tuning." },
+    { from: 8.4, to: 13.5, text: "From scene to planner input: the real frame becomes structured object, route and map tokens, plus sign-aware extensions." },
+    { from: 13.5, to: 20, text: "PlanT-2 keeps its backbone; sign and speed tokens add only 0.4% parameters, supervised by the selected expert trajectory." },
+    { from: 20, to: 27.5, text: "Rule-supervised fine-tuning produces PlanT-2-FT and raises rule compliance on the test scenarios." },
   ],
   s11_result: [
     { from: 0.5, to: 13.5, text: "Overall SCD rises from 5.9% to 72.3%. The benchmark exposes an actionable capability gap." },
