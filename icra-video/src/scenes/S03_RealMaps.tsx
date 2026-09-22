@@ -148,7 +148,7 @@ const CropCard: React.FC<{
             letterSpacing: 0.5,
           }}
         >
-          {video > 0.5 ? "CLOSED-LOOP ROLLOUT" : sign > 0.5 ? "SIGN PLACED" : "REAL-MAP CROP"}
+          {video > 0.5 ? "CLOSED-LOOP TESTING" : sign > 0.5 ? "SIGN PLACED" : "REAL-MAP CROP"}
         </div>
       </div>
 
@@ -415,7 +415,7 @@ export const S03_RealMaps: React.FC = () => {
           opacity: interpolate(t, [tt.rollouts, tt.rollouts + 0.6], [0, 1], clamp),
         }}
       >
-        map crop → sign-conditioned scene → closed-loop rollout
+        map crop → sign-conditioned scene → closed-loop testing
       </div>
     </Scene>
   );

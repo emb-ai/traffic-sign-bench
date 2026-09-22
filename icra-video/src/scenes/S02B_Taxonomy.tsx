@@ -98,7 +98,7 @@ const conventionPosition = (sign: SignItem) => {
   const index = categorySigns.findIndex((candidate) => candidate.id === sign.id);
   return {
     x: 44 + categoryIndex * 227 + 28 + (index % 2) * 88,
-    y: 300 + Math.floor(index / 2) * 88,
+    y: 426 + Math.floor(index / 2) * 94,
   };
 };
 
@@ -109,8 +109,8 @@ const semanticPosition = (sign: SignItem) => {
   const groupSigns = SIGNS.filter((candidate) => candidate.semantic === sign.semantic);
   const index = groupSigns.findIndex((candidate) => candidate.id === sign.id);
   return {
-    x: 70 + groupIndex * 455 + 46 + (index % 4) * 82,
-    y: 334 + Math.floor(index / 4) * 88,
+    x: 70 + groupIndex * 455 + 44 + (index % 4) * 84,
+    y: 500 + Math.floor(index / 4) * 94,
   };
 };
 
@@ -184,7 +184,7 @@ export const S02B_Taxonomy: React.FC = () => {
           </div>
           <Headline size={50}>34 Implemented Signs → 4 Semantic Groups</Headline>
           <div style={{ marginTop: 6, color: COLORS.muted, fontSize: 23, fontWeight: 700 }}>
-          Reorganize into 4 semantic groups based on the high-level capability demanded of the ego vehicle
+            Reorganize into 4 semantic groups based on the high-level capability demanded of the ego vehicle
           </div>
         </div>
       </div>
@@ -195,9 +195,9 @@ export const S02B_Taxonomy: React.FC = () => {
           style={{
             position: "absolute",
             left: 44 + index * 227,
-            top: 216,
+            top: 338,
             width: 212,
-            height: 405,
+            height: 430,
             borderRadius: 18,
             background: "#FFFFFF",
             border: "1.5px solid #E2E8F0",
@@ -238,7 +238,7 @@ export const S02B_Taxonomy: React.FC = () => {
               position: "absolute",
               left: 0,
               right: 0,
-              bottom: 20,
+              bottom: 18,
               display: "flex",
               justifyContent: "center",
               alignItems: "center",
@@ -260,9 +260,9 @@ export const S02B_Taxonomy: React.FC = () => {
             style={{
               position: "absolute",
               left: 70 + index * 455,
-              top: 245,
+              top: 338,
               width: 410,
-              height: 400,
+              height: 440,
               borderRadius: 22,
               background: "#FFFFFF",
               border: `2px solid ${COLORS.border}`,
@@ -273,27 +273,25 @@ export const S02B_Taxonomy: React.FC = () => {
             }}
           >
             <div style={{ height: 10, background: color.bar }} />
-            <div style={{ display: "flex", justifyContent: "space-between", alignItems: "flex-start", padding: "18px 24px" }}>
+            <div style={{ display: "flex", justifyContent: "space-between", alignItems: "flex-start", padding: "18px 24px 14px" }}>
               <div>
                 <span style={{ fontSize: 34, fontWeight: 900, color: COLORS.ink }}>{color.label}</span>
               </div>
               <div style={{ textAlign: "right" }}>
                 <div style={{ color: color.text, fontSize: 20, fontWeight: 900 }}>{signs} signs</div>
-                <div style={{ color: COLORS.muted, fontSize: 14, fontWeight: 700 }}>{scenarios} test types</div>
+                <div style={{ color: COLORS.muted, fontSize: 14, fontWeight: 700 }}>{scenarios} testing scenarios</div>
               </div>
             </div>
+            {/* Capability pill placed directly ABOVE the content (sign icons) */}
             <div
               style={{
-                position: "absolute",
-                left: 20,
-                right: 20,
-                bottom: 18,
-                padding: "10px 16px",
+                margin: "0 22px",
+                padding: "8px 14px",
                 borderRadius: 12,
                 background: "#F8FAFC",
                 border: "1px solid #E2E8F0",
                 color: COLORS.muted,
-                fontSize: 17,
+                fontSize: 16,
                 fontWeight: 700,
                 textAlign: "center",
               }}
@@ -339,67 +337,128 @@ export const S02B_Taxonomy: React.FC = () => {
         );
       })}
 
+      {/* Filter banner */}
       <div
         style={{
           position: "absolute",
-          left: 170,
-          right: 170,
-          bottom: 50,
-          padding: "20px 36px",
-          borderRadius: 20,
+          left: 70,
+          right: 70,
+          top: 208,
+          padding: "12px 28px",
+          borderRadius: 16,
           background: "rgba(255, 255, 255, 0.96)",
           backdropFilter: "blur(12px)",
-          boxShadow: "0 18px 50px rgba(15, 23, 42, 0.12)",
-          border: "1.5px solid #CBD5E1",
-          textAlign: "center",
+          boxShadow: "0 12px 32px rgba(15, 23, 42, 0.09)",
+          border: "1.5px solid #C8DCF5",
+          textAlign: "left",
           opacity: filterPhase * (1 - selectionPhase),
-          transform: `translateY(${(1 - filterPhase) * 16}px)`,
+          transform: `translateY(${(1 - filterPhase) * -12}px)`,
         }}
       >
-        <div style={{ color: COLORS.blue, fontSize: 15, fontWeight: 900, letterSpacing: 2, textTransform: "uppercase" }}>
+        <div style={{ color: COLORS.blue, fontSize: 13, fontWeight: 900, letterSpacing: 2, textTransform: "uppercase" }}>
           Taxonomy Filtering · Enforceable Semantics
         </div>
-        <div style={{ marginTop: 8, color: COLORS.ink, fontSize: 26, lineHeight: 1.3, fontWeight: 700 }}>
-          Retain signs that impose <span style={{ color: COLORS.blue, fontWeight: 900 }}>explicit, mandatory obligations</span> with machine-verifiable rule logic. Exclude advisory, contextual, or conditional signs.
+        <div style={{ marginTop: 4, color: COLORS.ink, fontSize: 24, lineHeight: 1.25, fontWeight: 700 }}>
+          Retain signs that impose <span style={{ color: COLORS.blue, fontWeight: 900 }}>explicit, mandatory obligations</span> with verifiable rule logic
         </div>
       </div>
 
+      {/* Selection banner */}
       <div
         style={{
           position: "absolute",
-          left: 220,
-          right: 220,
-          bottom: 50,
-          padding: "20px 36px",
-          borderRadius: 20,
+          left: 70,
+          right: 70,
+          top: 208,
+          padding: "16px 28px",
+          borderRadius: 16,
           background: "linear-gradient(135deg, #F0F7FF 0%, #E3F0FF 100%)",
           border: "2px solid #B8D4F4",
-          boxShadow: "0 18px 50px rgba(36, 88, 166, 0.12)",
-          textAlign: "center",
+          boxShadow: "0 12px 32px rgba(36, 88, 166, 0.1)",
+          textAlign: "left",
           opacity: selectionPhase * (1 - regroupPhase),
-          transform: `translateY(${(1 - selectionPhase) * 16}px)`,
+          transform: `translateY(${(1 - selectionPhase) * -12}px)`,
         }}
       >
-        <span style={{ color: COLORS.blue, fontSize: 36, fontWeight: 900 }}>34 Retained Signs.</span>
-        <span style={{ color: COLORS.ink, fontSize: 26, fontWeight: 700 }}>
+        <span style={{ color: COLORS.blue, fontSize: 30, fontWeight: 900 }}>34 Retained Signs.</span>
+        <span style={{ color: COLORS.ink, fontSize: 23, fontWeight: 700 }}>
           {" "}All implemented in simulation with explicitly defined, verifiable rule logic.
         </span>
       </div>
 
+      {/* High-impact unboxed KPI headline row (Best Paper Award styling) */}
       <div
         style={{
           position: "absolute",
-          left: 260,
-          right: 260,
-          top: 760,
-          textAlign: "center",
-          color: COLORS.muted,
-          fontSize: 26,
-          fontWeight: 700,
+          left: 70,
+          right: 70,
+          top: 200,
+          display: "flex",
+          alignItems: "center",
+          gap: 65,
           opacity: regroupPhase,
+          transform: `translateY(${(1 - regroupPhase) * -10}px)`,
         }}
       >
-        34 signs · 29 functional test types · explicit rule logic
+        <div style={{ display: "flex", alignItems: "baseline", gap: 12 }}>
+          <span
+            style={{
+              fontSize: 62,
+              fontWeight: 900,
+              color: COLORS.blue,
+              fontVariantNumeric: "tabular-nums",
+              letterSpacing: -2,
+              lineHeight: 1,
+            }}
+          >
+            34
+          </span>
+          <span style={{ fontSize: 25, fontWeight: 800, color: COLORS.ink, letterSpacing: -0.4 }}>
+            signs
+          </span>
+        </div>
+
+        <div style={{ width: 1.5, height: 36}} />
+
+        <div style={{ display: "flex", alignItems: "baseline", gap: 12 }}>
+          <span
+            style={{
+              fontSize: 62,
+              fontWeight: 900,
+              color: COLORS.blue,
+              fontVariantNumeric: "tabular-nums",
+              letterSpacing: -2,
+              lineHeight: 1,
+            }}
+          >
+            29
+          </span>
+          <span style={{ fontSize: 25, fontWeight: 800, color: COLORS.ink, letterSpacing: -0.4 }}>
+            testing scenarios
+          </span>
+        </div>
+
+        <div style={{ width: 1.5, height: 36}} />
+
+        <div style={{ display: "flex", alignItems: "baseline", gap: 12 }}>
+          <span
+            style={{
+              fontSize: 62,
+              fontWeight: 900,
+              color: COLORS.blue,
+              fontVariantNumeric: "tabular-nums",
+              letterSpacing: -2,
+              lineHeight: 1,
+            }}
+          >
+            4
+          </span>
+          <span style={{ fontSize: 25, fontWeight: 800, color: COLORS.ink, letterSpacing: -0.4 }}>
+            semantic groups
+          </span>
+        </div>
+
+
       </div>
     </Scene>
   );

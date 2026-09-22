@@ -15,7 +15,7 @@ export const S07_Portability: React.FC = () => {
   const tt = T.s07;
   return (
     <Scene>
-      {/* Clean, authoritative header without awkward corner boxes */}
+      {/* Clean, authoritative header with 92% highlighted */}
       <Reveal at={0.1} style={{ position: "absolute", left: SIZE.margin, right: SIZE.margin, top: 44 }}>
         <div>
           <div
@@ -36,50 +36,31 @@ export const S07_Portability: React.FC = () => {
             International Generalizability
           </div>
           <Headline size={50}>Traffic-Rule Semantics Generalize Internationally</Headline>
-          <Sub size={24} style={{ marginTop: 6, fontWeight: 700, color: "#334155" }}>
-            Legal semantics remain 92% invariant across jurisdictions — adapting to new countries requires changing visual appearance, not rule logic.
-          </Sub>
+          <div style={{ marginTop: 10, fontSize: 22, lineHeight: 1.35, color: "#334155", letterSpacing: -0.2 }}>
+            <span
+              style={{
+                fontSize: 30,
+                fontWeight: 900,
+                color: COLORS.blue,
+                letterSpacing: -0.6,
+              }}
+            >
+              92% average semantic overlap
+            </span>
+            <span style={{ fontWeight: 700, color: "#334155" }}>
+              {" "}— the 34 implemented traffic signs have direct semantic equivalents across analyzed Vienna-Convention signatories.
+            </span>
+          </div>
         </div>
       </Reveal>
 
-      {/* Integrated Metrics Belt: Hero Vienna Average (92%) + 6 Country Cards = Exactly 1740px (matching table below) */}
-      <div style={{ position: "absolute", left: SIZE.margin, top: 240, display: "flex", gap: 15, width: 1740 }}>
-        {/* Harmonious Hero KPI Card for Average Overlap (270px) */}
-        <Reveal at={tt.flags} dy={10}>
-          <div
-            style={{
-              width: 270,
-              height: 104,
-              padding: "12px 20px",
-              boxSizing: "border-box",
-              backgroundColor: "#EEF4FC",
-              borderRadius: 16,
-              border: "1.5px solid #C8DCF5",
-              borderTop: `5px solid ${COLORS.blue}`,
-              boxShadow: "0 6px 18px rgba(36, 88, 166, 0.06)",
-              display: "flex",
-              flexDirection: "column",
-              justifyContent: "space-between",
-            }}
-          >
-            <div style={{ fontSize: 11, fontWeight: 900, letterSpacing: 1.5, textTransform: "uppercase", color: COLORS.blue }}>
-              Mean Semantic Overlap
-            </div>
-            <div style={{ display: "flex", justifyContent: "space-between", alignItems: "baseline" }}>
-              <span style={{ fontSize: 14, fontWeight: 700, color: "#475569" }}>Vienna Signatories</span>
-              <span style={{ fontSize: 32, fontWeight: 900, color: COLORS.blue, fontVariantNumeric: "tabular-nums" }}>
-                92%
-              </span>
-            </div>
-          </div>
-        </Reveal>
-
-        {/* 6 Country cards with national flags (230px each) */}
+      {/* 6 Country Cards = Exactly 1740px (matching table below: 6 * 275px + 5 * 18px = 1740px) */}
+      <div style={{ position: "absolute", left: SIZE.margin, top: 236, display: "flex", gap: 18, width: 1740 }}>
         {COUNTRIES.map((country, index) => (
-          <Reveal key={country.key} at={tt.flags + (index + 1) * tt.flagStep} dy={10}>
+          <Reveal key={country.key} at={tt.flags + index * tt.flagStep} dy={10}>
             <div
               style={{
-                width: 230,
+                width: 275,
                 height: 104,
                 padding: "12px 18px",
                 boxSizing: "border-box",
@@ -125,7 +106,7 @@ export const S07_Portability: React.FC = () => {
       </div>
 
       {/* Visual comparison table */}
-      <Reveal at={tt.figure} style={{ position: "absolute", left: SIZE.margin, top: 398 }}>
+      <Reveal at={tt.figure} style={{ position: "absolute", left: SIZE.margin, top: 396 }}>
         <div style={{ color: COLORS.blue, fontSize: 13, fontWeight: 900, letterSpacing: 2, textTransform: "uppercase", marginBottom: 10 }}>
           Visual Equivalents Across Jurisdictions · Examples
         </div>
@@ -207,32 +188,32 @@ export const S07_Portability: React.FC = () => {
       </Reveal>
 
       {/* Bottom executive takeaway */}
-      <Reveal at={tt.result} style={{ position: "absolute", left: 340, right: 340, top: 882 }}>
+      <Reveal at={tt.result} style={{ position: "absolute", left: 300, right: 300, top: 866 }}>
         <div style={{ display: "flex", alignItems: "center", justifyContent: "center", gap: 20 }}>
           <div
             style={{
-              padding: "12px 24px",
+              padding: "12px 26px",
               borderRadius: 14,
-              background: "#EEF6FF",
+              background: "#EEF4FC",
               border: "1.5px solid #B8D4F4",
               boxShadow: "0 4px 14px rgba(36, 88, 166, 0.08)",
               color: COLORS.blue,
-              fontSize: 23,
+              fontSize: 22,
               fontWeight: 900,
             }}
           >
             Swap visual appearance
           </div>
-          <div style={{ color: "#64748B", fontSize: 32, fontWeight: 900 }}>→</div>
+          <div style={{ color: "#64748B", fontSize: 30, fontWeight: 900 }}>→</div>
           <div
             style={{
-              padding: "12px 24px",
+              padding: "12px 26px",
               borderRadius: 14,
               background: "#EAF7EF",
               border: "1.5px solid #B4E2C5",
               boxShadow: "0 4px 14px rgba(46, 139, 87, 0.08)",
               color: COLORS.green,
-              fontSize: 23,
+              fontSize: 22,
               fontWeight: 900,
             }}
           >
