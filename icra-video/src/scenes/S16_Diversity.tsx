@@ -9,8 +9,99 @@ import { COLORS, GROUP, SIZE } from "../config/style";
 import { clamp, Headline, rise, Scene, useT } from "../lib/ui";
 
 const TT = C.timing;
-const FRAME = { x: SIZE.margin, y: 220, w: 560, h: 560 }; // simulator frames are square 800 × 800 (step 0)
+const FRAME = { x: SIZE.margin, y: 300, w: 560, h: 560 }; // simulator frames are square 800 × 800 (step 0)
 const fadeOut = (t: number, at: number, dur = 0.5) => 1 - rise(t, at, dur);
+
+const SampledAxes: React.FC<{ t: number }> = ({ t }) => (
+  <div
+    style={{
+      position: "absolute",
+      left: SIZE.margin,
+      right: SIZE.margin,
+      top: 190,
+      height: 76,
+      display: "flex",
+      alignItems: "stretch",
+      gap: 12,
+      zIndex: 2,
+    }}
+  >
+    <div
+      style={{
+        width: 156,
+        flexShrink: 0,
+        display: "flex",
+        flexDirection: "column",
+        justifyContent: "center",
+        opacity: rise(t, TT.header + 0.25, 0.4),
+      }}
+    >
+      <div style={{ ...PAPER.sectionLabel, color: COLORS.blue, lineHeight: 1.25 }}>{C.axisLabel}</div>
+      <div style={{ marginTop: 5, fontSize: 16, fontWeight: 700, color: COLORS.muted }}>5 controlled axes</div>
+    </div>
+
+    {C.axes.map((axis, i) => {
+      const reveal = rise(t, TT.header + 0.35 + i * 0.08, 0.35);
+      return (
+        <div
+          key={axis.number}
+          style={{
+            position: "relative",
+            flex: 1,
+            minWidth: 0,
+            padding: "12px 14px 10px 48px",
+            boxSizing: "border-box",
+            borderRadius: 13,
+            border: `1.5px solid ${axis.example ? "#AFC9EA" : "#E2E8F0"}`,
+            borderTop: axis.example ? `4px solid ${COLORS.blue}` : "1.5px solid #E2E8F0",
+            backgroundColor: axis.example ? "#F3F7FD" : "#FAFBFC",
+            boxShadow: axis.example ? "0 6px 18px rgba(36, 88, 166, 0.10)" : "none",
+            opacity: reveal,
+            transform: `translateY(${(1 - reveal) * 8}px)`,
+          }}
+        >
+          <div
+            style={{
+              position: "absolute",
+              left: 13,
+              top: 13,
+              fontSize: 14,
+              fontWeight: 900,
+              color: axis.example ? COLORS.blue : "#A3AFBF",
+              fontVariantNumeric: "tabular-nums",
+            }}
+          >
+            {axis.number}
+          </div>
+          <div style={{ fontSize: 18, lineHeight: 1.1, fontWeight: 900, color: axis.example ? COLORS.blue : COLORS.ink, whiteSpace: "nowrap" }}>
+            {axis.label}
+          </div>
+          <div style={{ marginTop: 6, fontSize: 14, lineHeight: 1.1, fontWeight: 700, color: COLORS.muted, whiteSpace: "nowrap" }}>{axis.detail}</div>
+          {axis.example && (
+            <div
+              style={{
+                position: "absolute",
+                right: 10,
+                top: -12,
+                padding: "3px 8px",
+                borderRadius: 999,
+                backgroundColor: COLORS.blue,
+                color: "#fff",
+                fontSize: 10,
+                lineHeight: 1,
+                fontWeight: 900,
+                letterSpacing: 1.1,
+                textTransform: "uppercase",
+              }}
+            >
+              example below ↓
+            </div>
+          )}
+        </div>
+      );
+    })}
+  </div>
+);
 
 // nuPlan histogram with the benchmark's quantile probe
 const Histogram: React.FC<{ t: number; x: number; y: number; w: number; h: number }> = ({ t, x, y, w, h }) => {
@@ -47,7 +138,7 @@ const Histogram: React.FC<{ t: number; x: number; y: number; w: number; h: numbe
       </svg>
       <div style={{ fontSize: 17, color: COLORS.muted, marginTop: 4 }}>{C.histAxis}</div>
       {k[0] > 0 && (
-        <div style={{ position: "absolute", left: Math.min(px(at) + 14, w - 250), top: -14, fontSize: 22, fontWeight: 900, color: COLORS.blue, whiteSpace: "nowrap", opacity: k[0] }}>
+        <div style={{ position: "absolute", left: Math.min(px(at) + 14, w - 250), top: -34, fontSize: 22, fontWeight: 900, color: COLORS.blue, whiteSpace: "nowrap", opacity: k[0] }}>
           nuPlan p{L[cur].q} · {L[cur].value.toFixed(1)} / lane
         </div>
       )}
@@ -73,11 +164,12 @@ export const S16_Diversity: React.FC = () => {
   const gridX = SIZE.margin;
   return (
     <Scene>
-      <div style={{ position: "absolute", left: SIZE.margin, right: SIZE.margin, top: 44, opacity: rise(t, TT.header, 0.4) }}>
+      <div style={{ position: "absolute", left: SIZE.margin, right: SIZE.margin, top: 44, opacity: rise(t, TT.header, 0.4), zIndex: 2 }}>
         <div style={{ display: "inline-block", padding: "4px 14px", borderRadius: 999, ...PAPER.pill, color: COLORS.blue, fontSize: 13, fontWeight: 900, letterSpacing: 2.2, textTransform: "uppercase", marginBottom: 8 }}>{C.kicker}</div>
         <Headline size={50}>{C.title}</Headline>
         <div style={{ marginTop: 6, color: COLORS.muted, fontSize: 24, fontWeight: 700 }}>{C.subtitle}</div>
       </div>
+      <SampledAxes t={t} />
 
       {/* the corridor crop of the previous slide moves into the frame box and zooms into the simulator view of the map */}
       {cropOp > 0 && (
@@ -98,8 +190,9 @@ export const S16_Diversity: React.FC = () => {
           </div>
           <div style={{ position: "absolute", left: RX, top: FRAME.y, width: RW, boxSizing: "border-box", padding: "24px 32px 28px", borderRadius: PAPER.cardRadius, border: PAPER.cardBorder, borderTop: `5px solid ${COLORS.blue}`, boxShadow: PAPER.cardShadow, backgroundColor: "#fff", opacity: rise(t, TT.hist - 0.2, 0.5) }}>
             <div style={{ ...PAPER.sectionLabel, color: COLORS.blue }}>{C.histTitle}</div>
-            <div style={{ position: "relative", height: 380, marginTop: 50 }}>
-              <Histogram t={t} x={0} y={0} w={RW - 64} h={300} />
+            <div style={{ marginTop: 7, fontSize: 20, fontWeight: 700, color: COLORS.ink }}>{C.histSubtitle}</div>
+            <div style={{ position: "relative", height: 370, marginTop: 38 }}>
+              <Histogram t={t} x={0} y={24} w={RW - 64} h={270} />
             </div>
             {/* density slider: the three probes the benchmark uses */}
             <div style={{ display: "flex", gap: 16, marginTop: 6 }}>
@@ -121,12 +214,45 @@ export const S16_Diversity: React.FC = () => {
       {/* the map multiplies into its 10 real test variants → 29 × 100 × 10 */}
       {t >= TT.tiles - 0.2 && (
         <>
+          <div
+            style={{
+              position: "absolute",
+              left: gridX,
+              top: 330,
+              width: 1122,
+              height: 32,
+              display: "flex",
+              alignItems: "center",
+              gap: 12,
+              borderBottom: `2px solid #DCE7F5`,
+              opacity: rise(t, TT.tiles - 0.15, 0.4),
+            }}
+          >
+            <span
+              style={{
+                padding: "4px 10px",
+                borderRadius: 999,
+                backgroundColor: COLORS.blue,
+                color: "#fff",
+                fontSize: 14,
+                lineHeight: 1,
+                fontWeight: 900,
+                letterSpacing: 1.4,
+                textTransform: "uppercase",
+              }}
+            >
+              {C.gridKicker}
+            </span>
+            <span style={{ fontSize: 23, fontWeight: 900, color: COLORS.ink }}>{C.gridTitle}</span>
+            <span style={{ fontSize: 17, fontWeight: 700, color: COLORS.muted }}>{C.gridNote}</span>
+          </div>
+
           {C.tiles.map((tl, i) => {
             const p = rise(t, TT.tiles + i * TT.tileStep, 0.4);
             const col = i % 5;
             const row = Math.floor(i / 5);
             return (
-              <div key={tl.src} style={{ position: "absolute", left: gridX + col * (tileW + 18), top: 196 + row * (tileH + 66), width: tileW, opacity: p, transform: `scale(${0.9 + 0.1 * p})` }}>
+              <div key={tl.src} style={{ position: "absolute", left: gridX + col * (tileW + 18), top: 376 + row * (tileH + 66), width: tileW, opacity: p, transform: `scale(${0.9 + 0.1 * p})` }}>
                 <div style={{ width: tileW, height: tileH, borderRadius: 12, overflow: "hidden", border: PAPER.cardBorder, boxShadow: PAPER.cardShadow }}>
                   <Img src={staticFile(tl.src)} style={{ width: "100%", height: "100%" }} />
                 </div>
@@ -135,10 +261,24 @@ export const S16_Diversity: React.FC = () => {
               </div>
             );
           })}
-          <div style={{ position: "absolute", left: gridX + 5 * (tileW + 18) - 4, top: 196 + tileH + 66 + tileH / 2 - 30, fontSize: 40, fontWeight: 900, color: COLORS.faint, opacity: rise(t, TT.tiles + 10 * TT.tileStep, 0.4) }}>⋯</div>
-          <div style={{ position: "absolute", left: gridX + 5 * (tileW + 18) - 4, top: 196 + tileH + 66 + tileH / 2 + 22, fontSize: 18, fontWeight: 800, color: COLORS.muted, whiteSpace: "nowrap", opacity: rise(t, TT.tiles + 10 * TT.tileStep, 0.4) }}>{C.more}</div>
+          <div
+            style={{
+              position: "absolute",
+              left: 1224,
+              top: 584,
+              width: 66,
+              textAlign: "center",
+              fontSize: 54,
+              lineHeight: 1,
+              fontWeight: 900,
+              color: COLORS.blue,
+              opacity: rise(t, TT.tiles + 10 * TT.tileStep, 0.4),
+            }}
+          >
+            →
+          </div>
 
-          <div style={{ position: "absolute", left: 1300, top: 250, width: 1920 - SIZE.margin - 1300, boxSizing: "border-box", padding: "28px 32px", borderRadius: PAPER.cardRadius, border: PAPER.cardBorder, borderTop: `5px solid ${COLORS.blue}`, boxShadow: PAPER.cardShadow, backgroundColor: "#fff", opacity: rise(t, TT.formula, 0.5) }}>
+          <div style={{ position: "absolute", left: 1300, top: 412, width: 1920 - SIZE.margin - 1300, boxSizing: "border-box", padding: "28px 32px", borderRadius: PAPER.cardRadius, border: PAPER.cardBorder, borderTop: `5px solid ${COLORS.blue}`, boxShadow: PAPER.cardShadow, backgroundColor: "#fff", opacity: rise(t, TT.formula, 0.5) }}>
             <div style={{ display: "flex", alignItems: "flex-start", gap: 14 }}>
               {C.formula.map((f, i) => (
                 <div key={f.label} style={{ display: "flex", alignItems: "flex-start", gap: 14, opacity: rise(t, TT.formula + 0.3 * i, 0.4) }}>
@@ -155,7 +295,6 @@ export const S16_Diversity: React.FC = () => {
               <div style={{ fontSize: 24, fontWeight: 800, color: COLORS.ink, marginTop: 6 }}>{C.totalLabel}</div>
               <div style={{ fontSize: 20, fontWeight: 700, color: COLORS.muted, marginTop: 4 }}>{C.split}</div>
             </div>
-            <div style={{ fontSize: 17, fontWeight: 700, color: "#475569", marginTop: 20, lineHeight: 1.4, opacity: rise(t, TT.formula + 1.6, 0.5) }}>{C.axes}</div>
           </div>
         </>
       )}

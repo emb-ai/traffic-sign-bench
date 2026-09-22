@@ -4,8 +4,8 @@
 //
 // Data (all real, 2026-09-22):
 //  • Map = the corridor crop of the real-maps slide (seg_1241471060, sign 4.2.1 detour right). Its 10 test variants are
-//    rows 1–10 of traffic-rule-bench-main/data/runs_v7/detour_right/test/real_manifest.jsonl; frames = GIF step 0
-//    (square 800×800, ego at spawn) of a rule-compliant IDM rollout of each row, rendered without the text HUD
+//    rows 1–10 of traffic-rule-bench-main/data/runs_v7/detour_right/test/real_manifest.jsonl; frames = GIF step 10
+//    (square 800×800, one second into the rollout) of a rule-compliant IDM rollout of each row, rendered without the text HUD
 //    (server: icra-video/generated/diversity/seg_1241471060, tools/nohud_run.py). Previous 480×800 step-20 crops
 //    live in public/diversity/_old/. Caption values are the row fields density_percentile, spawn_velocity_ms,
 //    route_length_level_m.
@@ -17,8 +17,16 @@
 export const DIVERSITY = {
   durationSec: 14,
   kicker: "Scenario diversity",
-  title: "We vary the conditions — and target the interaction",
-  subtitle: "Each real-map crop becomes 10 closed-loop variants, calibrated on nuPlan driving statistics",
+  title: "Map expansion enables statistically robust evaluation",
+  subtitle: "Each real map becomes 10 controlled closed-loop variants",
+  axisLabel: "We sample",
+  axes: [
+    { number: "01", label: "Ego spawn lane", detail: "sampled when sign-valid", example: false },
+    { number: "02", label: "Route length", detail: "distance levels", example: false },
+    { number: "03", label: "Initial speed", detail: "3.6 · 7.8 · 11.1 m/s", example: false },
+    { number: "04", label: "Traffic density", detail: "nuPlan p25 · p50 · p75", example: true },
+    { number: "05", label: "Background-agent dynamics", detail: "IDM behavior profiles", example: false },
+  ],
 
   timing: {
     header: 0.1,
@@ -32,16 +40,21 @@ export const DIVERSITY = {
   },
 
   crop: { src: "real_maps/corridor.png", label: "Corridor · real-map crop", sign: "signs/detour_right.png" },
-  emptyFrame: "diversity/v1.png", // variant v0 of the manifest: no background traffic
+  emptyFrame: "diversity/v1.png", // variant v0 at rollout step 10: no background traffic
   histogram: "diversity/nuplan_density_hist.json",
-  histTitle: "Traffic density · nuPlan",
+  histTitle: "Worked example · traffic density",
+  histSubtitle: "Background traffic is sampled from the empirical nuPlan distribution",
   histAxis: "moving vehicles within 150 m, per lane",
-  agentsNote: "Background agents follow IDM with nuPlan-sampled parameters; rule-targeted task agents (e.g. a gated convoy for yield) come on top",
+  agentsNote: "Background agents follow IDM with nuPlan-sampled parameters",
   levels: [
     { name: "sparse", q: 25, value: 2.33, frame: "diversity/v4.png" },
     { name: "typical", q: 50, value: 4.0, frame: "diversity/v2.png" },
     { name: "dense", q: 75, value: 5.5, frame: "diversity/v8.png" },
   ],
+
+  gridKicker: "One source map",
+  gridTitle: "10 sampled variants",
+  gridNote: "same road geometry · different controlled conditions",
 
   // the 10 test variants of the map (manifest rows 1–10): density · initial speed · route length, and the IDM
   // time headway of the background agents (profile_TIME_WANTED, one of the sampled agent-dynamics parameters)
@@ -57,7 +70,6 @@ export const DIVERSITY = {
     { src: "diversity/v9.png", caption: "p75 · 7.8 m/s · 120 m", agents: "IDM headway 3.75 s" },
     { src: "diversity/v10.png", caption: "p75 · 3.6 m/s · 120 m", agents: "IDM headway 3.75 s" },
   ],
-  more: "for each of the 2,900 maps",
   formula: [
     { value: "29", label: "scenario types" },
     { value: "100", label: "maps per type" },
@@ -66,5 +78,4 @@ export const DIVERSITY = {
   total: "29,000",
   totalLabel: "closed-loop scenarios",
   split: "23,200 train · 5,800 test",
-  axes: "ego spawn lane · route length · initial speed · traffic density · agent dynamics — nuPlan-calibrated",
 };

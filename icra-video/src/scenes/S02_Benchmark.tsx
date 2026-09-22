@@ -55,8 +55,8 @@ const GRID_H = ROWS * TILE_H + (ROWS - 1) * GAP; // 1080
 const ZOOM_END = Math.min(1920 / GRID_W, 1080 / GRID_H); // ≈1.001 — full mosaic in frame
 
 // Compact, elegant central glass card
-const CARD_W = 700;
-const CARD_H = 390;
+const CARD_W = 800;
+const CARD_H = 440;
 
 export const S02_Benchmark: React.FC = () => {
   const t = useT();
@@ -137,7 +137,7 @@ export const S02_Benchmark: React.FC = () => {
           alignItems: "center",
           justifyContent: "center",
           textAlign: "center",
-          padding: "20px 32px",
+          padding: "24px 40px",
           boxSizing: "border-box",
           opacity: cardOpacity,
           transform: `scale(${cardScale})`,
@@ -147,7 +147,7 @@ export const S02_Benchmark: React.FC = () => {
         <div
           style={{
             color: COLORS.blue,
-            fontSize: 22,
+            fontSize: 26,
             fontStyle: "italic",
             fontWeight: 700,
             lineHeight: 1.2,
@@ -162,11 +162,11 @@ export const S02_Benchmark: React.FC = () => {
         <div
           style={{
             color: "#2C3E50",
-            fontSize: 14,
+            fontSize: 16,
             fontWeight: 900,
-            letterSpacing: 3,
+            letterSpacing: 3.5,
             textTransform: "uppercase",
-            marginBottom: 8,
+            marginBottom: 10,
             textShadow: "0 1px 6px rgba(255,255,255,0.9)",
           }}
         >
@@ -176,7 +176,7 @@ export const S02_Benchmark: React.FC = () => {
         {/* Grand headline */}
         <div
           style={{
-            fontSize: 56,
+            fontSize: 64,
             lineHeight: 1.05,
             fontWeight: 900,
             color: COLORS.ink,
@@ -190,9 +190,9 @@ export const S02_Benchmark: React.FC = () => {
         {/* Core benchmark mission */}
         <div
           style={{
-            marginTop: 8,
-            maxWidth: 780,
-            fontSize: 20,
+            marginTop: 10,
+            maxWidth: 860,
+            fontSize: 23,
             lineHeight: 1.3,
             color: COLORS.ink,
             fontWeight: 700,
@@ -203,7 +203,7 @@ export const S02_Benchmark: React.FC = () => {
         </div>
 
         {/* 3 Strong Scientific Pillars */}
-        <div style={{ marginTop: 14, display: "flex", gap: 10, justifyContent: "center" }}>
+        <div style={{ marginTop: 16, display: "flex", gap: 12, justifyContent: "center" }}>
           {[
             {
               title: "Broad Taxonomy",
@@ -234,18 +234,18 @@ export const S02_Benchmark: React.FC = () => {
                 style={{
                   opacity: pOpacity,
                   transform: `translateY(${(1 - pOpacity) * 10}px)`,
-                  padding: "8px 16px",
+                  padding: "10px 18px",
                   borderRadius: 14,
                   background: pillar.bg,
                   backdropFilter: "blur(6px)",
                   border: `1.5px solid ${pillar.border}`,
                   textAlign: "center",
-                  minWidth: 185,
+                  minWidth: 205,
                   boxShadow: "0 4px 12px rgba(0,0,0,0.06)",
                 }}
               >
-                <div style={{ color: pillar.color, fontSize: 17, fontWeight: 900 }}>{pillar.title}</div>
-                <div style={{ color: COLORS.muted, fontSize: 13, fontWeight: 700, marginTop: 2 }}>{pillar.sub}</div>
+                <div style={{ color: pillar.color, fontSize: 19, fontWeight: 900 }}>{pillar.title}</div>
+                <div style={{ color: COLORS.muted, fontSize: 15, fontWeight: 700, marginTop: 2 }}>{pillar.sub}</div>
               </div>
             );
           })}
@@ -254,11 +254,11 @@ export const S02_Benchmark: React.FC = () => {
         {/* Quantitative validation numbers */}
         <div
           style={{
-            marginTop: 16,
-            paddingTop: 14,
+            marginTop: 18,
+            paddingTop: 16,
             borderTop: "1.5px solid rgba(0,0,0,0.12)",
             display: "flex",
-            gap: 36,
+            gap: 40,
             alignItems: "center",
             justifyContent: "center",
             opacity: interpolate(t, [2.7, 3.2], [0, 1], clamp),
@@ -273,7 +273,7 @@ export const S02_Benchmark: React.FC = () => {
               <span
                 style={{
                   color: COLORS.ink,
-                  fontSize: 32,
+                  fontSize: 36,
                   fontWeight: 900,
                   fontVariantNumeric: "tabular-nums",
                   textShadow: "0 1px 6px rgba(255,255,255,0.8)",
@@ -281,7 +281,7 @@ export const S02_Benchmark: React.FC = () => {
               >
                 {value}
               </span>
-              <span style={{ color: COLORS.muted, fontSize: 15, fontWeight: 700 }}>{label}</span>
+              <span style={{ color: COLORS.muted, fontSize: 17, fontWeight: 700 }}>{label}</span>
             </div>
           ))}
         </div>

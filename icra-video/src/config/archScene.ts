@@ -43,9 +43,9 @@ const BASE_TIMING = {
   targets: 8.0, // path / waypoint / speed targets derived from it
   match: 8.3, // prediction ···· target (training only)
   ftStart: 9.1, // orange supervision loop into PlanT-2 (draws in 1 s)
-  ftModel: 10.1, // PlanT-2 → PlanT-2-FT inside the same diagram (label only)
+  ftModel: 9.8, // PlanT-2 → PlanT-2-FT label cross-fade (see Model in S11_ArchitectureFT)
   supFade: 10.6, // training-only graphics leave (expert panel, targets, dotted links, loop)
-  result: 11.1, // results: Table II numbers + one PlanT-2 / PlanT-2-FT test pair per functional group
+  result: 11.1, // results: Table II numbers + one large PlanT-2 / PlanT-2-FT before/after pair
   recenter: 99, // disabled: the diagram goes straight from PlanT-2-FT to the results
 };
 export const ARCH_SCENE = {
@@ -99,15 +99,16 @@ export const ARCH_SCENE = {
       experts: [76.9, 64.8, 64.6, 64.3, 64.8, 77.4, 80.0, 67.3], // IDMe, IDMe-s1..s4, PPOe, CaRLe, PlanT-2e
       ft: 72.3,
     },
-    // cherry-picked test rollouts: PlanT-2 violates, PlanT-2-FT complies; one pair per functional group, PlanT-2-FT =
-    // final checkpoint (nj e26) in every pair (stop: icra-video/generated/cherry/stop; others: reports/cherry_gifs runs,
-    // routing re-recorded with e26)
-    clipsTitle: "Test rollouts",
+    // One uncluttered before/after pair from gifs/plant2/direction_s_l.
+    clipsTitle: "Held-out rollout · same direction task",
     clips: [
-      { group: "priority", label: "Priority · stop", base: "converted/cherry/stop_junc_249684220_plant2.mp4", ft: "converted/cherry/stop_junc_249684220_plant2_ft.mp4", rate: 1.8 },
-      { group: "speed", label: "Speed · zone 30", base: "converted/cherry/zone_speed_limit_r76_plant2.mp4", ft: "converted/cherry/zone_speed_limit_r76_plant2_ft.mp4", rate: 1.5 },
-      { group: "obstacles", label: "Obstacles · detour", base: "converted/cherry/detour_right_r102_plant2.mp4", ft: "converted/cherry/detour_right_r102_plant2_ft.mp4", rate: 1.4 },
-      { group: "routing", label: "Routing · left or right", base: "converted/cherry/reroute_direction_left_right_r46_plant2.mp4", ft: "converted/cherry/reroute_direction_left_right_r46_plant2_ft.mp4", rate: 1.8 },
+      {
+        group: "routing",
+        label: "Mandatory direction · straight or left",
+        base: "converted/plant2_direction_straight_left_base.mp4",
+        ft: "converted/plant2_direction_straight_left_ft.mp4",
+        rate: 1,
+      },
     ],
     allLabels: {
       standard: "standard planners 2.9–9.0%",

@@ -17,7 +17,7 @@ export const CONCLUSION = {
       kicker: "Benchmark",
       value: "29,000",
       unit: "closed-loop scenarios",
-      body: "34 signs with automatic rule checkers, 29 scenario types, real Moscow road geometry",
+      body: "34 signs with automatic rule checkers, 29 testing scenarios, real Moscow road geometry",
       icons: ["signs/yield.png", "signs/speed_limit_40.png", "signs/detour_right.png", "signs/direction_right.png"],
     },
     {
@@ -33,7 +33,7 @@ export const CONCLUSION = {
       kicker: "Rule-supervised fine-tuning",
       value: "5.9 → 72.3%",
       unit: "PlanT-2 → PlanT-2-FT",
-      body: "Oracle expert trajectories + sign-aware tokens (+0.4% parameters); 96.6% sign compliance",
+      body: "Oracle experts and sign tokens shrink the gap at +0.4% parameters; remaining failures are often navigational",
       icons: [],
     },
   ],
