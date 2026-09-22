@@ -10,7 +10,7 @@ import c4 from "../../public/finetune/scenes/c4.json";
 import c7 from "../../public/finetune/scenes/c7.json";
 import n04 from "../../public/finetune/scenes/n04.json";
 import n15 from "../../public/finetune/scenes/n15.json";
-import { ARCH_SCENE } from "../config/archScene";
+import { ARCH_SCENE, FT_WARP } from "../config/archScene";
 import { FT_SCENE } from "../config/fineTuningScene";
 import { PAPER } from "../config/paperStyle";
 import { COLORS, SIZE } from "../config/style";
@@ -226,6 +226,53 @@ const SelectionTable: React.FC<{ t: number }> = ({ t }) => {
   );
 };
 
+// ─── opening: the three steps of this section ───────────────────────────────
+const STEP_COLORS = [COLORS.blue, ARCH_SCENE.colors.supervision, ARCH_SCENE.colors.ft];
+const IntroBeat: React.FC<{ t: number }> = ({ t }) => {
+  const out = 1 - rise(t, TT.introOut, 0.5);
+  if (out <= 0) return null;
+  const cardW = 520;
+  const gap = 90;
+  const left = (1920 - (3 * cardW + 2 * gap)) / 2;
+  return (
+    <div style={{ opacity: out }}>
+      {C.text.introSteps.map((st, i) => {
+        const p = rise(t, TT.introSteps + i * TT.introStepGap, 0.5);
+        const col = STEP_COLORS[i];
+        const x = left + i * (cardW + gap);
+        return (
+          <React.Fragment key={st.n}>
+            <div style={{
+              position: "absolute", left: x, top: 340, width: cardW, height: 400, boxSizing: "border-box", padding: "28px 32px",
+              backgroundColor: "#fff", borderRadius: PAPER.cardRadius, border: PAPER.cardBorder, borderTop: `5px solid ${col}`, boxShadow: PAPER.cardShadow,
+              opacity: p, transform: `translateY(${(1 - p) * 18}px)`,
+            }}>
+              <div style={{ display: "flex", alignItems: "center", gap: 14 }}>
+                <div style={{ width: 44, height: 44, borderRadius: 22, backgroundColor: col, color: "#fff", fontSize: 24, fontWeight: 900, display: "flex", alignItems: "center", justifyContent: "center" }}>{st.n}</div>
+                <div style={{ fontSize: 34, fontWeight: 900, color: COLORS.ink }}>{st.title}</div>
+              </div>
+              <div style={{ fontSize: 24, fontWeight: 700, color: "#475569", marginTop: 22, lineHeight: 1.3 }}>{st.body}</div>
+              {/* small pictogram: the 8 expert colours / the selected trajectory / the fine-tuned planner */}
+              <div style={{ position: "absolute", left: 32, bottom: 86, display: "flex", gap: 8, alignItems: "center" }}>
+                {i === 0 && Object.values(C.expertColors).map((c) => <span key={c} style={{ width: 38, height: 8, borderRadius: 4, backgroundColor: c }} />)}
+                {i === 1 && <>
+                  {Object.values(C.expertColors).slice(0, 6).map((c) => <span key={c} style={{ width: 30, height: 6, borderRadius: 3, backgroundColor: c, opacity: C.highlight.fadedOpacity * 3 }} />)}
+                  <span style={{ width: 60, height: 10, borderRadius: 5, backgroundColor: C.expertColors["idm_rule/s1"], boxShadow: `0 0 0 2.5px ${C.highlight.casing}` }} />
+                </>}
+                {i === 2 && <span style={{ padding: "8px 18px", borderRadius: 10, backgroundColor: ARCH_SCENE.colors.backbone, color: "#8FE0B0", fontSize: 20, fontWeight: 900 }}>PlanT-2-FT</span>}
+              </div>
+              <div style={{ position: "absolute", left: 32, right: 32, bottom: 26, paddingTop: 12, borderTop: `1px solid ${PAPER.rowLine}`, fontSize: 21, fontWeight: 800, color: col }}>{st.foot}</div>
+            </div>
+            {i < 2 && (
+              <div style={{ position: "absolute", left: x + cardW + 18, top: 510, fontSize: 48, color: COLORS.faint, opacity: rise(t, TT.introSteps + (i + 1) * TT.introStepGap - 0.2, 0.4) }}>→</div>
+            )}
+          </React.Fragment>
+        );
+      })}
+    </div>
+  );
+};
+
 // ─── 36,828: under the selection table (same slide) ──────────────────────────
 const DatasetBeat: React.FC<{ t: number }> = ({ t }) => (
   <div style={{ position: "absolute", left: C.intro.tableLeft, top: 852, width: 660 }}>
@@ -245,22 +292,27 @@ const DatasetBeat: React.FC<{ t: number }> = ({ t }) => (
 export const S10_FineTuning: React.FC<{ selectionScene?: string }> = ({ selectionScene }) => {
   const sel = SEL_SCENES[selectionScene ?? C.selection.scene];
   if (!sel) throw new Error(`unknown selection scene ${selectionScene ?? C.selection.scene}`);
-  const t = useT();
+  const t = useT() / FT_WARP; // section clock: the whole section, transitions included, plays FT_WARP× slower
   const tl = t - TT.archStart; // local time of the architecture half
-  const partA = 1 - rise(t, TT.archStart - 0.5, 0.5);
+  const partA = rise(t, TT.expertsAppear - 0.5, 0.5) * (1 - rise(t, TT.archStart - 0.5, 0.5));
   const tableOp = 1;
-  const stage = t < TT.archStart - 0.2 ? "collect" : archStage(tl);
-  const titleOp = t < TT.archStart - 0.4 || t > TT.archStart + 0.2 ? 1 : 0.35; // soft cue at the cut
+  const stage = t < TT.expertsAppear - 0.4 ? "intro" : t < TT.archStart - 0.2 ? "collect" : archStage(tl);
+  // headline changes (opening → step 1 → architecture half) are softened
+  const cueAt = (x: number) => (t < x - 0.4 || t > x + 0.2 ? 1 : 0.35);
+  const titleOp = cueAt(TT.archStart) * cueAt(TT.expertsAppear - 0.4);
 
   return (
     <SelCtx.Provider value={sel}>
     <Scene>
       {/* header in the style of the latest slides: pill kicker, 50 px headline, muted subtitle */}
-      <div style={{ position: "absolute", left: SIZE.margin, right: SIZE.margin, top: 34, opacity: rise(t, TT.title, 0.4) * titleOp }}>
-        <div style={{ display: "inline-block", padding: "4px 14px", borderRadius: 999, ...PAPER.pill, color: COLORS.blue, fontSize: 13, fontWeight: 900, letterSpacing: 2.2, textTransform: "uppercase", marginBottom: 8 }}>{C.text.kicker}</div>
+      <div style={{ position: "absolute", left: SIZE.margin, right: SIZE.margin, top: 44, opacity: rise(t, TT.title, 0.4) * titleOp }}>
+        <div style={{ display: "inline-block", padding: "4px 14px", borderRadius: 999, ...PAPER.pill, color: COLORS.blue, fontSize: 13, fontWeight: 900, letterSpacing: 2.2, textTransform: "uppercase", marginBottom: 8 }}>{C.text.kickers[stage]}</div>
         <Headline size={50}>{C.text.titles[stage]}</Headline>
-        <div style={{ marginTop: 6, color: COLORS.muted, fontSize: 23, fontWeight: 700 }}>{C.text.subtitles[stage]}</div>
+        <div style={{ marginTop: 6, color: COLORS.muted, fontSize: 24, fontWeight: 700 }}>{C.text.subtitles[stage]}</div>
       </div>
+
+
+      <IntroBeat t={t} />
 
       {partA > 0 && (
         <AbsoluteFill style={{ opacity: partA }}>

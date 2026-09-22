@@ -1,6 +1,7 @@
 #!/usr/bin/env bash
 # cherry_one_row.sh <family> <scene_uid> <policy plant2|plant2_ft> <gpu>: one test episode with a GIF (same args as
 # reports/cherry_gifs/scripts/one.sh and ft_rl3 eval_map20.sh). Output: icra-video/generated/cherry/<family>/<uid>/<policy>/
+# RR=1 in the environment sets DUAL_PATH_REROUTE=1 (as in eval_ft_dp2.sh re-route evals); default 0.
 set -u
 SM=/home/jovyan/shares/SR006.nfs2/smirnova
 M=$SM/traffic-rule-bench-main; EVALTREE=$SM/trb_stop; PY=$SM/.conda-envs/plant2/bin/python3
@@ -9,8 +10,16 @@ Z=/home/jovyan/shares/SR006.nfs2/zinkovich/zinkovich/traffic-rule-bench
 FAM=$1; UID_=$2; POL=$3; GPU=$4
 MAN=$Z/data/runs/$FAM/test/real_manifest.jsonl; SC=$Z/data/scenes/$FAM
 O=$M/icra-video/generated/cherry/$FAM/$UID_/$POL; rm -rf "$O"; mkdir -p "$O/out" "$O/gifs"
-SEED=$(echo "$UID_" | sed -E 's/.*seed([0-9]+).*/\1/'); SID=$(echo "$UID_" | sed -E 's/_lane0.*//; s/_rl[0-9]+.*//; s/_td[0-9]+.*//')
-grep "\"seed\": $SEED" "$MAN" | grep "\"scene_id\": \"$SID\"" | head -1 > "$O/row.jsonl"
+# the manifest row whose seed matches and whose scene_id + "_lane" starts the scene_uid (exactly one)
+"$PY" - "$MAN" "$UID_" > "$O/row.jsonl" <<PYEOF || { echo "row lookup failed $UID_" >&2; exit 2; }
+import json, sys
+man, uid = sys.argv[1], sys.argv[2]
+seed = int(uid.split("_seed")[1].split("_")[0])
+rows = [l for l in open(man) if l.strip() and json.loads(l)["seed"] == seed and uid.startswith(json.loads(l)["scene_id"] + "_lane")]
+if len(rows) != 1:
+    sys.exit(f"{len(rows)} manifest rows match {uid}")
+sys.stdout.write(rows[0])
+PYEOF
 [ -s "$O/row.jsonl" ] || { echo "row not found $UID_" >&2; exit 2; }
 args=(manifest="$O/row.jsonl" scenes_root="$SC" run_name=cherry_$POL output_dir="$O/out" max_steps=600 gif.enabled=true gif.dir="$O/gifs" gif.window_m=80)
 case $POL in
@@ -19,5 +28,5 @@ case $POL in
 esac
 cd "$EVALTREE" || exit 1
 env CUDA_VISIBLE_DEVICES=$GPU SDL_VIDEODRIVER=dummy OMP_NUM_THREADS=1 PYTHONPATH=$EVALTREE/third_party/metadrive:$EVALTREE \
-    PLANT2_SIGN_RADIUS_M=120 DUAL_PATH_REROUTE=0 nice -n 19 "$PY" -m traffic_bench.eval run "${args[@]}" > "$O/run.log" 2>&1
+    PLANT2_SIGN_RADIUS_M=120 DUAL_PATH_REROUTE=${RR:-0} nice -n 19 "$PY" -m traffic_bench.eval run "${args[@]}" > "$O/run.log" 2>&1
 echo "[$FAM $UID_ $POL] rc=$? gifs=$(ls $O/gifs | grep -c gif)"; tail -c 400 $O/out/episodes_*.jsonl 2>/dev/null | head -c 400

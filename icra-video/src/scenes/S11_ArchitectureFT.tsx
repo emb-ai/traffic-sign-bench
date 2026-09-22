@@ -11,11 +11,11 @@ import { Img, OffthreadVideo, Sequence, staticFile } from "remotion";
 import archC0 from "../../public/finetune/arch/c0.json";
 import archN04 from "../../public/finetune/arch/n04.json";
 import archN15 from "../../public/finetune/arch/n15.json";
-import { ARCH_SCENE } from "../config/archScene";
+import { ARCH_SCENE, FT_WARP } from "../config/archScene";
 import { FT_SCENE } from "../config/fineTuningScene";
 import { GROUP_SCD } from "../config/content";
 import { PAPER } from "../config/paperStyle";
-import { COLORS, SIZE } from "../config/style";
+import { COLORS, GROUP, SIZE } from "../config/style";
 import { rise } from "../lib/ui";
 
 const C = ARCH_SCENE;
@@ -173,7 +173,11 @@ const Inputs: React.FC<{ t: number; m: number; clean: number }> = ({ t, m, clean
   const objChips = CARS.map((b, i) => {
     const { p, pos } = fly(TT.objects + 0.25 + i * 0.07, egoToAbs(b.x, b.y), { x: oS.x + i * step, y: oS.y });
     if (p <= 0) return null;
-    return <div key={i} style={{ position: "absolute", left: pos.x, top: pos.y, width: oS.w, height: oS.h, borderRadius: 5, backgroundColor: isEgo(b) ? K.ego : K.car, border: "1.5px solid #1A1A1A", boxSizing: "border-box", opacity: Math.min(1, p * 3) }} />;
+    return (
+      <div key={i} style={{ position: "absolute", left: pos.x, top: pos.y, width: oS.w, height: oS.h, borderRadius: 5, backgroundColor: isEgo(b) ? K.ego : K.car, border: "1.5px solid #1A1A1A", boxSizing: "border-box", opacity: Math.min(1, p * 3) }}>
+        <div style={{ position: "absolute", right: "18%", top: "18%", bottom: "18%", width: "16%", borderRadius: 2, backgroundColor: "rgba(255,255,255,0.6)" }} />
+      </div>
+    );
   });
   // the sign object: same object sequence as the vehicles (red ring = its own, new class projection)
   const d = oS.h + 14;
@@ -356,68 +360,72 @@ const Supervision: React.FC<{ t: number }> = ({ t }) => {
   );
 };
 
-// ─── result: rule compliance of PlanT-2 vs PlanT-2-FT (paper Table II, test scenarios) ─
-const ResultBeat: React.FC<{ t: number }> = ({ t }) => {
+// ─── results: Table II (overall, groups, all 17 planners) + one PlanT-2 / PlanT-2-FT test pair per group ─────
+const GREEN = "#2E8B57";
+const GREY = "#9AA3AE";
+// real-time frame of the section at which a clip starts (the section clock runs FT_WARP× slower)
+const clipFrom = (tSection: number) => Math.round((FT_SCENE.timing.archStart + tSection) * FT_WARP * 30);
+const ResultsBeat: React.FC<{ t: number }> = ({ t }) => {
   const R = C.results;
-  const op = rise(t, TT.result, 0.6);
+  const T0 = TT.result;
+  const op = rise(t, T0, 0.6);
   if (op <= 0) return null;
-  const green = "#2E8B57";
-  const grey = "#9AA3AE";
-  const big = (m: { label: string; base: number; ft: number }, i: number) => {
-    const p = rise(t, TT.result + 0.5 + i * 0.35, 0.8);
-    return (
-      <div key={m.label} style={{ flex: 1, borderRadius: PAPER.cardRadius, border: PAPER.cardBorder, boxShadow: PAPER.cardShadow, backgroundColor: "#fff", padding: "22px 28px", opacity: rise(t, TT.result + 0.3 + i * 0.35, 0.4) }}>
-        <div style={{ ...PAPER.sectionLabel, color: COLORS.blue }}>{m.label}</div>
-        <div style={{ display: "flex", alignItems: "baseline", gap: 18, marginTop: 10 }}>
-          <span style={{ fontSize: 44, fontWeight: 800, color: grey }}>{m.base.toFixed(1)}%</span>
-          <span style={{ fontSize: 34, color: COLORS.faint }}>→</span>
-          <span style={{ fontSize: 96, fontWeight: 900, color: green, fontVariantNumeric: "tabular-nums" }}>{(m.base + (m.ft - m.base) * p).toFixed(1)}%</span>
-        </div>
-        <div style={{ fontSize: 17, color: COLORS.muted, marginTop: 4 }}>PlanT-2 → PlanT-2-FT</div>
-      </div>
-    );
-  };
+  const m = R.metrics[0];
+  const pNum = rise(t, T0 + 0.5, 0.8);
   const barW = 430;
   return (
     <div style={{ opacity: op }}>
-      <div style={{ position: "absolute", left: SIZE.margin, width: 1010, top: 210, display: "flex", gap: 28 }}>
-        {R.metrics.map(big)}
+      {/* overall SCD */}
+      <div style={{ position: "absolute", left: SIZE.margin, width: 1010, top: 200, boxSizing: "border-box", padding: "20px 28px", borderRadius: PAPER.cardRadius, border: PAPER.cardBorder, borderTop: `5px solid ${GREEN}`, boxShadow: PAPER.cardShadow, backgroundColor: "#fff", opacity: rise(t, T0 + 0.3, 0.4) }}>
+        <div style={{ ...PAPER.sectionLabel, color: COLORS.blue }}>{m.label}</div>
+        <div style={{ display: "flex", alignItems: "baseline", gap: 18, marginTop: 6 }}>
+          <span style={{ fontSize: 44, fontWeight: 800, color: GREY }}>{m.base.toFixed(1)}%</span>
+          <span style={{ fontSize: 34, color: COLORS.faint }}>→</span>
+          <span style={{ fontSize: 96, fontWeight: 900, color: GREEN, fontVariantNumeric: "tabular-nums", lineHeight: 1.05 }}>{(m.base + (m.ft - m.base) * pNum).toFixed(1)}%</span>
+          <span style={{ fontSize: 28, fontWeight: 800, color: COLORS.muted, opacity: rise(t, T0 + 1.3, 0.4) }}>{m.gain}</span>
+        </div>
+        <div style={{ fontSize: 17, color: COLORS.muted }}>PlanT-2 → PlanT-2-FT · all 29 scenario types</div>
       </div>
-      <div style={{ position: "absolute", left: SIZE.margin, width: 1010, top: 440, borderRadius: PAPER.cardRadius, border: PAPER.cardBorder, boxShadow: PAPER.cardShadow, backgroundColor: "#fff", padding: "22px 28px", boxSizing: "border-box", opacity: rise(t, TT.result + 1.6, 0.5) }}>
-        <div style={{ ...PAPER.sectionLabel, color: COLORS.blue, marginBottom: 14 }}>{R.groupTitle}</div>
+
+      {/* group SCD in the colours of the semantic groups */}
+      <div style={{ position: "absolute", left: SIZE.margin, width: 1010, top: 425, boxSizing: "border-box", padding: "20px 28px", borderRadius: PAPER.cardRadius, border: PAPER.cardBorder, boxShadow: PAPER.cardShadow, backgroundColor: "#fff", opacity: rise(t, T0 + 1.6, 0.5) }}>
+        <div style={{ ...PAPER.sectionLabel, color: COLORS.blue, marginBottom: 8 }}>{R.groupTitle}</div>
         {GROUP_SCD.map((g, i) => {
-          const p = rise(t, TT.result + 2.0 + i * 0.2, 0.7);
+          const p = rise(t, T0 + 2.0 + i * 0.2, 0.7);
+          const gc = GROUP[g.key];
           return (
-            <div key={g.key} style={{ display: "flex", alignItems: "center", height: 64 }}>
-              <div style={{ width: 150, fontSize: 23, fontWeight: 800 }}>{g.label}</div>
+            <div key={g.key} style={{ display: "flex", alignItems: "center", height: 60 }}>
+              <div style={{ width: 150, fontSize: 23, fontWeight: 800, color: gc.text }}>{g.label}</div>
               <div style={{ position: "relative", width: barW, height: 44 }}>
-                <div style={{ position: "absolute", left: 0, top: 4, height: 14, width: (barW * g.base) / 100, backgroundColor: grey, borderRadius: 4 }} />
-                <div style={{ position: "absolute", left: 0, top: 24, height: 16, width: (barW * g.ft * p) / 100, backgroundColor: green, borderRadius: 4 }} />
+                <div style={{ position: "absolute", left: 0, top: 4, height: 14, width: (barW * g.base) / 100, backgroundColor: GREY, borderRadius: 4 }} />
+                <div style={{ position: "absolute", left: 0, top: 24, height: 16, width: (barW * g.ft * p) / 100, backgroundColor: gc.bar, borderRadius: 4 }} />
               </div>
-              <div style={{ marginLeft: 22, fontSize: 22, color: grey, fontWeight: 700, width: 90, fontVariantNumeric: "tabular-nums" }}>{g.base.toFixed(1)}%</div>
+              <div style={{ marginLeft: 22, fontSize: 22, color: GREY, fontWeight: 700, width: 90, fontVariantNumeric: "tabular-nums" }}>{g.base.toFixed(1)}%</div>
               <div style={{ fontSize: 22, color: COLORS.faint, width: 40 }}>→</div>
-              <div style={{ fontSize: 26, color: green, fontWeight: 900, fontVariantNumeric: "tabular-nums", opacity: p }}>{g.ft.toFixed(1)}%</div>
+              <div style={{ fontSize: 26, color: gc.text, fontWeight: 900, fontVariantNumeric: "tabular-nums", opacity: p }}>{g.ft.toFixed(1)}%</div>
             </div>
           );
         })}
-        <div style={{ position: "absolute", right: 28, top: 22, display: "flex", gap: 22, fontSize: 18, color: COLORS.muted }}>
-          <span><span style={{ display: "inline-block", width: 22, height: 10, backgroundColor: grey, borderRadius: 3, marginRight: 8 }} />PlanT-2</span>
-          <span><span style={{ display: "inline-block", width: 22, height: 10, backgroundColor: green, borderRadius: 3, marginRight: 8 }} />PlanT-2-FT</span>
+        <div style={{ position: "absolute", right: 28, top: 20, display: "flex", gap: 22, fontSize: 18, color: COLORS.muted }}>
+          <span><span style={{ display: "inline-block", width: 22, height: 10, backgroundColor: GREY, borderRadius: 3, marginRight: 8 }} />PlanT-2</span>
+          <span><span style={{ display: "inline-block", width: 22, height: 10, background: `linear-gradient(90deg, ${GROUP.priority.bar} 0 25%, ${GROUP.speed.bar} 25% 50%, ${GROUP.obstacles.bar} 50% 75%, ${GROUP.routing.bar} 75%)`, borderRadius: 3, marginRight: 8 }} />PlanT-2-FT</span>
         </div>
       </div>
-      <div style={{ position: "absolute", left: SIZE.margin, top: 1000, fontSize: 17, color: COLORS.faint }}>{R.source}{R.clipsNote ? ` · ${R.clipsNote}` : ""}</div>
-      {/* cherry-picked test rollouts: PlanT-2 (top) vs PlanT-2-FT (bottom) */}
-      <div style={{ position: "absolute", left: 1130, top: 210, width: 710, opacity: rise(t, TT.result + 1.0, 0.5) }}>
+      <AllPlanners t={t} x={SIZE.margin} y={790} w={1010} />
+      <div style={{ position: "absolute", left: SIZE.margin, top: 1030, fontSize: 17, color: COLORS.faint }}>{R.source}</div>
+
+      {/* one test pair per functional group: PlanT-2 (top) vs PlanT-2-FT (bottom) */}
+      <div style={{ position: "absolute", left: 1130, top: 200, width: 710, opacity: rise(t, T0 + 1.0, 0.5) }}>
         <div style={{ ...PAPER.sectionLabel, color: COLORS.blue, marginBottom: 10 }}>{R.clipsTitle}</div>
         <div style={{ display: "flex", gap: 14 }}>
           {R.clips.map((c) => (
             <div key={c.label} style={{ width: 167 }}>
-              <div style={{ fontSize: 15, fontWeight: 800, marginBottom: 6, whiteSpace: "nowrap" }}>{c.label}</div>
-              {([["PlanT-2", c.base, "#9AA3AE"], ["PlanT-2-FT", c.ft, "#2E8B57"]] as const).map(([name, src, col]) => (
+              <div style={{ fontSize: 15, fontWeight: 800, marginBottom: 6, whiteSpace: "nowrap", color: GROUP[c.group as keyof typeof GROUP].text }}>{c.label}</div>
+              {([["PlanT-2", c.base, GREY], ["PlanT-2-FT", c.ft, GREEN]] as const).map(([name, src, col]) => (
                 <div key={name} style={{ marginBottom: 8 }}>
-                  <div style={{ width: 167, height: 300, borderRadius: 12, overflow: "hidden", border: `3px solid ${col}`, boxSizing: "border-box", backgroundColor: "#fff" }}>
-                    <Sequence from={Math.round((FT_SCENE.timing.archStart + TT.result + 1.0) * 30)} layout="none">
-                      <OffthreadVideo src={staticFile(src)} muted loop={name === "PlanT-2"} playbackRate={c.rate} style={{ width: 294, height: 294, marginLeft: -63 }} />
+                  <div style={{ width: 167, height: 330, borderRadius: 12, overflow: "hidden", border: `3px solid ${col}`, boxSizing: "border-box", backgroundColor: "#fff" }}>
+                    <Sequence from={clipFrom(T0 + 1.0)} layout="none">
+                      <OffthreadVideo src={staticFile(src)} muted playbackRate={c.rate} style={{ width: 324, height: 324, marginLeft: -78 }} />
                     </Sequence>
                   </div>
                   <div style={{ fontSize: 15, fontWeight: 800, color: col, marginTop: 2 }}>{name}</div>
@@ -431,14 +439,46 @@ const ResultBeat: React.FC<{ t: number }> = ({ t }) => {
   );
 };
 
+// ─── overall SCD of all 17 planners on one 0–100 axis (Table II) ─────────────
+const AllPlanners: React.FC<{ t: number; x: number; y: number; w: number }> = ({ t, x: X, y: Y, w: CW }) => {
+  const R = C.results;
+  const A = R.allPlanners;
+  const T0 = TT.result + 3.2;
+  const W = CW - 56;
+  const x = (v: number) => (W * v) / 100;
+  const dot = (v: number, i: number, col: string, at: number, r = 9) => (
+    <div key={`${col}${i}`} style={{ position: "absolute", left: x(v) - r, top: 56 - r, width: 2 * r, height: 2 * r, borderRadius: r, backgroundColor: col, border: "2px solid #fff", boxSizing: "border-box", opacity: rise(t, at, 0.3) }} />
+  );
+  const gold = K.supervision;
+  const expMax = Math.max(...A.experts);
+  return (
+    <div style={{ position: "absolute", left: X, width: CW, top: Y, height: 210, boxSizing: "border-box", padding: "20px 28px", borderRadius: PAPER.cardRadius, border: PAPER.cardBorder, boxShadow: PAPER.cardShadow, backgroundColor: "#fff", opacity: rise(t, T0, 0.5) }}>
+      <div style={{ ...PAPER.sectionLabel, color: COLORS.blue }}>{R.allTitle}</div>
+      <div style={{ position: "relative", marginTop: 8, height: 130 }}>
+        <div style={{ position: "absolute", left: 0, width: W, top: 55, height: 2, backgroundColor: COLORS.border }} />
+        {[0, 25, 50, 75, 100].map((v) => (
+          <div key={v} style={{ position: "absolute", left: x(v) - 20, width: 40, top: 70, textAlign: "center", fontSize: 15, color: COLORS.faint }}>{v}%</div>
+        ))}
+        {A.standard.map((v, i) => dot(v, i, GREY, T0 + 0.2 + i * 0.04))}
+        {A.experts.map((v, i) => dot(v, i, gold, T0 + 0.6 + i * 0.04))}
+        {dot(A.ft, 0, GREEN, T0 + 1.1, 14)}
+        <div style={{ position: "absolute", left: x(A.ft), width: x(expMax) - x(A.ft), top: 22, height: 14, borderTop: `2px solid ${GREEN}`, borderLeft: `2px solid ${GREEN}`, borderRight: `2px solid ${GREEN}`, boxSizing: "border-box", opacity: rise(t, T0 + 1.6, 0.4) }} />
+        <div style={{ position: "absolute", left: 0, top: 96, fontSize: 18, fontWeight: 800, color: "#7A8594", opacity: rise(t, T0 + 0.4, 0.4) }}>{R.allLabels.standard}</div>
+        <div style={{ position: "absolute", left: x(42), top: 96, fontSize: 18, fontWeight: 800, color: gold, opacity: rise(t, T0 + 0.8, 0.4) }}>{R.allLabels.experts}</div>
+        <div style={{ position: "absolute", right: 0, top: -31, fontSize: 18, fontWeight: 800, color: GREEN, textAlign: "right", whiteSpace: "nowrap", opacity: rise(t, T0 + 1.6, 0.4) }}>{R.allLabels.gap}</div>
+      </div>
+    </div>
+  );
+};
+
 // ─── body (local time t, seconds from the start of the architecture half) ────
 export const ArchitectureBody: React.FC<{ t: number; scene: string }> = ({ t, scene }) => {
   const data = React.useMemo(() => sceneArch(scene), [scene]);
-  const m = rise(t, TT.archMorph, 1.1);
+  const m = rise(t, TT.archMorph, 1.6);
   const frameOp = rise(t, TT.frame - 0.5, 0.5) * fadeOut(t, TT.archMorph - 0.1, 0.6);
   // after the training graphics leave, the inference diagram (inputs x≈300 … heads x≈1290) is centred
   const shift = 165 * rise(t, TT.recenter, 0.7);
-  const archOut = fadeOut(t, TT.result - 0.4, 0.5); // architecture gives way to the result slide
+  const archOut = fadeOut(t, TT.result - 0.4, 0.5); // architecture gives way to the results
   return (
     <ArchCtx.Provider value={data}>
       {frameOp > 0 && <div style={{ opacity: frameOp }}><FrozenFrame t={t} /></div>}
@@ -447,7 +487,7 @@ export const ArchitectureBody: React.FC<{ t: number; scene: string }> = ({ t, sc
         {t >= TT.backbone - 0.2 && <Model t={t} clean={1} />}
       </div>
       <Supervision t={t} />
-      <ResultBeat t={t} />
+      <ResultsBeat t={t} />
     </ArchCtx.Provider>
   );
 };

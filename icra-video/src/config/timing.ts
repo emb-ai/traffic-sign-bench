@@ -4,6 +4,8 @@
 // FPS is fixed at 30.
 // ─────────────────────────────────────────────────────────────────────────────
 import { FT_SCENE } from "./fineTuningScene";
+import { CONCLUSION } from "./conclusionScene";
+import { DIVERSITY } from "./diversityScene";
 
 export const FPS = 30;
 
@@ -23,21 +25,23 @@ export const SCENE_SECONDS = {
   s11_result: 14,
   s12_ablation: 12, // kept for standalone / types; omitted from SCENE_ORDER
   s13_failures: 8,
+  s16_diversity: DIVERSITY.durationSec, // scenario diversity, right after the real-maps slide
+  s15_conclusion: CONCLUSION.durationSec, // main findings, after the fine-tuning section
   s14_end: 3,
 } as const;
 
 export type SceneKey = keyof typeof SCENE_SECONDS;
-// s04–s06, s08, s12 stay available as components, but are omitted from the current cut.
+// s04–s06, s08, s11 + s13 (results and failures are shown at the end of s10), s12 stay available as components, but are omitted from the current cut.
 export const SCENE_ORDER: SceneKey[] = [
   "s01_hook",
   "s02_benchmark",
   "s02b_taxonomy",
   "s07_portability",
   "s03_realmaps",
+  "s16_diversity",
   "s09_gap",
   "s10_architecture",
-  "s11_result",
-  "s13_failures",
+  "s15_conclusion",
   "s14_end",
 ];
 

@@ -1,0 +1,39 @@
+{
+ "source": "traffic_bench/eval/engine/traffic/nuplan_statistics/densities.csv.gz, column count_moving_r150_per_lane (moving vehicles within 150 m of the ego per lane of its road); nuPlan frames with a known lane count",
+ "n": 329127,
+ "bin_edges": [
+  0.0,
+  1.0,
+  2.0,
+  3.0,
+  4.0,
+  5.0,
+  6.0,
+  7.0,
+  8.0,
+  9.0,
+  10.0,
+  11.0,
+  12.0
+ ],
+ "counts": [
+  20672,
+  36599,
+  48659,
+  56780,
+  54557,
+  39107,
+  26011,
+  17490,
+  10212,
+  7693,
+  4501,
+  3010
+ ],
+ "above_last_edge": 4485,
+ "quantiles": {
+  "25": 2.33,
+  "50": 4.0,
+  "75": 5.5
+ }
+}

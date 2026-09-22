@@ -11,48 +11,61 @@
 //      pass = no crash, no off-road, no target-sign violation, destination reached;
 //      IDM family (5 variants) → one variant competes (code: best F-score; paper: fastest — identical here,
 //      only IDMe-s1 succeeds); Q = F_β(time efficiency, comfort), β = 0.25; keep the top 2.
-//  • Paper Sec. IV-C: 36,828 successful demonstrations over the 23,200 training scenes; fine-tuning uses a
-//    balanced subset of 23,842 trajectories.
+//  • Paper Sec. IV-C/D: 36,828 selected trajectories over the 23,200 training scenes (29,462 train / 7,366 val).
 //  • Second half (architecture, frozen frame of the rank-1 trajectory IDMe-s1): src/config/archScene.ts.
 // ─────────────────────────────────────────────────────────────────────────────
 
-import { ARCH_SCENE } from "./archScene";
+import { ARCH_SCENE, FT_WARP } from "./archScene";
+
+// Opening: the three steps of the section (answers "Can the gap be closed?" of the previous slide).
+// Reveal times are section-clock seconds; the section plays FT_WARP times slower (see archScene.ts).
+const INTRO_SEC = 3.5;
+const at = (s: number) => INTRO_SEC + s;
 
 export const FT_SCENE = {
   // Total length of the section in seconds. ICRA-Full total must stay < 180 s.
   // Total length of the section: selection half (0 → timing.archStart) + architecture half
   // (ARCH_SCENE.durationSec, see archScene.ts). ICRA-Full picks it up through timing.ts.
   get durationSec() {
-    return Math.ceil(this.timing.archStart + ARCH_SCENE.durationSec);
+    return Math.ceil((this.timing.archStart + ARCH_SCENE.durationSec) * FT_WARP);
   },
 
-  // Reveal times of the selection half (seconds from the start of the section)
+  // Reveal times (seconds from the start of the section)
   timing: {
     title: 0.0,
-    expertsAppear: 0.3, // 8 rows + 8 trajectories start drawing
-    filterStart: 1.0, // "Sign Compliance" column, row by row
-    destReveal: 2.0, // "Destination" column, row by row (not before that trajectory finishes)
-    expertsDrawn: 3.2, // all trajectories fully drawn
-    failMute: 3.5, // unsuccessful rows and trajectories become muted
-    selectionStart: 3.9, // Quality for the successful candidates
-    selectionDecide: 4.6, // top 2 retained: warm rows + thicker/darker trajectories
-    focusSelected: 5.4, // on the map only the rank-1 trajectory stays
-    datasetCountReveal: 5.8, // under the table: across training scenarios → 36,828
-    datasetFT: 6.6, // "→ rule-supervised fine-tuning"
-    freezeMark: 7.2, // the training frame used next is marked on the selected trajectory
-    archStart: 8.4, // the selection slide cross-fades into that frame
+    // opening: three step cards, one after another, then step 1 takes the stage
+    introSteps: 0.3,
+    introStepGap: 0.8,
+    introOut: INTRO_SEC - 0.5,
+    expertsAppear: at(0.3), // 8 rows + 8 trajectories start drawing
+    filterStart: at(1.0), // "Rule obeyed?" column, row by row
+    destReveal: at(2.0), // "Destination reached?" column, row by row (not before that trajectory finishes)
+    expertsDrawn: at(3.2), // all trajectories fully drawn
+    failMute: at(3.5), // unsuccessful rows and trajectories become muted
+    selectionStart: at(3.9), // Quality for the successful candidates
+    selectionDecide: at(4.6), // top 2 retained: warm rows + thicker/darker trajectories
+    focusSelected: at(5.4), // on the map only the rank-1 trajectory stays
+    datasetCountReveal: at(5.8), // under the table: across training scenarios → 36,828
+    datasetFT: at(6.6), // "→ rule-supervised fine-tuning"
+    freezeMark: at(7.2), // the training frame used next is marked on the selected trajectory
+    archStart: at(8.4), // the selection slide cross-fades into that frame
   },
-
-
-
-
-
-
 
   text: {
     kicker: "Rule-supervised fine-tuning",
+    // pill above the headline, per stage (the section reads as three numbered steps + results)
+    kickers: {
+      intro: "Rule-supervised fine-tuning",
+      collect: "Step 1 · Oracle trajectories",
+      scene: "Step 2 · Sign-aware PlanT-2",
+      model: "Step 2 · Sign-aware PlanT-2",
+      ft: "Step 3 · Rule-supervised fine-tuning",
+      final: "Step 3 · Rule-supervised fine-tuning",
+      result: "Results · held-out test scenarios",
+    },
     titles: {
-      collect: "How training trajectories are collected",
+      intro: "Learning from privileged rule-compliant experts",
+      collect: "Which expert trajectories do we learn from?",
       scene: "From scene to planner input",
       model: "Sign-aware PlanT-2",
       ft: "Rule-supervised fine-tuning",
@@ -60,16 +73,23 @@ export const FT_SCENE = {
       result: "Fine-tuning raises rule compliance",
     },
     subtitles: {
-      collect: "8 privileged experts per training scenario, filtered by sign compliance, destination and quality",
+      intro: "Explicit sign constraints turn planners into experts; PlanT-2 learns from their best trajectories",
+      collect: "8 privileged experts drive each training scenario; only rule-compliant, completed, high-quality rollouts are kept",
       scene: "The real scene becomes structured planner inputs",
       model: "Small sign-aware extensions on an unchanged PlanT-2 backbone",
       ft: "Selected expert trajectories supervise path, waypoints and speed",
       final: "Rule-supervised fine-tuning of PlanT-2",
-      result: "PlanT-2 vs PlanT-2-FT on the test scenarios",
+      result: "PlanT-2 vs PlanT-2-FT on the held-out test scenarios",
     },
+    // three step cards of the opening (paper Sec. IV-B … IV-D)
+    introSteps: [
+      { n: "1", title: "Privileged experts", body: "IDM · PPO · CaRL · PlanT-2 + explicit sign constraints", foot: "8 rule-compliant experts" },
+      { n: "2", title: "Oracle trajectories", body: "sign obeyed + destination reached, top-2 by quality", foot: "36,828 trajectories · 23,200 scenarios" },
+      { n: "3", title: "PlanT-2-FT", body: "sign-aware tokens on the unchanged PlanT-2 backbone", foot: "+147,976 params · +0.4%" },
+    ],
     expertsTitle: "8 privileged expert planners",
-    checkRule: "Sign Compliance",
-    checkDest: "Destination",
+    checkRule: "Rule obeyed?",
+    checkDest: "Destination reached?",
     colExpert: "Expert",
     qualityTitle: "Quality",
     // paper Sec. IV-C: Q = F_beta(normalised speed, comfort), beta = 0.25, top 2 per scene
