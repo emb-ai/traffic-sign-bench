@@ -108,7 +108,7 @@ export const FLAGS = {
   china: "flags/china.png",
 };
 
-// Group icon sets shown in scene 02 (project sign icons)
+// Group icon sets shown in scene 02 (project sign icons from gifs/icons → public/signs)
 export const GROUP_ICONS = {
   priority: ["main_road", "secondary_road", "yield", "stop", "crosswalk", "roundabout"],
   speed: ["speed_limit_40", "end_speed_limit_40", "min_speed", "zone_speed_40", "end_zone_speed_40"],

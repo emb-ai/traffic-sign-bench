@@ -2,8 +2,8 @@ import { AbsoluteFill, Easing, Img, interpolate, staticFile, useCurrentFrame } f
 import { C, Card, clamp, G } from "./ui";
 
 // Mirrors Fig. 1 of the current paper: 34 signs, 4 groups, 29 scenario types.
-// Icons: traffic_bench/signs/icons (the project's own). Bottom images: the real
-// "verifier example" panels cropped from Fig. 1.
+// Icons: icra-video/gifs/icons (synced to public/signs via tools/sync_from_gifs.sh).
+// Bottom images: the real "verifier example" panels cropped from Fig. 1.
 const GROUPS = [
   {
     key: "priority",

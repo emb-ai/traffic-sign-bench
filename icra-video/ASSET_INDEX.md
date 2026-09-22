@@ -8,7 +8,8 @@ Repositories audited (read-only inspection):
 - **LOCAL** = the working copy on the laptop (`sdc_new_signs/`), which holds older eval GIFs
 
 Every converted clip lives in `public/converted/` (GIF → MP4, ffmpeg `fps=30, scale=800:800, yuv420p`, no speed change, originals untouched).
-Every figure lives in `public/figures/`, sign icons in `public/signs/`, flags in `public/flags/`.
+Every figure lives in `public/figures/`, sign icons in `public/signs/` (synced from `gifs/icons/`), flags in `public/flags/`.
+Edit icons in `gifs/icons/`, then run `tools/sync_from_gifs.sh` so Remotion picks them up.
 
 Status legend — **current**: consistent with the current paper; **old**: old-paper asset, visual only; **unknown**: provenance/checkpoint not verified.
 
@@ -49,7 +50,7 @@ Status legend — **current**: consistent with the current paper; **old**: old-p
 | # | Source | Repo | Type | What | Scene | Status | Notes |
 |---|---|---|---|---|---|---|---|
 | 19 | `Z/paper/imgs/semantics/1.pdf` | Z | PDF | source of current Fig. 1 (four group cards with verifier examples) | 02 | current | rasterised to `figures/taxonomy_fig1.png`; scene 02 rebuilds the cards from icons + clips |
-| 20 | `TRB/traffic_bench/signs/icons/*.png` (64) | TRB | PNG | project sign icons | 02, 04, 05, 10 | current | copied to `public/signs/` |
+| 20 | `icra-video/gifs/icons/*` (66; originally from TRB `signs/icons`) | video | PNG | project sign icons | 02, 04, 05, 10 | current | synced to `public/signs/` via `tools/sync_from_gifs.sh` |
 | 21 | `Z/paper/imgs/signs/*.png` (56), `signs.pdf` | Z | PNG/PDF | sign grid for the paper | — | current | alternative icon source |
 | 22 | `Z/paper/imgs/flags/*.png` | Z | PNG | flags used in Table I | 07 | current | copied to `public/flags/` |
 | 23 | `Z/paper/imgs/_old/sign_countries.pdf` | Z | PDF | **old paper Fig. 4**: Yield + Turn-left signs in 7 countries | 07 | **old (visual only)** | its bracket labels are cropped out; all numbers on screen come from current Table I (DE 91, FR 84, IT 94, TR 100, UK 97, CN 91, mean 92%) |
