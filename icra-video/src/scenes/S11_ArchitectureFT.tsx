@@ -363,7 +363,7 @@ const Supervision: React.FC<{ t: number }> = ({ t }) => {
   );
 };
 
-// ─── results: Table II (overall, groups, all 17 planners) + one PlanT-2 / PlanT-2-FT test pair per group ─────
+// ─── results: Table II (overall + groups) + one PlanT-2 / PlanT-2-FT test pair ─────
 const GREEN = "#2E8B57";
 const GREY = "#9AA3AE";
 // real-time frame of the section at which a clip starts (the section clock runs FT_WARP× slower)
@@ -381,7 +381,7 @@ const ResultsBeat: React.FC<{ t: number }> = ({ t }) => {
   return (
     <div style={{ opacity: op }}>
       {/* overall SCD */}
-      <div style={{ position: "absolute", left: SIZE.margin, width: 1010, top: 200, boxSizing: "border-box", padding: "20px 28px", borderRadius: PAPER.cardRadius, border: PAPER.cardBorder, borderTop: `5px solid ${GREEN}`, boxShadow: PAPER.cardShadow, backgroundColor: "#fff", opacity: rise(t, T0 + 0.3, 0.4) }}>
+      <div style={{ position: "absolute", left: SIZE.margin, width: 1010, top: 280, boxSizing: "border-box", padding: "20px 28px", borderRadius: PAPER.cardRadius, border: PAPER.cardBorder, borderTop: `5px solid ${GREEN}`, boxShadow: PAPER.cardShadow, backgroundColor: "#fff", opacity: rise(t, T0 + 0.3, 0.4) }}>
         <div style={{ ...PAPER.sectionLabel, color: COLORS.blue }}>{m.label}</div>
         <div style={{ display: "flex", alignItems: "baseline", gap: 18, marginTop: 6 }}>
           <span style={{ fontSize: 44, fontWeight: 800, color: GREY }}>{m.base.toFixed(1)}%</span>
@@ -393,7 +393,7 @@ const ResultsBeat: React.FC<{ t: number }> = ({ t }) => {
       </div>
 
       {/* group SCD in the colours of the semantic groups */}
-      <div style={{ position: "absolute", left: SIZE.margin, width: 1010, top: 425, boxSizing: "border-box", padding: "20px 28px", borderRadius: PAPER.cardRadius, border: PAPER.cardBorder, boxShadow: PAPER.cardShadow, backgroundColor: "#fff", opacity: rise(t, T0 + 1.6, 0.5) }}>
+      <div style={{ position: "absolute", left: SIZE.margin, width: 1010, top: 520, boxSizing: "border-box", padding: "20px 28px", borderRadius: PAPER.cardRadius, border: PAPER.cardBorder, boxShadow: PAPER.cardShadow, backgroundColor: "#fff", opacity: rise(t, T0 + 1.6, 0.5) }}>
         <div style={{ ...PAPER.sectionLabel, color: COLORS.blue, marginBottom: 8 }}>{R.groupTitle}</div>
         {GROUP_SCD.map((g, i) => {
           const p = rise(t, T0 + 2.0 + i * 0.2, 0.7);
@@ -416,11 +416,9 @@ const ResultsBeat: React.FC<{ t: number }> = ({ t }) => {
           <span><span style={{ display: "inline-block", width: 22, height: 10, background: `linear-gradient(90deg, ${GROUP.priority.bar} 0 25%, ${GROUP.speed.bar} 25% 50%, ${GROUP.obstacles.bar} 50% 75%, ${GROUP.routing.bar} 75%)`, borderRadius: 3, marginRight: 8 }} />PlanT-2-FT</span>
         </div>
       </div>
-      <AllPlanners t={t} x={SIZE.margin} y={790} w={1010} />
-      <div style={{ position: "absolute", left: SIZE.margin, top: 1030, fontSize: 17, color: COLORS.faint }}>{R.source}</div>
 
       {/* One large before/after pair: two examples, kept deliberately sparse. */}
-      <div style={{ position: "absolute", left: 1130, top: 200, width: 710, opacity: rise(t, T0 + 1.0, 0.5) }}>
+      <div style={{ position: "absolute", left: 1130, top: 280, width: 710, opacity: rise(t, T0 + 1.0, 0.5) }}>
         <div style={{ ...PAPER.sectionLabel, color: COLORS.blue, marginBottom: 10 }}>{R.clipsTitle}</div>
         <div style={{ height: 78, borderRadius: 14, border: PAPER.cardBorder, backgroundColor: "#fff", boxShadow: PAPER.cardShadow, display: "flex", alignItems: "center", padding: "0 20px", gap: 16 }}>
           <div style={{ width: 54, height: 54, borderRadius: 12, backgroundColor: "rgba(36, 88, 166, 0.06)", display: "flex", alignItems: "center", justifyContent: "center", flexShrink: 0 }}>
@@ -456,38 +454,6 @@ const ResultsBeat: React.FC<{ t: number }> = ({ t }) => {
           <span style={{ fontSize: 29, color: COLORS.faint }}>→</span>
           <span style={{ fontSize: 20, fontWeight: 900, color: GREEN }}>rule-supervised fine-tuning</span>
         </div>
-      </div>
-    </div>
-  );
-};
-
-// ─── overall SCD of all 17 planners on one 0–100 axis (Table II) ─────────────
-const AllPlanners: React.FC<{ t: number; x: number; y: number; w: number }> = ({ t, x: X, y: Y, w: CW }) => {
-  const R = C.results;
-  const A = R.allPlanners;
-  const T0 = TT.result + 3.2;
-  const W = CW - 56;
-  const x = (v: number) => (W * v) / 100;
-  const dot = (v: number, i: number, col: string, at: number, r = 9) => (
-    <div key={`${col}${i}`} style={{ position: "absolute", left: x(v) - r, top: 56 - r, width: 2 * r, height: 2 * r, borderRadius: r, backgroundColor: col, border: "2px solid #fff", boxSizing: "border-box", opacity: rise(t, at, 0.3) }} />
-  );
-  const gold = K.supervision;
-  const expMax = Math.max(...A.experts);
-  return (
-    <div style={{ position: "absolute", left: X, width: CW, top: Y, height: 210, boxSizing: "border-box", padding: "20px 28px", borderRadius: PAPER.cardRadius, border: PAPER.cardBorder, boxShadow: PAPER.cardShadow, backgroundColor: "#fff", opacity: rise(t, T0, 0.5) }}>
-      <div style={{ ...PAPER.sectionLabel, color: COLORS.blue }}>{R.allTitle}</div>
-      <div style={{ position: "relative", marginTop: 8, height: 130 }}>
-        <div style={{ position: "absolute", left: 0, width: W, top: 55, height: 2, backgroundColor: COLORS.border }} />
-        {[0, 25, 50, 75, 100].map((v) => (
-          <div key={v} style={{ position: "absolute", left: x(v) - 20, width: 40, top: 70, textAlign: "center", fontSize: 15, color: COLORS.faint }}>{v}%</div>
-        ))}
-        {A.standard.map((v, i) => dot(v, i, GREY, T0 + 0.2 + i * 0.04))}
-        {A.experts.map((v, i) => dot(v, i, gold, T0 + 0.6 + i * 0.04))}
-        {dot(A.ft, 0, GREEN, T0 + 1.1, 14)}
-        <div style={{ position: "absolute", left: x(A.ft), width: x(expMax) - x(A.ft), top: 22, height: 14, borderTop: `2px solid ${GREEN}`, borderLeft: `2px solid ${GREEN}`, borderRight: `2px solid ${GREEN}`, boxSizing: "border-box", opacity: rise(t, T0 + 1.6, 0.4) }} />
-        <div style={{ position: "absolute", left: 0, top: 96, fontSize: 18, fontWeight: 800, color: "#7A8594", opacity: rise(t, T0 + 0.4, 0.4) }}>{R.allLabels.standard}</div>
-        <div style={{ position: "absolute", left: x(42), top: 96, fontSize: 18, fontWeight: 800, color: gold, opacity: rise(t, T0 + 0.8, 0.4) }}>{R.allLabels.experts}</div>
-        <div style={{ position: "absolute", right: 0, top: -31, fontSize: 18, fontWeight: 800, color: GREEN, textAlign: "right", whiteSpace: "nowrap", opacity: rise(t, T0 + 1.6, 0.4) }}>{R.allLabels.gap}</div>
       </div>
     </div>
   );

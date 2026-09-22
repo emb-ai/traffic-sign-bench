@@ -4,7 +4,7 @@ import { T } from "../config/timing";
 import { Headline, Icon, Reveal, Scene, Sub, clamp, useT } from "../lib/ui";
 
 const METRICS = [
-  { label: "Driving Score", value: "90.00", note: "route completion × penalty", tone: "good" },
+  { label: "Driving Score", value: "100.00", note: "route completion × penalty", tone: "good" },
   { label: "Comfort", value: "88.0%", note: "smooth-frame ratio", tone: "good" },
   { label: "Efficiency", value: "295.3", note: "mean speed ratio", tone: "good" },
   { label: "Collision Rate", value: "0%", note: "no collision", tone: "good" },

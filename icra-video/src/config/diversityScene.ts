@@ -15,7 +15,7 @@
 // ─────────────────────────────────────────────────────────────────────────────
 
 export const DIVERSITY = {
-  durationSec: 14,
+  durationSec: 16,
   kicker: "Scenario diversity",
   title: "Map expansion enables statistically robust evaluation",
   subtitle: "Each real map becomes 10 controlled closed-loop variants",

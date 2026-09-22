@@ -1,21 +1,48 @@
-# VOICEOVER — draft (editable), 179 s, calm scientific pace
+# VOICEOVER — final timed script (2:59)
 
-Timings are the scene windows from `src/config/timing.ts`. The video is readable without audio; the narration adds causality, not new facts. Every number is from the current paper.
+This script was written from the current visual cut. It introduces no terms or
+claims beyond those already shown on screen. Cue timing is relative to each
+scene; absolute scene windows match `src/config/timing.ts`.
 
-| # | Window | Narration |
-|---|---|---|
-| 01 | 0:00–0:21 | PlanT-2 reaches its destination without a collision and receives a high driving score of ninety. Yet under conventional metrics, critical traffic-rule violations go completely unnoticed. At step 50, ego fails to yield to pedestrians on the crosswalk. Existing simulation benchmarks do not make traffic-rule compliance systematic, scalable, and directly verifiable. |
-| 02 | 0:21–0:33 | To address this gap, we introduce TrafficSignBench: the first large-scale benchmark to jointly combine a broad taxonomy of thirty-four signs, automatic rule checkers, and twenty-nine thousand rule-targeted closed-loop scenarios. We use it to evaluate seventeen planners. |
-| 03 | 0:33–0:51 | We begin with the eight sign classes of a Vienna-Convention reference system. We retain explicit obligations with machine-verifiable outcomes, while excluding signs whose meaning is primarily advisory, contextual, or conditional. All thirty-four retained signs are executable in simulation and reorganized by demanded planning capability into priority, speed, obstacles, and routing. |
-| 04 | 0:51–0:59 | Legal semantics generalize internationally, with ninety-two percent average overlap across Vienna signatories. TrafficSignBench adapts by swapping sign appearance while reusing the same rule-verification logic. |
-| 05 | 0:44–1:02 | The benchmark is grounded in real road geometry. Sign-free fragments are harvested from the Moscow road network — twenty-six thousand real-map crops: junctions, dual-path maps and corridors. Each crop becomes a simulator scene, and each scene an executable rule test. |
-| 06 | 1:02–1:19 | Random agent placement rarely probes the intended rule. So interactions are rule-targeted. For yielding, a gated convoy is released as the ego approaches. For crosswalks, pedestrians follow controlled timing presets. |
-| 07 | 1:19–1:32 | On dual-path maps, the destination makes the prohibited branch the shortest path. Compliance requires replanning onto the longer route. |
-| 08 | 1:32–1:42 | Twenty-nine scenario types, one hundred crops each, ten variants per map: twenty-nine thousand scenarios. Maps are split by OpenStreetMap ID before sign assignment. |
-| 09 | 1:42–1:56 | Planners receive structured sign semantics and output a trajectory; an online checker verifies every rollout. SCD counts an episode only when the sign is obeyed and the destination is reached. |
-| 10 | 1:56–2:05 | Standard planners reach only two point nine to nine percent overall SCD. Can the gap be closed? |
-| 11 | 2:05–2:22 | We adapt PlanT-2 without changing its backbone. Sign and state tokens plus a learnable speed token add only 0.4 percent parameters. The model is fine-tuned on oracle expert trajectories. |
-| 12 | 2:22–2:36 | Overall SCD rises from five point nine to seventy-two point three percent. The benchmark exposes an actionable capability gap. |
-| 13 | 2:36–2:48 | Removing sign identity while physical plates remain drops SCD from seventy-two point eight to fifteen point four percent on five hundred eighty paired episodes. |
-| 14 | 2:48–2:56 | Remaining failures are primarily navigational: twenty-five percent obey the sign but miss the destination; only three percent violate it. |
-| 15 | 2:56–2:59 | TrafficSignBench: explicit rule-conditioned closed-loop evaluation. |
+
+| Absolute window | Scene cue | Narration                                                                                                                                 |
+| --------------- | --------- | ----------------------------------------------------------------------------------------------------------------------------------------- |
+| 0:00–0:22       | 0.5       | At first glance, this trajectory looks successful.                                                                                           |
+|                 | 4.7       | PlanT-2 earns a perfect driving score and avoids every collision.                                                                  |
+|                 | 9.6       | Now watch the rule itself. At step fifty, the car keeps moving.                                                                           |
+|                 | 15.3      | It fails to yield at the crosswalk. High metrics have hidden an illegal behavior.                                                         |
+| 0:22–0:33       | 0.5       | TrafficSignBench makes rule compliance verifiable.                                                                                        |
+|                 | 4.7       | Thirty-four signs, automatic checkers, and twenty-nine thousand targeted scenarios.                                                       |
+| 0:33–0:52       | 0.4       | We start from all eight Vienna Convention classes.                                                                                        |
+|                 | 4.6       | We retain only signs that impose explicit obligations with verifiable rule logic.                                                         |
+|                 | 10.6      | Thirty-four signs remain, grouped by what capability they demand of the ego vehicle: priority, speed, obstacles, and routing.             |
+| 0:52–1:01       | 0.4       | Across countries, rule meaning overlaps by ninety-two percent.                                                                            |
+|                 | 5.0       | Change the appearance; reuse the same checker.                                                                                            |
+| 1:01–1:20       | 0.3       | Every test begins with real road geometry: twenty-six thousand Moscow road fragments.                                                     |
+|                 | 5.9       | We preserve three structural families: junctions, dual-path maps, and corridors.                                                          |
+|                 | 11.9      | A sign turns each fragment into a simulator scene—and an executable closed-loop rule test.                                                |
+| 1:20–1:36       | 0.3       | For each map, we sample ten controlled closed-loop variants.                                                                              |
+|                 | 4.9       | We vary spawn lane, route, speed, traffic density, and background dynamics.                                                               |
+|                 | 10.3      | Ten variants per map yield twenty-nine thousand scenarios—and robust evaluation.                                                          |
+| 1:36–1:48       | 0.4       | We next evaluate standard planners. The metric is SCD: obey the sign and reach the destination.                                           |
+|                 | 7.7       | Standard planners score only two point nine to nine percent.                                                                              |
+| 1:48–2:34       | 0.5       | To close the gap, PlanT-2 learns from privileged, rule-compliant experts.                                                                 |
+|                 | 5.8       | Eight experts drive each scenario. Failed rollouts are discarded.                                                                         |
+|                 | 11.4      | We retain the top two successful trajectories by speed and comfort: thirty-six thousand eight hundred twenty-eight high-quality examples. |
+|                 | 19.0      | Each frame becomes input: objects, sign, route, and local map.                                                                            |
+|                 | 24.0      | Persistent sign-state and learned speed tokens carry the active rule and vehicle speed.                                                   |
+|                 | 29.2      | We train on expert path, waypoints, and speed, adding just zero point four percent new parameters.                                        |
+|                 | 37.2      | On held-out tests, overall SCD rises from five point nine to seventy-two point three percent, with gains in every group.                  |
+| 2:34–2:56       | 0.4       | Therefore, this work shows that traffic-rule compliance must be tested explicitly.                                                        |
+|                 | 5.7       | TrafficSignBench does it at scale: thirty-four signs, twenty-nine thousand closed-loop scenarios.                                         |
+|                 | 12.7      | Safe autonomous driving needs scores that catch rule compliance—not only the destination or comfort.                                      |
+| 2:56–2:59       | —         | Silent end card.                                                                                                                          |
+
+
+The neural voice settings and exact cue bounds are in
+`src/config/voiceover.json`. Regenerate the audio with:
+
+```console
+python tools/generate_voiceover.py
+```
+

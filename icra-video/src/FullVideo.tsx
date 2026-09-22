@@ -1,7 +1,8 @@
-import { AbsoluteFill, Series } from "remotion";
+import { AbsoluteFill, Audio, Sequence, Series, staticFile } from "remotion";
 import { SUBTITLES } from "./config/subtitles";
 import { COLORS, FONT, SHOW_SUBTITLES } from "./config/style";
 import { FPS, SCENE_ORDER, SCENE_SECONDS, SceneKey } from "./config/timing";
+import { VOICEOVER, VOICEOVER_VOLUME } from "./config/voiceover";
 import { Subtitles } from "./lib/Subtitles";
 import { S01_Hook } from "./scenes/S01_Hook";
 import { S02_Benchmark } from "./scenes/S02_Benchmark";
@@ -50,6 +51,11 @@ export const FullVideo: React.FC = () => {
           return (
             <Series.Sequence key={key} name={key} durationInFrames={SCENE_SECONDS[key] * FPS} premountFor={FPS}>
               <C />
+              {VOICEOVER[key].map((cue) => (
+                <Sequence key={cue.id} from={Math.round(cue.from * FPS)} layout="none">
+                  <Audio src={staticFile(`voiceover/${cue.id}.mp3`)} volume={VOICEOVER_VOLUME} />
+                </Sequence>
+              ))}
               {SHOW_SUBTITLES && <Subtitles lines={SUBTITLES[key]} />}
             </Series.Sequence>
           );

@@ -1,0 +1,213 @@
+{
+  "voice": "en-US-GuyNeural",
+  "rate": "+2%",
+  "pitch": "-2Hz",
+  "cues": {
+    "s01_hook": [
+      {
+        "id": "s01_01",
+        "from": 0.5,
+        "to": 4.5,
+        "text": "At first glance, this trajectory looks successful."
+      },
+      {
+        "id": "s01_02",
+        "from": 4.7,
+        "to": 9.5,
+        "text": "PlanT-2 earns a perfect driving score and avoids every collision.",
+        "tts": "Plan T Two earns a perfect driving score and avoids every collision."
+      },
+      {
+        "id": "s01_03",
+        "from": 9.6,
+        "to": 15.2,
+        "text": "Now watch the rule itself. At step fifty, the car keeps moving."
+      },
+      {
+        "id": "s01_04",
+        "from": 15.3,
+        "to": 21.9,
+        "text": "It fails to yield at the crosswalk. High metrics have hidden an illegal behavior."
+      }
+    ],
+    "s02_benchmark": [
+      {
+        "id": "s02_01",
+        "from": 0.5,
+        "to": 4.5,
+        "text": "TrafficSignBench makes rule compliance verifiable.",
+        "tts": "Traffic Sign Bench makes rule compliance verifiable."
+      },
+      {
+        "id": "s02_02",
+        "from": 4.7,
+        "to": 10.8,
+        "text": "Thirty-four signs, automatic checkers, and twenty-nine thousand targeted scenarios."
+      }
+    ],
+    "s02b_taxonomy": [
+      {
+        "id": "s02b_01",
+        "from": 0.4,
+        "to": 4.4,
+        "text": "We start from all eight Vienna Convention classes."
+      },
+      {
+        "id": "s02b_02",
+        "from": 4.6,
+        "to": 10.4,
+        "text": "We retain only signs that impose explicit obligations with verifiable rule logic."
+      },
+      {
+        "id": "s02b_03",
+        "from": 10.6,
+        "to": 18.9,
+        "text": "Thirty-four signs remain, grouped by what capability they demand of the ego vehicle: priority, speed, obstacles, and routing."
+      }
+    ],
+    "s07_portability": [
+      {
+        "id": "s07_01",
+        "from": 0.4,
+        "to": 4.8,
+        "text": "Across countries, rule meaning overlaps by ninety-two percent."
+      },
+      {
+        "id": "s07_02",
+        "from": 5.0,
+        "to": 8.9,
+        "text": "Change the appearance; reuse the same checker."
+      }
+    ],
+    "s03_realmaps": [
+      {
+        "id": "s03_01",
+        "from": 0.3,
+        "to": 5.7,
+        "text": "Every test begins with real road geometry: twenty-six thousand Moscow road fragments."
+      },
+      {
+        "id": "s03_02",
+        "from": 5.9,
+        "to": 11.7,
+        "text": "We preserve three structural families: junctions, dual-path maps, and corridors."
+      },
+      {
+        "id": "s03_03",
+        "from": 11.9,
+        "to": 18.9,
+        "text": "A sign turns each fragment into a simulator scene—and an executable closed-loop rule test."
+      }
+    ],
+    "s16_diversity": [
+      {
+        "id": "s16_01",
+        "from": 0.3,
+        "to": 4.8,
+        "text": "For each map, we sample ten controlled closed-loop variants."
+      },
+      {
+        "id": "s16_02",
+        "from": 4.9,
+        "to": 10.2,
+        "text": "We vary spawn lane, route, speed, traffic density, and background dynamics."
+      },
+      {
+        "id": "s16_03",
+        "from": 10.3,
+        "to": 15.9,
+        "text": "Ten variants per map yield twenty-nine thousand scenarios—and robust evaluation."
+      }
+    ],
+    "s09_gap": [
+      {
+        "id": "s09_01",
+        "from": 0.4,
+        "to": 7.5,
+        "text": "We next evaluate standard planners. The metric is SCD: obey the sign and reach the destination.",
+        "tts": "We next evaluate standard planners. The metric is S C D: obey the sign and reach the destination."
+      },
+      {
+        "id": "s09_02",
+        "from": 7.7,
+        "to": 11.9,
+        "text": "Standard planners score only two point nine to nine percent."
+      }
+    ],
+    "s10_architecture": [
+      {
+        "id": "s10_01",
+        "from": 0.5,
+        "to": 5.7,
+        "text": "To close the gap, PlanT-2 learns from privileged, rule-compliant experts.",
+        "tts": "To close the gap, Plan T Two learns from privileged, rule-compliant experts."
+      },
+      {
+        "id": "s10_02",
+        "from": 5.8,
+        "to": 11.3,
+        "text": "Eight experts drive each scenario. Failed rollouts are discarded."
+      },
+      {
+        "id": "s10_03",
+        "from": 11.4,
+        "to": 18.9,
+        "text": "We retain the top two successful trajectories by speed and comfort: thirty-six thousand eight hundred twenty-eight high-quality examples."
+      },
+      {
+        "id": "s10_04",
+        "from": 19.0,
+        "to": 23.8,
+        "text": "Each frame becomes input: objects, sign, route, and local map."
+      },
+      {
+        "id": "s10_05",
+        "from": 24.0,
+        "to": 29.0,
+        "text": "Persistent sign-state and learned speed tokens carry the active rule and vehicle speed."
+      },
+      {
+        "id": "s10_06",
+        "from": 29.2,
+        "to": 36.8,
+        "text": "We train on expert path, waypoints, and speed, adding just zero point four percent new parameters."
+      },
+      {
+        "id": "s10_07",
+        "from": 37.2,
+        "to": 45.8,
+        "text": "On held-out tests, overall SCD rises from five point nine to seventy-two point three percent, with gains in every group.",
+        "tts": "On held-out tests, overall S C D rises from five point nine to seventy-two point three percent, with gains in every group."
+      }
+    ],
+    "s15_conclusion": [
+      {
+        "id": "s15_01",
+        "from": 0.4,
+        "to": 5.5,
+        "text": "Therefore, this work shows that traffic-rule compliance must be tested explicitly."
+      },
+      {
+        "id": "s15_02",
+        "from": 5.7,
+        "to": 12.5,
+        "text": "TrafficSignBench does it at scale: thirty-four signs, twenty-nine thousand closed-loop scenarios.",
+        "tts": "Traffic Sign Bench does it at scale: thirty-four signs, twenty-nine thousand closed-loop scenarios."
+      },
+      {
+        "id": "s15_03",
+        "from": 12.7,
+        "to": 21.8,
+        "text": "Safe autonomous driving needs scores that catch rule compliance—not only the destination or comfort."
+      }
+    ],
+    "s04_targeted": [],
+    "s05_routing": [],
+    "s06_scale": [],
+    "s08_interface": [],
+    "s11_result": [],
+    "s12_ablation": [],
+    "s13_failures": [],
+    "s14_end": []
+  }
+}

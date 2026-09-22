@@ -24,7 +24,7 @@
 // every transition (e.g. the frame → architecture regrouping) are stretched together. 1 = the original silent cut.
 export const FT_WARP = 1.6;
 // Results slide: how long it holds after its reveal starts (real seconds).
-const RESULTS_HOLD_SEC = 16;
+const RESULTS_HOLD_SEC = 9;
 
 // reveal times of the architecture half (section-clock seconds; real seconds = × FT_WARP)
 const BASE_TIMING = {
@@ -90,17 +90,8 @@ export const ARCH_SCENE = {
   results: {
     metrics: [{ label: "SCD · sign compliance and destination reached", base: 5.9, ft: 72.3, gain: "+66.4 points" }],
     groupTitle: "SCD by functional group",
-    source: "Table II · held-out test scenarios",
-    // Table II overall SCD of all 17 evaluated planners (paper Sec. V-A: "within 7.7 points of the strongest
-    // privileged expert (80.0%)")
-    allTitle: "Overall SCD · all 17 planners",
-    allPlanners: {
-      standard: [7.2, 9.0, 9.0, 8.8, 8.9, 3.2, 2.9, 5.9], // IDM, IDM-s1..s4, PPO, CaRL, PlanT-2
-      experts: [76.9, 64.8, 64.6, 64.3, 64.8, 77.4, 80.0, 67.3], // IDMe, IDMe-s1..s4, PPOe, CaRLe, PlanT-2e
-      ft: 72.3,
-    },
     // One uncluttered before/after pair from gifs/plant2/direction_s_l.
-    clipsTitle: "Held-out rollout · same direction task",
+    clipsTitle: "Same direction task",
     clips: [
       {
         group: "routing",
@@ -110,11 +101,6 @@ export const ARCH_SCENE = {
         rate: 1,
       },
     ],
-    allLabels: {
-      standard: "standard planners 2.9–9.0%",
-      experts: "privileged experts 64.3–80.0%",
-      gap: "PlanT-2-FT 72.3% · 7.7 points below the best expert, CaRLe 80.0%",
-    },
   },
 
   colors: {

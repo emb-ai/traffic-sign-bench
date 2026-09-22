@@ -10,16 +10,16 @@ import { DIVERSITY } from "./diversityScene";
 export const FPS = 30;
 
 export const SCENE_SECONDS = {
-  s01_hook: 21,
-  s02_benchmark: 9,
-  s02b_taxonomy: 18,
-  s07_portability: 8,
-  s03_realmaps: 18,
+  s01_hook: 22,
+  s02_benchmark: 11,
+  s02b_taxonomy: 19,
+  s07_portability: 9,
+  s03_realmaps: 19,
   s04_targeted: 17,
   s05_routing: 13,
   s06_scale: 10,
   s08_interface: 14,
-  s09_gap: 9,
+  s09_gap: 12,
   // Colleague fine-tuning section (expert collection → planner input → PlanT-2-FT)
   s10_architecture: FT_SCENE.durationSec,
   s11_result: 14,

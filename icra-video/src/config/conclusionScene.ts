@@ -5,7 +5,7 @@
 import { COLORS } from "./style";
 
 export const CONCLUSION = {
-  durationSec: 16,
+  durationSec: 22,
   kicker: "Conclusion",
   title: "Traffic-rule compliance must be tested explicitly",
   subtitle: "TrafficSignBench makes it systematic, scalable and verifiable",

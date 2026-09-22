@@ -363,7 +363,7 @@ export const S02B_Taxonomy: React.FC = () => {
         </div>
       </div>
 
-      {/* Selection banner */}
+      {/* Selection banner
       <div
         style={{
           position: "absolute",
@@ -384,7 +384,7 @@ export const S02B_Taxonomy: React.FC = () => {
         <span style={{ color: COLORS.ink, fontSize: 23, fontWeight: 700 }}>
           {" "}All implemented in simulation with explicitly defined, verifiable rule logic.
         </span>
-      </div>
+      </div> */}
 
       {/* High-impact unboxed KPI headline row (Best Paper Award styling) */}
       <div
