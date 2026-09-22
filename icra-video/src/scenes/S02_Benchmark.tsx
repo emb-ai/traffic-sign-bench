@@ -41,16 +41,18 @@ const CLIPS = [
   "speed_carl_rule",
 ] as const;
 
-// 7 columns x 5 rows = 35 clips (1 clip left out of 36 as requested)
-const COLS = 7;
-const ROWS = 5;
-const CLIPS_35 = CLIPS.slice(0, COLS * ROWS);
+// 9 columns × 4 rows = 36 clips
+const COLS = 9;
+const ROWS = 4;
+const CLIPS_GRID = CLIPS.slice(0, COLS * ROWS);
 
-const TILE_W = 260;
-const TILE_H = 195;
-const GAP = 10;
-const GRID_W = COLS * TILE_W + (COLS - 1) * GAP; // 1880
-const GRID_H = ROWS * TILE_H + (ROWS - 1) * GAP; // 1015
+// Sized so scale=1 fills the 1920×1080 frame (all 36 tiles visible, no empty margins).
+const TILE_W = 206;
+const TILE_H = 264;
+const GAP = 8;
+const GRID_W = COLS * TILE_W + (COLS - 1) * GAP; // 1918
+const GRID_H = ROWS * TILE_H + (ROWS - 1) * GAP; // 1080
+const ZOOM_END = Math.min(1920 / GRID_W, 1080 / GRID_H); // ≈1.001 — full mosaic in frame
 
 // Compact, elegant central glass card
 const CARD_W = 700;
@@ -59,22 +61,22 @@ const CARD_H = 390;
 export const S02_Benchmark: React.FC = () => {
   const t = useT();
 
-  // Dramatic cinematic zoom-out from single-scenario close-up (6.0x) to 35-scenario wide-format mosaic (0.98x)
-  const camera = interpolate(t, [0, 8.5], [6.0, 0.98], {
+  // Pull back until the full mosaic fills the frame — stop there (no letterbox margins).
+  const camera = interpolate(t, [0, 7.2], [5.4, ZOOM_END], {
     ...clamp,
-    easing: Easing.bezier(0.16, 1, 0.3, 1),
+    easing: Easing.bezier(0.4, 0.0, 0.2, 1),
   });
 
-  // Frosted glass card emerges smoothly as camera sweeps back into wide perspective
-  const cardOpacity = interpolate(t, [1.0, 1.8], [0, 1], clamp);
-  const cardScale = interpolate(t, [1.0, 1.8], [0.92, 1], {
+  // Frosted glass card emerges as the mosaic starts to open up
+  const cardOpacity = interpolate(t, [0.7, 1.4], [0, 1], clamp);
+  const cardScale = interpolate(t, [0.7, 1.4], [0.94, 1], {
     ...clamp,
-    easing: Easing.bezier(0.16, 1, 0.3, 1),
+    easing: Easing.bezier(0.22, 1, 0.36, 1),
   });
 
   return (
     <Scene>
-      {/* 5 x 7 Grid Mosaic of 35 diverse benchmark rollouts */}
+      {/* 4 × 9 mosaic of 36 diverse benchmark rollouts */}
       <div
         style={{
           position: "absolute",
@@ -86,7 +88,7 @@ export const S02_Benchmark: React.FC = () => {
           transformOrigin: "center",
         }}
       >
-        {CLIPS_35.map((clip, index) => {
+        {CLIPS_GRID.map((clip, index) => {
           const row = Math.floor(index / COLS);
           const col = index % COLS;
           return (
@@ -126,7 +128,7 @@ export const S02_Benchmark: React.FC = () => {
           width: CARD_W,
           height: CARD_H,
           borderRadius: 24,
-          background: "rgba(255, 255, 255, 0.25)",
+          background: "rgba(255, 255, 255, 0.55)",
           backdropFilter: "blur(4px)",
           boxShadow: "0 24px 70px rgba(10, 25, 45, 0.20)",
           border: "1.5px solid rgba(255, 255, 255, 0.50)",
@@ -225,7 +227,7 @@ export const S02_Benchmark: React.FC = () => {
               color: "#B96E12",
             },
           ].map((pillar, index) => {
-            const pOpacity = interpolate(t, [2.1 + index * 0.35, 2.5 + index * 0.35], [0, 1], clamp);
+            const pOpacity = interpolate(t, [1.7 + index * 0.28, 2.05 + index * 0.28], [0, 1], clamp);
             return (
               <div
                 key={pillar.title}
@@ -259,7 +261,7 @@ export const S02_Benchmark: React.FC = () => {
             gap: 36,
             alignItems: "center",
             justifyContent: "center",
-            opacity: interpolate(t, [3.4, 4.0], [0, 1], clamp),
+            opacity: interpolate(t, [2.7, 3.2], [0, 1], clamp),
           }}
         >
           {[

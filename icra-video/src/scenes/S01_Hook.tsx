@@ -133,7 +133,7 @@ export const S01_Hook: React.FC = () => {
           </div>
         </Reveal>
 
-        {/* Metrics appear after the 1st run of the video completes */}
+        {/* Metrics mid first-pass — shortly after the example badge */}
         <div style={{ marginTop: 24, display: "grid", gridTemplateColumns: "1fr 1fr", gap: 14 }}>
           {METRICS.map((metric, index) => (
             <Reveal

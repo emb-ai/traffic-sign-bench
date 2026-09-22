@@ -9,7 +9,7 @@ export const FPS = 30;
 
 export const SCENE_SECONDS = {
   s01_hook: 21,
-  s02_benchmark: 12,
+  s02_benchmark: 9,
   s02b_taxonomy: 18,
   s07_portability: 8,
   s03_realmaps: 18,
@@ -49,7 +49,8 @@ export const SCENE_FADE = 0.35;
 
 // In-scene reveal times, in seconds from the start of that scene.
 export const T = {
-  s01: { headline: 0.25, example: 0.75, checks: 10.3, ruleFail: 15.3, mainText: 16.6 },
+  // checks: early in the first pass (shortly after headline + example)
+  s01: { headline: 0.25, example: 0.75, checks: 2.6, ruleFail: 15.3, mainText: 16.6 },
   s02: { title: 0.2, cards: 1.0, cardStep: 0.35, numbers: 5.5 },
   s03: {
     map: 0.1,

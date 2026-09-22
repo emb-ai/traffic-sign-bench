@@ -5,13 +5,13 @@ import type { SubLine } from "../lib/Subtitles";
 
 export const SUBTITLES: Record<SceneKey, SubLine[]> = {
   s01_hook: [
-    { from: 0.5, to: 10.0, text: "PlanT-2 reaches the destination without a collision and receives a high driving score of 90." },
-    { from: 10.2, to: 15.2, text: "Yet under conventional metrics, critical traffic-rule violations go completely unnoticed." },
+    { from: 0.5, to: 8.5, text: "PlanT-2 reaches the destination without a collision and receives a high driving score of 90." },
+    { from: 8.6, to: 15.2, text: "Yet under conventional metrics, critical traffic-rule violations go completely unnoticed." },
     { from: 15.3, to: 20.5, text: "At step 50, ego fails to yield to pedestrians on the crosswalk. Existing benchmarks do not make compliance directly verifiable." },
   ],
   s02_benchmark: [
-    { from: 0.4, to: 5.5, text: "To address this gap, we introduce TrafficSignBench — a large-scale benchmark for systematic compliance evaluation." },
-    { from: 5.8, to: 11.5, text: "It combines 34 traffic signs, automatic rule checkers, and 29,000 rule-targeted closed-loop scenarios across 17 planners." },
+    { from: 0.4, to: 4.2, text: "To address this gap, we introduce TrafficSignBench — a large-scale benchmark for systematic compliance evaluation." },
+    { from: 4.3, to: 8.7, text: "It combines 34 traffic signs, automatic rule checkers, and 29,000 rule-targeted closed-loop scenarios across 17 planners." },
   ],
   s02b_taxonomy: [
     { from: 0.3, to: 5, text: "We begin with the eight sign classes of a Vienna-Convention reference system." },

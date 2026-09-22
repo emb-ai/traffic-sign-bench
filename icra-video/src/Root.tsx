@@ -8,6 +8,8 @@ import { AbsoluteFill } from "remotion";
 import { FT_SCENE } from "./config/fineTuningScene";
 import { FONT } from "./config/style";
 import { S10_FineTuning } from "./scenes/S10_FineTuning";
+import { S02B_Taxonomy } from "./scenes/S02B_Taxonomy";
+import { S07_Portability } from "./scenes/S07_Portability";
 
 export const RemotionRoot: React.FC = () => {
   return (
@@ -15,6 +17,8 @@ export const RemotionRoot: React.FC = () => {
       <Composition id="ICRA-Full" component={FullVideo} durationInFrames={TOTAL_FRAMES} fps={FPS} width={1920} height={1080} />
       <Composition id="ICRA-Intro" component={IntroVideo} durationInFrames={INTRO_FRAMES} fps={FPS} width={1920} height={1080} />
       <Composition id="FineTuning-Preview" component={FineTuningPreview} defaultProps={{ selectionScene: FT_SCENE.selection.scene }} durationInFrames={Math.ceil(FT_SCENE.durationSec * FPS)} fps={FPS} width={1920} height={1080} />
+      <Composition id="S02B-Taxonomy" component={S02B_Taxonomy} durationInFrames={18 * 30} fps={30} width={1920} height={1080} />
+      <Composition id="S07-Portability" component={S07_Portability} durationInFrames={8 * 30} fps={30} width={1920} height={1080} />
       <Folder name="Prototypes">
         <Composition id="Prototype" component={Prototype} durationInFrames={675} fps={30} width={1920} height={1080} />
         <Composition id="PrototypeV2" component={PrototypeV2} durationInFrames={915} fps={30} width={1920} height={1080} />
