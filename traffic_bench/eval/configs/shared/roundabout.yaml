@@ -17,4 +17,4 @@ simulation:
 
 # green=yield zone, yellow=nearest main arc, cyan/magenta=heading rays
 gif:
-  draw_path_conflict: true
+  draw_path_conflict: false

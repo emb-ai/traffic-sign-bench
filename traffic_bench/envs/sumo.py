@@ -216,6 +216,7 @@ SUMO_DEFAULT_CONFIG = dict(
         pedestrian_spawn_gap_s=2.5,
         pedestrian_spawn_chain="time_gap",
         crosswalk_active_tolerance_m=0.05,
+        knock_on_hit=False,
     ),
     pedestrian_yield_enforcer=dict(
         enabled=True,

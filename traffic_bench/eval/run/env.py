@@ -195,6 +195,9 @@ def _build_sumo_env(row: dict, scenes_root: Path, max_steps: int) -> TrafficSign
         use_pedestrian_yield_rule=use_yield,
         enforce_pedestrian_yield_for_traffic=False,
     )
+    if bool(ped_cfg.get("knock_on_hit", False)):
+        # Visualization GIFs: keep rolling after a pedestrian strike.
+        config["crash_human_done"] = False
     if ped_cfg:
         config["pedestrian_manager"] = ped_cfg
     if row.get("road_id"):

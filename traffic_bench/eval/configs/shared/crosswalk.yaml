@@ -20,9 +20,6 @@ simulation:
   spawn_distance_before_end: 50.0
   min_hops_after_depart: 0
 
-gif:
-  window_m: 130
-
 pedestrian:
   default_ego_spawn_distance_m: 50.0
   default_speed_mean: 1.2

@@ -77,8 +77,11 @@ gif:
   hide_signs: true
   dir: null
   run_name: null
-  window_m: 160
+  window_m: 60
   draw_path_conflict: false  # cyan/magenta routes + yellow conflict X on GIFs
+  # Visualization-only: keep the GIF rolling after a pedestrian hit and fling
+  # them aside instead of freezing on the impact frame.
+  knock_pedestrians: false
   # Optional; carl/carl_rule/plant2/plant2_rule default to pretrained:
   #   carl*:      traffic-bench/checkpoints/carl/nuplan_51479_1B/model_best.pth
   #   plant2*:    traffic-bench/checkpoints/plant2_pretrain/epoch=029_final_3.ckpt

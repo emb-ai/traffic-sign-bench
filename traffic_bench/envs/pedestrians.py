@@ -65,6 +65,32 @@ class ScenarioNetLikeReplayPolicy(ReplayTrafficParticipantPolicy):
         return None
 
 
+def knock_velocity_xy(
+    vehicle_heading: float,
+    vehicle_speed_mps: float,
+    vehicle_pos_xy: np.ndarray,
+    ped_pos_xy: np.ndarray,
+    *,
+    speed_gain: float = 2.2,
+    min_speed: float = 8.0,
+    side_mix: float = 0.55,
+) -> np.ndarray:
+    """2D fly-off velocity after a vehicle hits a pedestrian (visualization)."""
+    heading = float(vehicle_heading)
+    forward = np.array([math.cos(heading), math.sin(heading)], dtype=np.float64)
+    lateral = np.array([-forward[1], forward[0]], dtype=np.float64)
+    rel = np.asarray(ped_pos_xy[:2], dtype=np.float64) - np.asarray(vehicle_pos_xy[:2], dtype=np.float64)
+    side_sign = 1.0 if float(np.dot(rel, lateral)) >= 0.0 else -1.0
+    direction = forward * (1.0 - side_mix) + lateral * side_sign * side_mix
+    norm = float(np.linalg.norm(direction))
+    if norm < 1e-6:
+        direction = forward
+        norm = 1.0
+    direction = direction / norm
+    speed = max(float(vehicle_speed_mps) * float(speed_gain), float(min_speed))
+    return direction * speed
+
+
 @dataclass
 class _CrosswalkSpec:
     crosswalk_id: str
@@ -128,6 +154,14 @@ class CrosswalkPedestrianManager(BaseManager):
         self.pedestrian_spawn_gap_s = float(self._cfg.get("pedestrian_spawn_gap_s", 2.5))
         self.pedestrian_spawn_chain = str(self._cfg.get("pedestrian_spawn_chain", "time_gap")).strip().lower()
         self.crosswalk_active_tolerance_m = float(self._cfg.get("crosswalk_active_tolerance_m", 0.05))
+        # Visualization-only: stop replaying the walking track on impact and
+        # fling the pedestrian aside instead of freezing the episode.
+        self.knock_on_hit = bool(self._cfg.get("knock_on_hit", False))
+        self.knock_speed_gain = float(self._cfg.get("knock_speed_gain", 2.2))
+        self.knock_min_speed = float(self._cfg.get("knock_min_speed", 8.0))
+        self.knock_decay = float(self._cfg.get("knock_decay", 0.94))
+        self.knock_ttl_s = float(self._cfg.get("knock_ttl_s", 8.0))
+        self.knock_nudge_m = float(self._cfg.get("knock_nudge_m", 0.9))
 
         self._crosswalks: Dict[str, _CrosswalkSpec] = {}
         self._tracks: Dict[str, dict] = {}
@@ -141,6 +175,7 @@ class CrosswalkPedestrianManager(BaseManager):
         self._ego_spawns_scheduled = 0
         self._ego_trigger_crosswalk_id: Optional[str] = None
         self._next_ego_spawn_step = 0
+        self._knocked: Dict[str, dict] = {}
 
     def before_reset(self):
         super().before_reset()
@@ -156,6 +191,7 @@ class CrosswalkPedestrianManager(BaseManager):
         self._ego_spawns_scheduled = 0
         self._ego_trigger_crosswalk_id = None
         self._next_ego_spawn_step = 0
+        self._knocked = {}
 
     def reset(self):
         if not self.enabled:
@@ -180,11 +216,18 @@ class CrosswalkPedestrianManager(BaseManager):
         if not self.enabled:
             return {}
 
+        if self.knock_on_hit:
+            self._detect_and_apply_knocks()
+
         to_cleanup = []
         for scenario_id, obj_id in list(self._scenario_id_to_obj_id.items()):
             obj = self.spawned_objects.get(obj_id, None)
             if obj is None:
                 to_cleanup.append(scenario_id)
+                continue
+            if scenario_id in self._knocked:
+                if self._step_knocked_pedestrian(scenario_id, obj):
+                    to_cleanup.append(scenario_id)
                 continue
             policy = self.get_policy(obj_id)
             if policy is None or not policy.is_current_step_valid:
@@ -518,6 +561,7 @@ class CrosswalkPedestrianManager(BaseManager):
     def _cleanup_scenario_track(self, scenario_id: str):
         obj_id = self._scenario_id_to_obj_id.pop(scenario_id, None)
         crosswalk_id = self._scenario_id_to_crosswalk_id.pop(scenario_id, None)
+        self._knocked.pop(scenario_id, None)
         if obj_id is not None:
             if obj_id in self.spawned_objects:
                 self.clear_objects([obj_id])
@@ -525,6 +569,78 @@ class CrosswalkPedestrianManager(BaseManager):
         if crosswalk_id and self.spawn_mode != "ego_proximity":
             self._set_next_spawn_step(crosswalk_id, int(self.episode_step))
         self._pause_until_step.pop(scenario_id, None)
+
+    def _detect_and_apply_knocks(self) -> None:
+        vehicles = self.engine.get_objects(lambda o: isinstance(o, BaseVehicle)).values()
+        hitters = [v for v in vehicles if bool(getattr(v, "crash_human", False))]
+        if not hitters:
+            return
+        for scenario_id, obj_id in list(self._scenario_id_to_obj_id.items()):
+            if scenario_id in self._knocked:
+                continue
+            obj = self.spawned_objects.get(obj_id, None)
+            if obj is None:
+                continue
+            ped_pos = np.asarray(obj.position[:2], dtype=np.float64)
+            for veh in hitters:
+                if self._vehicle_overlaps_pedestrian(veh, ped_pos):
+                    self._apply_knock(scenario_id, obj, veh)
+                    break
+
+    @staticmethod
+    def _vehicle_overlaps_pedestrian(vehicle: BaseVehicle, ped_pos: np.ndarray) -> bool:
+        veh_pos = np.asarray(vehicle.position[:2], dtype=np.float64)
+        length = float(getattr(vehicle, "LENGTH", 4.5) or 4.5)
+        width = float(getattr(vehicle, "WIDTH", 1.8) or 1.8)
+        thresh = 0.5 * math.hypot(length, width) + float(Pedestrian.RADIUS) + 0.5
+        return float(np.linalg.norm(ped_pos - veh_pos)) <= thresh
+
+    @staticmethod
+    def _vehicle_speed_mps(vehicle: BaseVehicle) -> float:
+        vel = getattr(vehicle, "velocity", None)
+        if vel is not None:
+            arr = np.asarray(vel, dtype=np.float64).reshape(-1)
+            if arr.size >= 2:
+                return float(np.linalg.norm(arr[:2]))
+        return float(getattr(vehicle, "speed", 0.0) or 0.0)
+
+    def _apply_knock(self, scenario_id: str, obj: Pedestrian, vehicle: BaseVehicle) -> None:
+        vel = knock_velocity_xy(
+            float(getattr(vehicle, "heading_theta", 0.0) or 0.0),
+            self._vehicle_speed_mps(vehicle),
+            np.asarray(vehicle.position[:2], dtype=np.float64),
+            np.asarray(obj.position[:2], dtype=np.float64),
+            speed_gain=self.knock_speed_gain,
+            min_speed=self.knock_min_speed,
+        )
+        pos = np.asarray(obj.position[:2], dtype=np.float64)
+        speed = float(np.linalg.norm(vel))
+        if speed > 1e-6:
+            pos = pos + (vel / speed) * self.knock_nudge_m
+        obj.set_position([float(pos[0]), float(pos[1])])
+        try:
+            obj.set_static(False)
+            obj.body.setIntoCollideMask(0)
+        except Exception:
+            pass
+        ttl_steps = max(1, int(round(self.knock_ttl_s / max(self._sim_dt(), 1e-3))))
+        self._knocked[scenario_id] = {
+            "velocity": vel.astype(np.float64),
+            "step": int(self.episode_step),
+            "until_step": int(self.episode_step) + ttl_steps,
+        }
+
+    def _step_knocked_pedestrian(self, scenario_id: str, obj: Pedestrian) -> bool:
+        state = self._knocked.get(scenario_id)
+        if state is None:
+            return True
+        dt = self._sim_dt()
+        vel = np.asarray(state["velocity"], dtype=np.float64)
+        pos = np.asarray(obj.position[:2], dtype=np.float64) + vel * dt
+        obj.set_position([float(pos[0]), float(pos[1])])
+        vel = vel * self.knock_decay
+        state["velocity"] = vel
+        return False
 
     def _get_ego_vehicle(self) -> Optional[BaseVehicle]:
         agent_manager = getattr(self.engine, "agent_manager", None)
@@ -582,6 +698,8 @@ class CrosswalkPedestrianManager(BaseManager):
         count = 0
         for scenario_id, cw_id in self._scenario_id_to_crosswalk_id.items():
             if str(cw_id) != str(crosswalk_id):
+                continue
+            if scenario_id in getattr(self, "_knocked", {}):
                 continue
             obj_id = self._scenario_id_to_obj_id.get(scenario_id)
             if obj_id and obj_id in self.spawned_objects:
@@ -856,6 +974,8 @@ class CrosswalkPedestrianManager(BaseManager):
         }
 
         for scenario_id, obj_id in self._scenario_id_to_obj_id.items():
+            if scenario_id in getattr(self, "_knocked", {}):
+                continue
             obj = self.spawned_objects.get(obj_id, None)
             if obj is None:
                 continue

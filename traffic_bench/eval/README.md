@@ -299,6 +299,10 @@ python -m traffic_bench.eval manifest \
 # GIFs during manifest generation
 python -m traffic_bench.eval manifest \
     sign=yield gif.enabled=true gif.max_scenes=8
+
+# Crosswalk GIFs: keep rolling after a pedestrian hit (they fly aside)
+python -m traffic_bench.eval manifest \
+    sign=crosswalk gif.enabled=true gif.knock_pedestrians=true
 ```
 
 Nested Hydra groups use paths such as:

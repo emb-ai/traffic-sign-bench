@@ -214,6 +214,7 @@ def render_gifs_from_manifest(
         gif_window_m=float(gif_cfg.window_m or 80.0),
         hide_signs=bool(gif_cfg.hide_signs),
         draw_path_conflict=bool(gif_cfg.draw_path_conflict),
+        knock_pedestrians=bool(gif_cfg.knock_pedestrians),
         run_name=gif_cfg.run_name or experiment_dir.name,
     )
     return len(rows), 0
@@ -468,6 +469,7 @@ def main(cfg: DictConfig) -> None:
         window_m=float(getattr(cfg.gif, "window_m", 80.0) or 80.0),
         draw_path_conflict=bool(getattr(cfg.gif, "draw_path_conflict", False)),
         model_path=getattr(cfg.gif, "model_path", None) or None,
+        knock_pedestrians=bool(getattr(cfg.gif, "knock_pedestrians", False)),
     )
     if gif_cfg.enabled and entries:
         gif_rendered, gif_failed = render_gifs_from_manifest(

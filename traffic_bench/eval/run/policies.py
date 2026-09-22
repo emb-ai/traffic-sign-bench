@@ -181,6 +181,7 @@ def _run_scene_shard(job: dict[str, Any]) -> int:
         gif_window_m=float(job["gif_window_m"]),
         hide_signs=bool(job["hide_signs"]),
         draw_path_conflict=bool(job["draw_path_conflict"]),
+        knock_pedestrians=bool(job.get("knock_pedestrians", False)),
         run_name=str(job["run_name"]),
     )
     return int(job["idx"])
@@ -498,6 +499,7 @@ def run_policy_list(cfg: DictConfig, policies: list[str]) -> None:
             "hide_signs": _bool(cfg.hide_signs),
             "draw_path_conflict": _bool(cfg.draw_path_conflict)
             or _bool(gif_cfg.get("draw_path_conflict")),
+            "knock_pedestrians": _bool(gif_cfg.get("knock_pedestrians")),
             "run_name": f"{policy}_{variant}",
             "cuda_devices": cuda_for_job,
         }

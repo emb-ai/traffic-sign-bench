@@ -45,6 +45,7 @@ gif:
   dir: null
   window_m: 80.0
   draw_path_conflict: false
+  knock_pedestrians: false
 
 hydra:
   run:

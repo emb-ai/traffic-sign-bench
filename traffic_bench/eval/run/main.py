@@ -86,6 +86,7 @@ def run_episodes(
     gif_window_m: float = 80.0,
     hide_signs: bool = False,
     draw_path_conflict: bool = False,
+    knock_pedestrians: bool = False,
     run_name: str | None = None,
 ) -> Path:
     """Run closed-loop episodes and write ``episodes_<policy>.jsonl``."""
@@ -175,6 +176,7 @@ def run_episodes(
                 gif_window_m=gif_window_m,
                 hide_signs=hide_signs,
                 draw_path_conflict=draw_path_conflict,
+                knock_pedestrians=bool(knock_pedestrians),
             )
             print(f"{policy}  elapsed_s={time.time() - t0:.3f}")
             key = _episode_key_from_row(row)
@@ -326,6 +328,7 @@ def run_one_policy(cfg: DictConfig) -> Path:
         gif_window_m=float(gif_cfg.get("window_m") or 80.0),
         hide_signs=_bool(cfg.hide_signs),
         draw_path_conflict=_bool(cfg.draw_path_conflict) or _bool(gif_cfg.get("draw_path_conflict")),
+        knock_pedestrians=_bool(gif_cfg.get("knock_pedestrians")),
         run_name=run_name,
     )
 

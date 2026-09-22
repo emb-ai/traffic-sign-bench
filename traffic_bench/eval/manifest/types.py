@@ -103,6 +103,7 @@ class GifConfig:
     window_m: float = 80.0
     draw_path_conflict: bool = False
     model_path: Optional[str] = None
+    knock_pedestrians: bool = False
 
 
 @dataclass

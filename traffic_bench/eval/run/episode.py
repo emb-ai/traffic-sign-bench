@@ -289,6 +289,7 @@ def run_one_episode(
     gif_window_m: float = 80.0,
     hide_signs: bool = False,
     draw_path_conflict: bool = False,
+    knock_pedestrians: bool = False,
     auxiliary_agent: bool = False,
     aux_distance_from_intersection: float = DEFAULT_AUX_DISTANCE_FROM_INTERSECTION,
     aux_policy: str = "idm",
@@ -313,6 +314,12 @@ def run_one_episode(
         _torch.backends.cudnn.benchmark = False
     except ImportError:
         pass
+
+    if knock_pedestrians and save_gif is not None:
+        row = dict(row)
+        ped_cfg = dict(row.get("pedestrian_manager") or {})
+        ped_cfg["knock_on_hit"] = True
+        row["pedestrian_manager"] = ped_cfg
 
     env = _build_sumo_env(row, scenes_root=scenes_root, max_steps=max_steps)
 
