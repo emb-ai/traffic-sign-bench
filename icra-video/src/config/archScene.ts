@@ -20,34 +20,41 @@
 //    ft_rl3 dump; built by tools/extract_arch_frames.py + tools/prepare_arch_assets.py.
 // ─────────────────────────────────────────────────────────────────────────────
 
+// Pace of the whole fine-tuning section: its clock runs FT_WARP times slower than real time, so reveal times AND
+// every transition (e.g. the frame → architecture regrouping) are stretched together. 1 = the original silent cut.
+export const FT_WARP = 1.6;
+// Results slide: how long it holds after its reveal starts (real seconds).
+const RESULTS_HOLD_SEC = 16;
+
+// reveal times of the architecture half (section-clock seconds; real seconds = × FT_WARP)
+const BASE_TIMING = {
+  frame: 0.0, // real training frame (cross-fades in from the scenario map); it stays frozen
+  objects: 0.5, // SCENE INPUTS: vehicles → object tokens
+  signObject: 1.15, // the plate joins the SAME object sequence (own class projection)
+  route: 1.8,
+  map: 2.45, // local map raster (one BEV token)
+  signState: 3.1, // SIGN-AWARE EXTENSIONS: persistent sign state (sign_emb, paper Sec. IV-D)
+  speedToken: 3.75, // learned speed token (feeds the discrete ego-speed head)
+  params: 4.2,
+  archMorph: 4.9, // frame leaves, the same elements regroup into the architecture
+  backbone: 6.1,
+  outputs: 6.9,
+  expert: 7.7, // selected expert trajectory appears right after the heads
+  targets: 8.0, // path / waypoint / speed targets derived from it
+  match: 8.3, // prediction ···· target (training only)
+  ftStart: 9.1, // orange supervision loop into PlanT-2 (draws in 1 s)
+  ftModel: 10.1, // PlanT-2 → PlanT-2-FT inside the same diagram (label only)
+  supFade: 10.6, // training-only graphics leave (expert panel, targets, dotted links, loop)
+  result: 11.1, // results: Table II numbers + one PlanT-2 / PlanT-2-FT test pair per functional group
+  recenter: 99, // disabled: the diagram goes straight from PlanT-2-FT to the results
+};
 export const ARCH_SCENE = {
   // Local timeline of the architecture half of the fine-tuning section (seconds from its start).
   // It is played inside S10_FineTuning right after the expert selection (FT_SCENE.timing.archStart).
-  durationSec: 19.2,
+  // section-clock seconds (see FT_WARP)
+  durationSec: BASE_TIMING.result + RESULTS_HOLD_SEC / FT_WARP,
 
-  timing: {
-    frame: 0.0, // real training frame (cross-fades in from the scenario map); it stays frozen
-    objects: 0.5, // SCENE INPUTS: vehicles → object tokens
-    signObject: 1.15, // the plate joins the SAME object sequence (own class projection)
-    route: 1.8,
-    map: 2.45, // local map raster (one BEV token)
-    signState: 3.1, // SIGN-AWARE EXTENSIONS: persistent sign state (sign_emb, paper Sec. IV-D)
-    speedToken: 3.75, // learned speed token (feeds the discrete ego-speed head)
-    params: 4.2,
-    archMorph: 4.9, // frame leaves, the same elements regroup into the architecture
-    backbone: 6.1,
-    outputs: 6.9,
-    expert: 7.7, // STEP 1: selected expert trajectory appears right after the heads
-    targets: 8.0, // path / waypoint / speed targets derived from it
-    match: 8.3, // prediction ···· target (training only)
-    ftStart: 9.1, // orange supervision loop into PlanT-2 (draws in 1 s)
-    ftModel: 10.1, // STEP 2: PlanT-2 → PlanT-2-FT inside the same diagram (label only)
-    supFade: 10.6, // training-only graphics leave (expert panel, targets, dotted links, loop)
-    result: 11.1, // result slide: rule compliance PlanT-2 → PlanT-2-FT (Table II)
-    recenter: 99, // disabled: the diagram goes straight from PlanT-2-FT to the result slide
-    _unused_recenter: 11.3, // remaining architecture slides to the centre; clean final frame holds to the end
-  },
-
+  timing: BASE_TIMING,
 
   // Dump frame of the IDMe-s1 trajectory that is decomposed (ego, 5 vehicles, plate 10 m ahead)
   frames: { main: 16 },
@@ -81,19 +88,32 @@ export const ARCH_SCENE = {
 
   // Paper Table II (test scenarios), PlanT-2 vs PlanT-2-FT; group rows = GROUP_SCD in content.ts
   results: {
-    metrics: [{ label: "SCD · sign compliance and destination reached", base: 5.9, ft: 72.3 }],
+    metrics: [{ label: "SCD · sign compliance and destination reached", base: 5.9, ft: 72.3, gain: "+66.4 points" }],
     groupTitle: "SCD by functional group",
     source: "Table II · held-out test scenarios",
-    // cherry-picked test rollouts (reports/cherry_gifs/picked): PlanT-2 violates, PlanT-2-FT complies
+    // Table II overall SCD of all 17 evaluated planners (paper Sec. V-A: "within 7.7 points of the strongest
+    // privileged expert (80.0%)")
+    allTitle: "Overall SCD · all 17 planners",
+    allPlanners: {
+      standard: [7.2, 9.0, 9.0, 8.8, 8.9, 3.2, 2.9, 5.9], // IDM, IDM-s1..s4, PPO, CaRL, PlanT-2
+      experts: [76.9, 64.8, 64.6, 64.3, 64.8, 77.4, 80.0, 67.3], // IDMe, IDMe-s1..s4, PPOe, CaRLe, PlanT-2e
+      ft: 72.3,
+    },
+    // cherry-picked test rollouts: PlanT-2 violates, PlanT-2-FT complies; one pair per functional group, PlanT-2-FT =
+    // final checkpoint (nj e26) in every pair (stop: icra-video/generated/cherry/stop; others: reports/cherry_gifs runs,
+    // routing re-recorded with e26)
     clipsTitle: "Test rollouts",
-    // one pair per functional group; PlanT-2-FT = final checkpoint (nj e26) in every pair
     clips: [
-      { label: "Priority · stop", base: "converted/cherry/stop_junc_249684220_plant2.mp4", ft: "converted/cherry/stop_junc_249684220_plant2_ft.mp4", rate: 1.8 },
-      { label: "Speed · zone 30", base: "converted/cherry/zone_speed_limit_r76_plant2.mp4", ft: "converted/cherry/zone_speed_limit_r76_plant2_ft.mp4", rate: 1.5 },
-      { label: "Obstacles · detour", base: "converted/cherry/detour_right_r102_plant2.mp4", ft: "converted/cherry/detour_right_r102_plant2_ft.mp4", rate: 1.4 },
-      { label: "Routing · left or right", base: "converted/cherry/reroute_direction_left_right_r46_plant2.mp4", ft: "converted/cherry/reroute_direction_left_right_r46_plant2_ft.mp4", rate: 1.8 },
+      { group: "priority", label: "Priority · stop", base: "converted/cherry/stop_junc_249684220_plant2.mp4", ft: "converted/cherry/stop_junc_249684220_plant2_ft.mp4", rate: 1.8 },
+      { group: "speed", label: "Speed · zone 30", base: "converted/cherry/zone_speed_limit_r76_plant2.mp4", ft: "converted/cherry/zone_speed_limit_r76_plant2_ft.mp4", rate: 1.5 },
+      { group: "obstacles", label: "Obstacles · detour", base: "converted/cherry/detour_right_r102_plant2.mp4", ft: "converted/cherry/detour_right_r102_plant2_ft.mp4", rate: 1.4 },
+      { group: "routing", label: "Routing · left or right", base: "converted/cherry/reroute_direction_left_right_r46_plant2.mp4", ft: "converted/cherry/reroute_direction_left_right_r46_plant2_ft.mp4", rate: 1.8 },
     ],
-    clipsNote: "",
+    allLabels: {
+      standard: "standard planners 2.9–9.0%",
+      experts: "privileged experts 64.3–80.0%",
+      gap: "PlanT-2-FT 72.3% · 7.7 points below the best expert, CaRLᵉ 80.0%",
+    },
   },
 
   colors: {

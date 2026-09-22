@@ -18,6 +18,8 @@ import { S11_Result } from "./scenes/S11_Result";
 import { S12_Ablation } from "./scenes/S12_Ablation";
 import { S13_Failures } from "./scenes/S13_Failures";
 import { S14_End } from "./scenes/S14_End";
+import { S15_Conclusion } from "./scenes/S15_Conclusion";
+import { S16_Diversity } from "./scenes/S16_Diversity";
 
 const SCENES: Record<SceneKey, React.FC> = {
   s01_hook: S01_Hook,
@@ -34,6 +36,8 @@ const SCENES: Record<SceneKey, React.FC> = {
   s11_result: S11_Result,
   s12_ablation: S12_Ablation,
   s13_failures: S13_Failures,
+  s16_diversity: S16_Diversity,
+  s15_conclusion: S15_Conclusion,
   s14_end: S14_End,
 };
 
