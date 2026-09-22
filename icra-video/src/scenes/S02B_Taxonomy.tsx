@@ -20,15 +20,15 @@ type SignItem = {
   semantic?: SemanticKey;
 };
 
-const CATEGORIES: { key: ConventionKey; label: string }[] = [
-  { key: "warning", label: "Warning" },
-  { key: "priority", label: "Priority" },
-  { key: "prohibitory", label: "Prohibitory" },
-  { key: "mandatory", label: "Mandatory" },
-  { key: "special", label: "Special regulation" },
-  { key: "information", label: "Information" },
-  { key: "direction", label: "Direction" },
-  { key: "panels", label: "Additional panels" },
+const CATEGORIES: { key: ConventionKey; label: string; code: string; accent: string }[] = [
+  { key: "warning", label: "Warning", code: "Class A", accent: "#F59E0B" },
+  { key: "priority", label: "Priority", code: "Class B", accent: "#3B82F6" },
+  { key: "prohibitory", label: "Prohibitory", code: "Class C", accent: "#EF4444" },
+  { key: "mandatory", label: "Mandatory", code: "Class D", accent: "#2563EB" },
+  { key: "special", label: "Special regulation", code: "Class E", accent: "#6366F1" },
+  { key: "information", label: "Information", code: "Class F", accent: "#0D9488" },
+  { key: "direction", label: "Direction", code: "Class G", accent: "#64748B" },
+  { key: "panels", label: "Additional panels", code: "Class H", accent: "#94A3B8" },
 ];
 const MAX_INITIAL_SIGNS = 6;
 
@@ -97,8 +97,8 @@ const conventionPosition = (sign: SignItem) => {
   const categorySigns = SIGNS.filter((candidate) => candidate.convention === sign.convention);
   const index = categorySigns.findIndex((candidate) => candidate.id === sign.id);
   return {
-    x: 57 + categoryIndex * 228 + (index % 2) * 91,
-    y: 238 + Math.floor(index / 2) * 102,
+    x: 44 + categoryIndex * 227 + 28 + (index % 2) * 88,
+    y: 300 + Math.floor(index / 2) * 88,
   };
 };
 
@@ -109,8 +109,8 @@ const semanticPosition = (sign: SignItem) => {
   const groupSigns = SIGNS.filter((candidate) => candidate.semantic === sign.semantic);
   const index = groupSigns.findIndex((candidate) => candidate.id === sign.id);
   return {
-    x: 104 + groupIndex * 455 + (index % 4) * 80,
-    y: 332 + Math.floor(index / 4) * 90,
+    x: 70 + groupIndex * 455 + 46 + (index % 4) * 82,
+    y: 334 + Math.floor(index / 4) * 88,
   };
 };
 
@@ -140,17 +140,51 @@ export const S02B_Taxonomy: React.FC = () => {
 
   return (
     <Scene>
-      <div style={{ position: "absolute", left: 70, right: 70, top: 42, textAlign: "left" }}>
+      <div style={{ position: "absolute", left: 70, right: 70, top: 40, textAlign: "left" }}>
         <div style={{ opacity: 1 - regroupPhase }}>
-          <Headline size={55}>From a national sign system to verifiable traffic rules</Headline>
-          <div style={{ marginTop: 10, color: COLORS.muted, fontSize: 25 }}>
-            A Vienna-Convention reference system · eight functional classes
+          <div
+            style={{
+              display: "inline-block",
+              padding: "4px 14px",
+              borderRadius: 999,
+              background: "#EEF4FC",
+              border: "1.5px solid #C8DCF5",
+              color: COLORS.blue,
+              fontSize: 13,
+              fontWeight: 900,
+              letterSpacing: 2.2,
+              textTransform: "uppercase",
+              marginBottom: 8,
+            }}
+          >
+            Vienna Convention Taxonomy
+          </div>
+          <Headline size={50}>Generalizability of TrafficSignBench</Headline>
+          <div style={{ marginTop: 6, color: COLORS.muted, fontSize: 23, fontWeight: 700 }}>
+            Comprehensive coverage across all 8 international functional classes
           </div>
         </div>
         <div style={{ position: "absolute", inset: 0, opacity: regroupPhase }}>
-          <Headline size={55}>34 implemented signs → 4 capability-based groups</Headline>
-          <div style={{ marginTop: 10, color: COLORS.muted, fontSize: 25 }}>
-            Reorganized by the planning capability demanded of the ego vehicle
+          <div
+            style={{
+              display: "inline-block",
+              padding: "4px 14px",
+              borderRadius: 999,
+              background: "#EAF7EF",
+              border: "1.5px solid #B4E2C5",
+              color: COLORS.green,
+              fontSize: 13,
+              fontWeight: 900,
+              letterSpacing: 2.2,
+              textTransform: "uppercase",
+              marginBottom: 8,
+            }}
+          >
+            Closed-Loop Scenario Formulation
+          </div>
+          <Headline size={50}>34 Implemented Signs → 4 Semantic Groups</Headline>
+          <div style={{ marginTop: 6, color: COLORS.muted, fontSize: 23, fontWeight: 700 }}>
+          Reorganize into 4 semantic groups based on the high-level capability demanded of the ego vehicle
           </div>
         </div>
       </div>
@@ -160,25 +194,61 @@ export const S02B_Taxonomy: React.FC = () => {
           key={category.key}
           style={{
             position: "absolute",
-            left: 40 + index * 228,
-            top: 178,
-            width: 210,
-            height: 445,
-            borderRadius: 16,
-            background: "#FAFAFA",
-            border: `1px solid ${COLORS.border}`,
+            left: 44 + index * 227,
+            top: 216,
+            width: 212,
+            height: 405,
+            borderRadius: 18,
+            background: "#FFFFFF",
+            border: "1.5px solid #E2E8F0",
+            boxShadow: "0 8px 24px rgba(15, 23, 42, 0.04)",
             opacity: initialLabels,
+            overflow: "hidden",
           }}
         >
-          <div style={{ height: 7, background: index < 5 ? "#AFC2D9" : "#D3D8DE", borderRadius: "16px 16px 0 0" }} />
-          <div style={{ paddingTop: 12, textAlign: "center", color: COLORS.ink, fontSize: category.key === "special" || category.key === "panels" ? 18 : 20, fontWeight: 900 }}>
-            {category.label}
-          </div>
-          {SIGNS.filter((sign) => sign.convention === category.key).length > MAX_INITIAL_SIGNS && (
-            <div style={{ position: "absolute", left: 0, right: 0, bottom: 14, textAlign: "center", color: COLORS.muted, fontSize: 30, fontWeight: 900 }}>
-              · · ·
+          {/* Top color accent */}
+          <div style={{ height: 6, background: category.accent }} />
+
+          {/* Header section with Class code and Label */}
+          <div style={{ paddingTop: 10, paddingBottom: 6, textAlign: "center", borderBottom: "1px solid #F1F5F9" }}>
+            <div style={{ color: category.accent, fontSize: 11, fontWeight: 900, letterSpacing: 1.5, textTransform: "uppercase" }}>
+              {category.code}
             </div>
-          )}
+            <div
+              style={{
+                color: COLORS.ink,
+                fontSize: category.key === "special" || category.key === "panels" ? 15 : 17,
+                fontWeight: 900,
+                marginTop: 2,
+                lineHeight: 1.15,
+                height: 28,
+                display: "flex",
+                alignItems: "center",
+                justifyContent: "center",
+                padding: "0 6px",
+              }}
+            >
+              {category.label}
+            </div>
+          </div>
+
+          {/* Ellipsis indicator for EVERY category (demonstrates sample of broad convention) */}
+          <div
+            style={{
+              position: "absolute",
+              left: 0,
+              right: 0,
+              bottom: 20,
+              display: "flex",
+              justifyContent: "center",
+              alignItems: "center",
+              gap: 5,
+            }}
+          >
+            <span style={{ width: 6, height: 6, borderRadius: "50%", background: "#94A3B8" }} />
+            <span style={{ width: 6, height: 6, borderRadius: "50%", background: "#94A3B8" }} />
+            <span style={{ width: 6, height: 6, borderRadius: "50%", background: "#94A3B8" }} />
+          </div>
         </div>
       ))}
 
@@ -190,26 +260,45 @@ export const S02B_Taxonomy: React.FC = () => {
             style={{
               position: "absolute",
               left: 70 + index * 455,
-              top: 200,
+              top: 245,
               width: 410,
-              height: 450,
-              borderRadius: 20,
-              background: "#fff",
+              height: 400,
+              borderRadius: 22,
+              background: "#FFFFFF",
               border: `2px solid ${COLORS.border}`,
-              boxShadow: "0 8px 28px rgba(0,0,0,0.07)",
+              boxShadow: "0 12px 36px rgba(15, 23, 42, 0.08)",
               opacity: groupCards,
               transform: `translateY(${(1 - groupCards) * 26}px)`,
+              overflow: "hidden",
             }}
           >
-            <div style={{ height: 12, borderRadius: "18px 18px 0 0", background: color.bar }} />
-            <div style={{ display: "flex", justifyContent: "space-between", padding: "17px 24px" }}>
-              <span style={{ fontSize: 34, fontWeight: 900 }}>{color.label}</span>
-              <span style={{ color: color.text, fontSize: 20, fontWeight: 900, textAlign: "right" }}>
-                {signs} signs<br />{scenarios} tests
-              </span>
+            <div style={{ height: 10, background: color.bar }} />
+            <div style={{ display: "flex", justifyContent: "space-between", alignItems: "flex-start", padding: "18px 24px" }}>
+              <div>
+                <span style={{ fontSize: 34, fontWeight: 900, color: COLORS.ink }}>{color.label}</span>
+              </div>
+              <div style={{ textAlign: "right" }}>
+                <div style={{ color: color.text, fontSize: 20, fontWeight: 900 }}>{signs} signs</div>
+                <div style={{ color: COLORS.muted, fontSize: 14, fontWeight: 700 }}>{scenarios} test types</div>
+              </div>
             </div>
-            <div style={{ position: "absolute", left: 24, right: 24, bottom: 20, borderTop: `2px solid ${COLORS.panel}`, paddingTop: 12, color: COLORS.muted, fontSize: 19, fontWeight: 700 }}>
-              {capability}
+            <div
+              style={{
+                position: "absolute",
+                left: 20,
+                right: 20,
+                bottom: 18,
+                padding: "10px 16px",
+                borderRadius: 12,
+                background: "#F8FAFC",
+                border: "1px solid #E2E8F0",
+                color: COLORS.muted,
+                fontSize: 17,
+                fontWeight: 700,
+                textAlign: "center",
+              }}
+            >
+              demands <span style={{ color: COLORS.ink, fontWeight: 900 }}>{capability}</span>
             </div>
           </div>
         );
@@ -255,38 +344,46 @@ export const S02B_Taxonomy: React.FC = () => {
           position: "absolute",
           left: 170,
           right: 170,
-          bottom: 70,
-          padding: "20px 34px",
-          borderRadius: 18,
-          background: "#F4F6F8",
-          border: `2px solid ${COLORS.border}`,
+          bottom: 50,
+          padding: "20px 36px",
+          borderRadius: 20,
+          background: "rgba(255, 255, 255, 0.96)",
+          backdropFilter: "blur(12px)",
+          boxShadow: "0 18px 50px rgba(15, 23, 42, 0.12)",
+          border: "1.5px solid #CBD5E1",
           textAlign: "center",
           opacity: filterPhase * (1 - selectionPhase),
           transform: `translateY(${(1 - filterPhase) * 16}px)`,
         }}
       >
-        <div style={{ color: COLORS.blue, fontSize: 22, fontWeight: 900, letterSpacing: 1.8, textTransform: "uppercase" }}>From catalogue to executable rules</div>
-        <div style={{ marginTop: 8, color: COLORS.ink, fontSize: 29, lineHeight: 1.25, fontWeight: 700 }}>
-          Retain signs with explicit obligations and machine-verifiable outcomes. Exclude signs whose meaning is primarily advisory, contextual, or conditional.
+        <div style={{ color: COLORS.blue, fontSize: 15, fontWeight: 900, letterSpacing: 2, textTransform: "uppercase" }}>
+          Taxonomy Filtering · Enforceable Semantics
+        </div>
+        <div style={{ marginTop: 8, color: COLORS.ink, fontSize: 26, lineHeight: 1.3, fontWeight: 700 }}>
+          Retain signs that impose <span style={{ color: COLORS.blue, fontWeight: 900 }}>explicit, mandatory obligations</span> with machine-verifiable rule logic. Exclude advisory, contextual, or conditional signs.
         </div>
       </div>
 
       <div
         style={{
           position: "absolute",
-          left: 280,
-          right: 280,
-          bottom: 66,
-          padding: "20px 34px",
-          borderRadius: 18,
-          background: "#EEF6FF",
+          left: 220,
+          right: 220,
+          bottom: 50,
+          padding: "20px 36px",
+          borderRadius: 20,
+          background: "linear-gradient(135deg, #F0F7FF 0%, #E3F0FF 100%)",
           border: "2px solid #B8D4F4",
+          boxShadow: "0 18px 50px rgba(36, 88, 166, 0.12)",
           textAlign: "center",
           opacity: selectionPhase * (1 - regroupPhase),
+          transform: `translateY(${(1 - selectionPhase) * 16}px)`,
         }}
       >
-        <span style={{ color: COLORS.blue, fontSize: 38, fontWeight: 900 }}>34 signs.</span>
-        <span style={{ color: COLORS.ink, fontSize: 27, fontWeight: 700 }}> Every rule executable. Every violation automatically verifiable.</span>
+        <span style={{ color: COLORS.blue, fontSize: 36, fontWeight: 900 }}>34 Retained Signs.</span>
+        <span style={{ color: COLORS.ink, fontSize: 26, fontWeight: 700 }}>
+          {" "}All implemented in simulation with explicitly defined, verifiable rule logic.
+        </span>
       </div>
 
       <div
@@ -294,10 +391,10 @@ export const S02B_Taxonomy: React.FC = () => {
           position: "absolute",
           left: 260,
           right: 260,
-          top: 770,
+          top: 760,
           textAlign: "center",
           color: COLORS.muted,
-          fontSize: 27,
+          fontSize: 26,
           fontWeight: 700,
           opacity: regroupPhase,
         }}

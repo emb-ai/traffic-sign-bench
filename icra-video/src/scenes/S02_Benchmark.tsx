@@ -53,21 +53,21 @@ const GRID_W = COLS * TILE_W + (COLS - 1) * GAP; // 1880
 const GRID_H = ROWS * TILE_H + (ROWS - 1) * GAP; // 1015
 
 // Compact, elegant central glass card
-const CARD_W = 880;
+const CARD_W = 700;
 const CARD_H = 390;
 
 export const S02_Benchmark: React.FC = () => {
   const t = useT();
 
-  // Smooth, stately camera pullback across the 12-second scene
-  const camera = interpolate(t, [0, 9.0], [1.32, 1.0], {
+  // Dramatic cinematic zoom-out from single-scenario close-up (6.0x) to 35-scenario wide-format mosaic (0.98x)
+  const camera = interpolate(t, [0, 8.5], [6.0, 0.98], {
     ...clamp,
     easing: Easing.bezier(0.16, 1, 0.3, 1),
   });
 
-  // Card appearance
-  const cardOpacity = interpolate(t, [0.2, 0.7], [0, 1], clamp);
-  const cardScale = interpolate(t, [0.2, 0.7], [0.94, 1], {
+  // Frosted glass card emerges smoothly as camera sweeps back into wide perspective
+  const cardOpacity = interpolate(t, [1.0, 1.8], [0, 1], clamp);
+  const cardScale = interpolate(t, [1.0, 1.8], [0.92, 1], {
     ...clamp,
     easing: Easing.bezier(0.16, 1, 0.3, 1),
   });
@@ -87,7 +87,6 @@ export const S02_Benchmark: React.FC = () => {
         }}
       >
         {CLIPS_35.map((clip, index) => {
-          const reveal = interpolate(t, [0.05 + index * 0.025, 0.35 + index * 0.025], [0, 1], clamp);
           const row = Math.floor(index / COLS);
           const col = index % COLS;
           return (
@@ -101,8 +100,6 @@ export const S02_Benchmark: React.FC = () => {
                 height: TILE_H,
                 borderRadius: 10,
                 overflow: "hidden",
-                opacity: reveal,
-                transform: `scale(${0.9 + reveal * 0.1})`,
                 boxShadow: "0 8px 24px rgba(0,0,0,0.18)",
                 border: "2.5px solid white",
               }}
@@ -120,7 +117,7 @@ export const S02_Benchmark: React.FC = () => {
       {/* Atmospheric darkening overlay */}
       <div style={{ position: "absolute", inset: 0, background: "rgba(10,18,27,0.22)" }} />
 
-      {/* Compact, sleek central presentation card */}
+      {/* Sleek, highly transparent central glass card */}
       <div
         style={{
           position: "absolute",
@@ -129,10 +126,10 @@ export const S02_Benchmark: React.FC = () => {
           width: CARD_W,
           height: CARD_H,
           borderRadius: 24,
-          background: "rgba(255,255,255,0.80)",
-          backdropFilter: "blur(10px)",
-          boxShadow: "0 28px 80px rgba(10,25,45,0.24)",
-          border: "1.5px solid rgba(255,255,255,0.92)",
+          background: "rgba(255, 255, 255, 0.25)",
+          backdropFilter: "blur(4px)",
+          boxShadow: "0 24px 70px rgba(10, 25, 45, 0.20)",
+          border: "1.5px solid rgba(255, 255, 255, 0.50)",
           display: "flex",
           flexDirection: "column",
           alignItems: "center",
@@ -144,39 +141,62 @@ export const S02_Benchmark: React.FC = () => {
           transform: `scale(${cardScale})`,
         }}
       >
-        {/* Kicker badge */}
+        {/* Line 1: 'To address this gap,' in italics */}
         <div
           style={{
-            display: "inline-flex",
-            alignItems: "center",
-            gap: 8,
-            padding: "5px 16px",
-            borderRadius: 999,
-            background: "#EEF4FC",
-            border: "1.5px solid #C8DCF5",
-            marginBottom: 8,
+            color: COLORS.blue,
+            fontSize: 22,
+            fontStyle: "italic",
+            fontWeight: 700,
+            lineHeight: 1.2,
+            marginBottom: 4,
+            textShadow: "0 1px 8px rgba(255,255,255,0.9)",
           }}
         >
-          <span
-            style={{
-              color: COLORS.blue,
-              fontSize: 15,
-              fontWeight: 900,
-              letterSpacing: 1.4,
-              textTransform: "uppercase",
-            }}
-          >
-            To address this gap, we introduce
-          </span>
+          To address this gap,
+        </div>
+
+        {/* Line 2: 'WE INTRODUCE' */}
+        <div
+          style={{
+            color: "#2C3E50",
+            fontSize: 14,
+            fontWeight: 900,
+            letterSpacing: 3,
+            textTransform: "uppercase",
+            marginBottom: 8,
+            textShadow: "0 1px 6px rgba(255,255,255,0.9)",
+          }}
+        >
+          we introduce
         </div>
 
         {/* Grand headline */}
-        <div style={{ fontSize: 56, lineHeight: 1.05, fontWeight: 900, color: COLORS.ink, letterSpacing: -1 }}>
+        <div
+          style={{
+            fontSize: 56,
+            lineHeight: 1.05,
+            fontWeight: 900,
+            color: COLORS.ink,
+            letterSpacing: -1,
+            textShadow: "0 2px 12px rgba(255,255,255,0.9)",
+          }}
+        >
           TrafficSignBench
         </div>
 
         {/* Core benchmark mission */}
-        <div style={{ marginTop: 8, maxWidth: 780, fontSize: 20, lineHeight: 1.3, color: COLORS.ink, fontWeight: 700 }}>
+        <div
+          style={{
+            marginTop: 8,
+            maxWidth: 780,
+            fontSize: 20,
+            lineHeight: 1.3,
+            color: COLORS.ink,
+            fontWeight: 700,
+            textShadow: "0 1px 8px rgba(255,255,255,0.9)",
+          }}
+        >
           The first large-scale benchmark to jointly combine
         </div>
 
@@ -186,26 +206,26 @@ export const S02_Benchmark: React.FC = () => {
             {
               title: "Broad Taxonomy",
               sub: "34 traffic signs",
-              bg: "#EAF2FF",
-              border: "#B8D4F4",
+              bg: "rgba(234, 242, 255, 0.75)",
+              border: "rgba(184, 212, 244, 0.9)",
               color: COLORS.blue,
             },
             {
               title: "Rule Checkers",
               sub: "automatic & verifiable",
-              bg: "#EAF7EF",
-              border: "#B4E2C5",
+              bg: "rgba(234, 247, 239, 0.75)",
+              border: "rgba(180, 226, 197, 0.9)",
               color: COLORS.green,
             },
             {
               title: "Targeted Scenarios",
               sub: "29,000 closed-loop",
-              bg: "#FFF4E5",
-              border: "#F6D3A4",
+              bg: "rgba(255, 244, 229, 0.75)",
+              border: "rgba(246, 211, 164, 0.9)",
               color: "#B96E12",
             },
           ].map((pillar, index) => {
-            const pOpacity = interpolate(t, [1.4 + index * 0.35, 1.8 + index * 0.35], [0, 1], clamp);
+            const pOpacity = interpolate(t, [2.1 + index * 0.35, 2.5 + index * 0.35], [0, 1], clamp);
             return (
               <div
                 key={pillar.title}
@@ -215,9 +235,11 @@ export const S02_Benchmark: React.FC = () => {
                   padding: "8px 16px",
                   borderRadius: 14,
                   background: pillar.bg,
+                  backdropFilter: "blur(6px)",
                   border: `1.5px solid ${pillar.border}`,
                   textAlign: "center",
                   minWidth: 185,
+                  boxShadow: "0 4px 12px rgba(0,0,0,0.06)",
                 }}
               >
                 <div style={{ color: pillar.color, fontSize: 17, fontWeight: 900 }}>{pillar.title}</div>
@@ -232,12 +254,12 @@ export const S02_Benchmark: React.FC = () => {
           style={{
             marginTop: 16,
             paddingTop: 14,
-            borderTop: "1.5px solid rgba(0,0,0,0.07)",
+            borderTop: "1.5px solid rgba(0,0,0,0.12)",
             display: "flex",
             gap: 36,
             alignItems: "center",
             justifyContent: "center",
-            opacity: interpolate(t, [2.8, 3.4], [0, 1], clamp),
+            opacity: interpolate(t, [3.4, 4.0], [0, 1], clamp),
           }}
         >
           {[
@@ -246,7 +268,15 @@ export const S02_Benchmark: React.FC = () => {
             ["17", "planners evaluated"],
           ].map(([value, label]) => (
             <div key={label} style={{ display: "flex", alignItems: "baseline", gap: 8 }}>
-              <span style={{ color: COLORS.ink, fontSize: 32, fontWeight: 900, fontVariantNumeric: "tabular-nums" }}>
+              <span
+                style={{
+                  color: COLORS.ink,
+                  fontSize: 32,
+                  fontWeight: 900,
+                  fontVariantNumeric: "tabular-nums",
+                  textShadow: "0 1px 6px rgba(255,255,255,0.8)",
+                }}
+              >
                 {value}
               </span>
               <span style={{ color: COLORS.muted, fontSize: 15, fontWeight: 700 }}>{label}</span>

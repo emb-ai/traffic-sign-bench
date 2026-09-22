@@ -36,7 +36,7 @@ export const SUBTITLES: Record<SceneKey, SubLine[]> = {
     { from: 5, to: 10.5, text: "Maps are split by unique OpenStreetMap ID before sign assignment." },
   ],
   s07_portability: [
-    { from: 0.3, to: 7.7, text: "The core set reaches 92% average semantic overlap among analysed Vienna-Convention signatories; adaptation often only requires replacing sign appearance." },
+    { from: 0.3, to: 7.7, text: "Legal semantics remain 92% invariant across jurisdictions; adaptation requires only swapping sign appearance while reusing rule logic." },
   ],
   s08_interface: [
     { from: 0.5, to: 7, text: "Planners receive structured sign semantics; an online checker verifies every rollout." },
