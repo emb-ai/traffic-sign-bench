@@ -1,4 +1,14 @@
-![Main road sign](assets/signs/main_road.png)![Yield sign](assets/signs/yield.png)![Stop sign](assets/signs/stop.png)![Roundabout sign](assets/signs/roundabout.png)![Speed limit sign](assets/signs/speed_limit.png)![No entry sign](assets/signs/no_entry.png)![Right turn only sign](assets/signs/direction_right.png)
+<div align="center">
+
+<p>
+  <img src="assets/signs/main_road.png" width="42" alt="Main road sign">
+  <img src="assets/signs/yield.png" width="42" alt="Yield sign">
+  <img src="assets/signs/stop.png" width="42" alt="Stop sign">
+  <img src="assets/signs/roundabout.png" width="42" alt="Roundabout sign">
+  <img src="assets/signs/speed_limit.png" width="42" alt="Speed limit sign">
+  <img src="assets/signs/no_entry.png" width="42" alt="No entry sign">
+  <img src="assets/signs/direction_right.png" width="42" alt="Right turn only sign">
+</p>
 
 # TrafficSignBench
 
@@ -32,6 +42,9 @@ Rule-Centric Closed-Loop Evaluation of Traffic-Sign Compliance in Autonomous Dri
     </tr>
   </tbody>
 </table>
+
+
+</div>
 
 
 ## News
