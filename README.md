@@ -77,6 +77,10 @@ Rule-supervised fine-tuning raises PlanT-2 from **5.9% to 72.3%** without replac
 
 Held-out test split, 5,800 episodes. Conventional metrics are episode-weighted; SCD is macro-averaged over scenario types. Privileged policies that read the target rule directly are upper references and are not included in this baseline table (you can find them in the paper).
 
+
+<br/>
+
+
 ## <img src="assets/signs/yield.png" alt="" height="23"/> Quick start
 
 This smoke test runs one CPU-only IDM episode on a yield-sign scene. It requires no
@@ -151,6 +155,9 @@ an offscreen OpenGL context; evaluation itself does not.
 For every CLI option, split semantics, augmentation controls, and recovery
 instructions, read the **[evaluation guide](traffic_bench/eval/README.md)**.
 
+<br/>
+
+
 ## <img src="assets/signs/roundabout.png" alt="" height="23"/> Full evaluation
 
 Evaluation has three explicit stages:
@@ -189,6 +196,7 @@ python tools/eval_progress.py --watch 30
 > [evaluation guide](traffic_bench/eval/README.md#3-parallel-multi-sign-eval-recommended-on-multi-gpu).
 
 
+<br/>
 
 ## <img src="assets/signs/stop.png" alt="" height="23"/> Planners and checkpoints
 
@@ -216,9 +224,8 @@ oracle experts and upper references.
 25 scenario types ship as ready-to-run eval profiles. Use the `sign=` value with every CLI
 verb — `manifest`, `run`, and `metrics` all accept it, as does `sign=all`.
 
-**All 25 sign IDs**  
-
-
+<details>
+<summary><b>All 25 sign IDs</b></summary>
 
 | `sign=`                    | Code   | Group     | Family                                                      |
 | -------------------------- | ------ | --------- | ----------------------------------------------------------- |
@@ -248,8 +255,10 @@ verb — `manifest`, `run`, and `metrics` all accept it, as does `sign=all`.
 | `one_way/right`            | 5.7.1  | Routing   | [dual_path](traffic_bench/eval/signs/dual_path/README.md)   |
 | `one_way/left`             | 5.7.2  | Routing   | [dual_path](traffic_bench/eval/signs/dual_path/README.md)   |
 
+</details>
 
 
+<br/>
 
 ## <img src="assets/signs/min_speed.png" alt="" height="23"/> Repository map
 
@@ -271,6 +280,7 @@ checkpoints/             # downloaded planner weights (gitignored)
 ```
 
 
+<br/>
 
 ## <img src="assets/signs/secondary_road.png" alt="" height="23"/> Citation
 
@@ -286,6 +296,7 @@ If TrafficSignBench is useful in your research, please cite:
 ```
 
 
+<br/>
 
 ## <img src="assets/signs/one_way.png" alt="" height="23"/> Acknowledgements
 
