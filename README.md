@@ -5,18 +5,36 @@
 <div align="center">
 
 <h1>
-  <img src="assets/signs/main_road.png" alt="" height="13"/>
-  TrafficSignBench
+  <img src="assets/signs/main_road.png" alt="" height="36"/>
+  <img src="assets/signs/stop.png" alt="" height="36"/>
+  <img src="assets/signs/roundabout.png" alt="" height="36"/>
+  &nbsp;TrafficSignBench&nbsp;
+  <img src="assets/signs/speed_limit.png" alt="" height="36"/>
+  <img src="assets/signs/no_entry.png" alt="" height="36"/>
+  <img src="assets/signs/direction_right.png" alt="" height="36"/>
 </h1>
 
 Rule-Centric Closed-Loop Evaluation of Traffic-Sign Compliance in Autonomous Driving
 
-![Paper](https://img.shields.io/badge/Paper-arXiv-B31B1B?style=flat-square&logo=arxiv&logoColor=white)
-![Project](https://img.shields.io/badge/Project-Website-334155?style=flat-square&logo=githubpages&logoColor=white)
-![Dataset](https://img.shields.io/badge/Dataset-Hugging_Face-334155?style=flat-square&logo=huggingface&logoColor=FFD21E)
-![Models](https://img.shields.io/badge/Models-Hugging_Face-334155?style=flat-square&logo=huggingface&logoColor=FFD21E)
+[![Paper](https://img.shields.io/badge/Paper-arXiv-B31B1B?style=flat-square&logo=arxiv&logoColor=white)](https://emb-ai.github.io/traffic-sign-bench/)
+[![Project](https://img.shields.io/badge/Project-Website-334155?style=flat-square&logo=githubpages&logoColor=white)](https://emb-ai.github.io/traffic-sign-bench/)
+[![Dataset](https://img.shields.io/badge/Dataset-Hugging_Face-334155?style=flat-square&logo=huggingface&logoColor=FFD21E)](https://huggingface.co/datasets/emb-ai/traffic-sign-bench)
+[![Models](https://img.shields.io/badge/Models-Hugging_Face-334155?style=flat-square&logo=huggingface&logoColor=FFD21E)](https://huggingface.co/emb-ai/traffic-rule-bench-models)
 
 </div>
+
+<p align="center">
+  <strong>Current planners violate traffic signs</strong><br/>
+  <span style="color:#555;">High driving scores hide illegal behavior.</span>
+</p>
+
+<p align="center">
+  <img src="assets/rollouts/yield_carl.gif" alt="CaRL yield rollout" width="32%"/>
+  <img src="assets/rollouts/crosswalk_plant2.gif" alt="PlanT-2 crosswalk rollout" width="32%"/>
+  <img src="assets/rollouts/ppo_dir_right.gif" alt="PPO direction-right rollout" width="32%"/>
+  <br/>
+  <em style="display:inline-block; width:32%; text-align:center;">CaRL [CoRL 2025]</em><em style="display:inline-block; width:32%; text-align:center;">PlanT 2.0 [arXiv 2025]</em><em style="display:inline-block; width:32%; text-align:center;">PPO [MetaDrive, TPAMI 2022]</em>
+</p>
 
 <h2>
   <img src="assets/signs/main_road.png" alt="" height="13"/>
