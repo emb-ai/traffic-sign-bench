@@ -48,7 +48,8 @@ replay_results/
 **/benchmark_output/
 **/gifs/
 **/gifs_*/
-# Site demos used by README.md and GitHub Pages
+# Demo rollouts for the GitHub Pages site. README.md media lives in assets/,
+# which the `**/gifs/` rule above does not touch (see assets/rollouts/).
 !docs/static/gifs/
 !docs/static/gifs/**
 **/trajectory_output/
@@ -94,3 +95,8 @@ traffic_bench/scene_collection/map_pool/nets/
 
 ### GIF dumps of validation runs (large, regenerated per run)
 reports/gifval*/
+
+### Remotion project for the project video (node_modules + rendered mp4s).
+# The stills and clips README.md uses were exported from it into assets/;
+# see assets/README.md for the exact sources.
+video/
