@@ -23,21 +23,32 @@ Rule-Centric Closed-Loop Evaluation of Traffic-Sign Compliance in Autonomous Dri
 
 </div>
 
-<p align="center">
-  <strong>Current planners violate traffic signs</strong><br/>
-  <span style="color:#555;">High driving scores hide illegal behavior.</span>
+<br>
+
+<p>
+  Current planners violate traffic signs.
+  <strong>High driving scores hide illegal behavior.</strong>
 </p>
 
-<p align="center">
-  <img src="assets/rollouts/yield_carl.gif" alt="CaRL yield rollout" width="32%"/>
-  <img src="assets/rollouts/crosswalk_plant2.gif" alt="PlanT-2 crosswalk rollout" width="32%"/>
-  <img src="assets/rollouts/ppo_dir_right.gif" alt="PPO direction-right rollout" width="32%"/>
-  <br/>
-  <em style="display:inline-block; width:32%; text-align:center;">CaRL [CoRL 2025]</em><em style="display:inline-block; width:32%; text-align:center;">PlanT 2.0 [arXiv 2025]</em><em style="display:inline-block; width:32%; text-align:center;">PPO [MetaDrive, TPAMI 2022]</em>
-</p>
+<table>
+  <tr>
+    <td align="center" width="33%">
+      <img src="assets/rollouts/yield_carl.gif" alt="CaRL yield rollout" width="100%"/><br/>
+      <em>CaRL [CoRL 2025]</em>
+    </td>
+    <td align="center" width="33%">
+      <img src="assets/rollouts/crosswalk_plant2.gif" alt="PlanT-2 crosswalk rollout" width="100%"/><br/>
+      <em>PlanT 2.0 [arXiv 2025]</em>
+    </td>
+    <td align="center" width="33%">
+      <img src="assets/rollouts/ppo_dir_right.gif" alt="PPO direction-right rollout" width="100%"/><br/>
+      <em>PPO [MetaDrive, TPAMI 2022]</em>
+    </td>
+  </tr>
+</table>
 
 <h2>
-  <img src="assets/signs/main_road.png" alt="" height="13"/>
+  <img src="assets/signs/main_road.png" alt="" height="23"/>
   News
 </h2>
 
