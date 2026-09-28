@@ -1,122 +1,70 @@
-<p align="center">
-  <img src="assets/hero.gif" alt="TrafficSignBench overview" width="100%"/>
-</p>
+![TrafficSignBench overview](assets/hero.gif)
 
-<div align="center">
 
-<h1>
-  <img src="assets/signs/main_road.png" alt="" height="36"/>
-  <img src="assets/signs/stop.png" alt="" height="36"/>
-  <img src="assets/signs/roundabout.png" alt="" height="36"/>
-  &nbsp;TrafficSignBench&nbsp;
-  <img src="assets/signs/speed_limit.png" alt="" height="36"/>
-  <img src="assets/signs/no_entry.png" alt="" height="36"/>
-  <img src="assets/signs/direction_right.png" alt="" height="36"/>
-</h1>
+
+# ![](assets/signs/main_road.png)![](assets/signs/stop.png)![](assets/signs/roundabout.png)  TrafficSignBench  ![](assets/signs/speed_limit.png)![](assets/signs/no_entry.png)![](assets/signs/direction_right.png)
 
 Rule-Centric Closed-Loop Evaluation of Traffic-Sign Compliance in Autonomous Driving
 
-[![Paper](https://img.shields.io/badge/Paper-arXiv-B31B1B?style=flat-square&logo=arxiv&logoColor=white)](https://emb-ai.github.io/traffic-sign-bench/)
-[![Project](https://img.shields.io/badge/Project-Website-334155?style=flat-square&logo=githubpages&logoColor=white)](https://emb-ai.github.io/traffic-sign-bench/)
-[![Dataset](https://img.shields.io/badge/Dataset-Hugging_Face-334155?style=flat-square&logo=huggingface&logoColor=FFD21E)](https://huggingface.co/datasets/emb-ai/traffic-sign-bench)
-[![Models](https://img.shields.io/badge/Models-Hugging_Face-334155?style=flat-square&logo=huggingface&logoColor=FFD21E)](https://huggingface.co/emb-ai/traffic-rule-bench-models)
+![Paper](https://img.shields.io/badge/Paper-arXiv-B31B1B?style=flat-square&logo=arxiv&logoColor=white)
+![Project](https://img.shields.io/badge/Project-Website-334155?style=flat-square&logo=githubpages&logoColor=white)
+![Dataset](https://img.shields.io/badge/Dataset-Hugging_Face-334155?style=flat-square&logo=huggingface&logoColor=FFD21E)
+![Models](https://img.shields.io/badge/Models-Hugging_Face-334155?style=flat-square&logo=huggingface&logoColor=FFD21E)
 
-</div>
 
-<br>
 
-<p>
-  Current planners violate traffic signs.
-  <strong>High driving scores hide illegal behavior.</strong>
-</p>
-
-<table>
-  <tr>
-    <td align="center" width="33%">
-      <img src="assets/rollouts/yield_carl.gif" alt="CaRL yield rollout" width="100%"/><br/>
-      <em>CaRL [CoRL 2025]</em>
-    </td>
-    <td align="center" width="33%">
-      <img src="assets/rollouts/crosswalk_plant2.gif" alt="PlanT-2 crosswalk rollout" width="100%"/><br/>
-      <em>PlanT 2.0 [arXiv 2025]</em>
-    </td>
-    <td align="center" width="33%">
-      <img src="assets/rollouts/ppo_dir_right.gif" alt="PPO direction-right rollout" width="100%"/><br/>
-      <em>PPO [MetaDrive, TPAMI 2022]</em>
-    </td>
-  </tr>
-</table>
-
-<h2>
-  <img src="assets/signs/main_road.png" alt="" height="23"/>
-  News
-</h2>
+## ![](assets/signs/detour_right.png) News
 
 - **[2025]** Our paper is now available on arXiv! Check out the [video demo](https://emb-ai.github.io/traffic-sign-bench/).
 
 
 
-## Key result
+## ![](assets/signs/main_road.png) Key Results
 
-Across the released held-out split, standard planners achieve only **2.9–9.0%
-overall SCD**. Rule-supervised fine-tuning raises PlanT-2 from **5.9% to 72.3%**
-without replacing its backbone.
-
-
-| Planner        | Driving Score ↑ | Destination ↑ | Collision ↓ | Overall SCD ↑ |
-| -------------- | --------------- | ------------- | ----------- | ------------- |
-| IDM            | 35.7            | 66.4%         | 21.0%       | 7.2%          |
-| PPO            | 35.6            | 67.9%         | 27.5%       | 3.2%          |
-| CaRL           | 39.6            | 73.7%         | 21.0%       | 2.9%          |
-| PlanT-2        | 28.6            | 56.1%         | 43.3%       | 5.9%          |
-| **PlanT-2-FT** | **74.2**        | **74.8%**     | **12.0%**   | **72.3%**     |
+On the held-out split, current planners achieve only **2.9–9.0% SCD**
+(Sign-Compliant Destination: obey the sign *and* reach the goal).
+High driving scores do not imply rule compliance.
 
 
-Held-out test split, 5,800 episodes. Conventional metrics are episode-weighted; SCD is macro-averaged over scenario types. Privileged policies that read the target rule directly are upper references and are not included in this baseline table.
-
-Two observations motivate the benchmark:
-
-1. **Standard driving metrics are not compliance proxies.** A planner can improve
-  route completion without learning the active rule.
-2. **The fine-tuning gain is sign-conditioned.** Removing sign identity from the
-  same checkpoint drops SCD from 72.8% to 15.4%.
-
-See the [video demonstrations](https://emb-ai.github.io/traffic-sign-bench/) for
-matched baseline and rule-compliant rollouts on the same scenes and routes.
-
-## Benchmark at a glance
-
-The 34 implemented signs cover four capabilities:
+|                                                                          |                                                                                             |                                                                                                 |
+| ------------------------------------------------------------------------ | ------------------------------------------------------------------------------------------- | ----------------------------------------------------------------------------------------------- |
+| ![CaRL yield rollout](assets/rollouts/yield_carl.gif) *CaRL [CoRL 2025]* | ![PlanT-2 crosswalk rollout](assets/rollouts/crosswalk_plant2.gif) *PlanT 2.0 [arXiv 2025]* | ![PPO direction-right rollout](assets/rollouts/ppo_dir_right.gif) *PPO [MetaDrive, TPAMI 2022]* |
 
 
-| Group         | What it tests                                              | Examples                                        |
-| ------------- | ---------------------------------------------------------- | ----------------------------------------------- |
-| **Priority**  | Right-of-way with conflicting vehicles and pedestrians     | yield, stop, roundabout, crosswalk              |
-| **Speed**     | Longitudinal control under local and zone-wide constraints | maximum, minimum, residential and zone limits   |
-| **Obstacles** | Safe navigation around inaccessible space                  | blocked roads and mandatory passing sides       |
-| **Routing**   | Re-planning under prohibited segments and manoeuvres       | no entry, no turn, mandatory direction, one-way |
+Rule-supervised fine-tuning raises PlanT-2 from **5.9% to 72.3%** without replacing its backbone.
 
 
-Each map is expanded across route, spawn, speed, traffic-density, and actor-dynamics
-variations calibrated from nuPlan. Maps are split by OSM identity before scenario
-generation, so the same street cannot appear in both training and test sets.
+<table>
+  <tr>
+    <td align="center"><b>PlanT-2<sub>baseline</sub></b></td>
+    <td align="center"><b>PlanT-2-FT<sub>rule-supervised</sub></b></td>
+  </tr>
+  <tr>
+    <td align="center"><img src="assets/rollouts/plant2/direction_s_l/plant2.gif" alt="PlanT-2 baseline" width="100%"/></td>
+    <td align="center"><img src="assets/rollouts/plant2/direction_s_l/plant2_ft_n2e8.gif" alt="PlanT-2-FT rule-supervised" width="100%"/></td>
+  </tr>
+  <tr>
+    <td align="center"><em>takes the prohibited branch</em></td>
+    <td align="center"><em>reroutes</em></td>
+  </tr>
+</table>
 
-For the complete sign registry and family-specific construction logic, see
-`[traffic_bench/eval/signs/](traffic_bench/eval/signs/README.md)`.
 
-## Quick start
+| Planner        | Driving Score ↑ | Destination ↑ | Collision ↓ | SCD ↑     |
+| -------------- | --------------- | ------------- | ----------- | --------- |
+| IDM            | 35.7            | 66.4%         | 21.0%       | 7.2%      |
+| PPO            | 35.6            | 67.9%         | 27.5%       | 3.2%      |
+| CaRL           | 39.6            | 73.7%         | 21.0%       | 2.9%      |
+| PlanT-2        | 28.6            | 56.1%         | 43.3%       | 5.9%      |
+| **PlanT-2-FT** | **74.2**        | **74.8%**     | **12.0%**   | **72.3%** |
+
+
+Held-out test split, 5,800 episodes. Conventional metrics are episode-weighted; SCD is macro-averaged over scenario types. Privileged policies that read the target rule directly are upper references and are not included in this baseline table (you can find them in the paper).
+
+## ![](assets/signs/yield.png) Quick start
 
 This smoke test runs one CPU-only IDM episode on a yield-sign scene. It requires no
 GPU and no model checkpoint.
-
-### Requirements
-
-- Linux
-- Git with submodule support
-- Python 3.10 (recommended)
-- Conda or another isolated Python environment
-
-
 
 ### 1. Clone and install
 
@@ -141,8 +89,6 @@ If the repository was cloned without submodules:
 ```bash
 git submodule update --init --recursive
 ```
-
-
 
 ### 2. Download a small scene subset
 
@@ -184,22 +130,10 @@ data/runs/yield/debug/<timestamp>/
 To render a debug GIF, rerun with `gif.enabled=true`. Headless rendering requires
 an offscreen OpenGL context; evaluation itself does not.
 
-**Common setup problems**
-
-
-| Symptom                                | Fix                                                                                            |
-| -------------------------------------- | ---------------------------------------------------------------------------------------------- |
-| `third_party/metadrive` is empty       | Run `git submodule update --init --recursive`.                                                 |
-| `SUMO_HOME` or `netconvert` is missing | Activate the environment where `eclipse-sumo` was installed and verify `netconvert --version`. |
-| `hf: command not found`                | Upgrade with `pip install -U huggingface_hub`; older releases use `huggingface-cli download`.  |
-| ALSA warnings on a headless machine    | They are harmless; use `SDL_AUDIODRIVER=dummy` if needed.                                      |
-| GIF rendering fails                    | Keep `gif.enabled=false` or configure offscreen OpenGL/EGL for Panda3D.                        |
-
-
 For every CLI option, split semantics, augmentation controls, and recovery
 instructions, read the **[evaluation guide](traffic_bench/eval/README.md)**.
 
-## Full evaluation
+## ![](assets/signs/roundabout.png) Full evaluation
 
 Evaluation has three explicit stages:
 
@@ -238,15 +172,13 @@ python tools/eval_progress.py --watch 30
 
 
 
-## Planners and checkpoints
+## ![](assets/signs/stop.png) Planners and checkpoints
 
 
 | `policy=`                | Planner       | Rule access        | Checkpoint            |
 | ------------------------ | ------------- | ------------------ | --------------------- |
-| `idm`                    | CurveAwareIDM | none               | not required          |
-| `idm_rule`               | CurveAwareIDM | explicit           | not required          |
-| `ppo_lidar`              | PPO           | none               | bundled configuration |
-| `ppo_rule`               | PPO           | explicit           | bundled configuration |
+| `idm` / `idm_rule`       | CurveAwareIDM | none / explicit    | not required          |
+| `ppo_lidar` / `ppo_rule` | PPO           | none / explicit    | bundled configuration |
 | `carl` / `carl_rule`     | CaRL          | none / explicit    | downloaded            |
 | `plant2` / `plant2_rule` | PlanT-2       | none / explicit    | downloaded            |
 | `plant2_ft`              | PlanT-2-FT    | learned from signs | downloaded            |
@@ -259,37 +191,55 @@ hf download emb-ai/traffic-rule-bench-models --local-dir checkpoints
 ```
 
 Privileged `*_rule` planners read the active rule directly. They are useful as
-oracle experts and upper references, but they are not deployable baselines.
-The CPU-only IDM smoke test uses the base environment above; neural planners may
-also require their upstream
-[CaRL](https://github.com/autonomousvision/CaRL) or
-[PlanT-2](https://github.com/emb-ai/plant2) environment.
-
-## Training and data pipelines
-
-The top-level README intentionally keeps advanced workflows short. Their dedicated
-guides contain the required environments, commands, path conventions, and failure
-modes:
-
-- **Evaluate planners:** `[traffic_bench/eval/README.md](traffic_bench/eval/README.md)`
-- **Understand rule checkers:** `[traffic_bench/signs/README.md](traffic_bench/signs/README.md)`
-- **Inspect scenario families:** `[traffic_bench/eval/signs/README.md](traffic_bench/eval/signs/README.md)`
-- **Generate scenes from OSM:** `[traffic_bench/scene_collection/README.md](traffic_bench/scene_collection/README.md)`
-- **Collect and select oracle experts:** `[traffic_bench/oracle/README.md](traffic_bench/oracle/README.md)`
-- **Replay experts into PlanT-2 frames:** `[finetune/README.md](finetune/README.md)`
-- **Fine-tune PlanT-2:** `[scripts/plant2_ft_pipeline/README.md](scripts/plant2_ft_pipeline/README.md)`
-- **Run metrics and plots:** `[traffic_bench/eval/metrics/README.md](traffic_bench/eval/metrics/README.md)`
+oracle experts and upper references.
 
 
+## ![](assets/signs/direction_right.png) Sign registry
 
-## Repository structure
+25 scenario types ship as ready-to-run eval profiles. Use the `sign=` value with every CLI
+verb — `manifest`, `run`, and `metrics` all accept it, as does `sign=all`.
+
+<details>
+<summary><b>All 25 sign IDs</b></summary>
+<br>
+
+| `sign=` | Code | Group | Family |
+| --- | --- | --- | --- |
+| `main_road` | 2.1 | Priority | [junction](traffic_bench/eval/signs/junction/README.md) |
+| `secondary` | 2.3 | Priority | [junction](traffic_bench/eval/signs/junction/README.md) |
+| `yield` | 2.4 | Priority | [junction](traffic_bench/eval/signs/junction/README.md) |
+| `stop` | 2.5 | Priority | [junction](traffic_bench/eval/signs/junction/README.md) |
+| `roundabout` | 4.3 | Priority | [roundabout](traffic_bench/eval/signs/roundabout/README.md) |
+| `crosswalk` | 5.19 | Priority | [crosswalk](traffic_bench/eval/signs/crosswalk/README.md) |
+| `speed_limit` | 3.24 | Speed | [speed](traffic_bench/eval/signs/speed/README.md) |
+| `min_speed` | 4.6 | Speed | [speed](traffic_bench/eval/signs/speed/README.md) |
+| `residential_zone` | 5.21 | Speed | [speed](traffic_bench/eval/signs/speed/README.md) |
+| `zone_speed_limit` | 5.31 | Speed | [speed](traffic_bench/eval/signs/speed/README.md) |
+| `blocked_road` | 3.2 | Obstacles | [blocked](traffic_bench/eval/signs/blocked/README.md) |
+| `detour/right` | 4.2.1 | Obstacles | [detour](traffic_bench/eval/signs/detour/README.md) |
+| `detour/left` | 4.2.2 | Obstacles | [detour](traffic_bench/eval/signs/detour/README.md) |
+| `detour/either` | 4.2.3 | Obstacles | [detour](traffic_bench/eval/signs/detour/README.md) |
+| `no_entry` | 3.1 | Routing | [dual_path](traffic_bench/eval/signs/dual_path/README.md) |
+| `no_turn/right` | 3.18.1 | Routing | [dual_path](traffic_bench/eval/signs/dual_path/README.md) |
+| `no_turn/left` | 3.18.2 | Routing | [dual_path](traffic_bench/eval/signs/dual_path/README.md) |
+| `direction/straight` | 4.1.1 | Routing | [dual_path](traffic_bench/eval/signs/dual_path/README.md) |
+| `direction/right` | 4.1.2 | Routing | [dual_path](traffic_bench/eval/signs/dual_path/README.md) |
+| `direction/left` | 4.1.3 | Routing | [dual_path](traffic_bench/eval/signs/dual_path/README.md) |
+| `direction/straight_right` | 4.1.4 | Routing | [dual_path](traffic_bench/eval/signs/dual_path/README.md) |
+| `direction/straight_left` | 4.1.5 | Routing | [dual_path](traffic_bench/eval/signs/dual_path/README.md) |
+| `direction/left_right` | 4.1.6 | Routing | [dual_path](traffic_bench/eval/signs/dual_path/README.md) |
+| `one_way/right` | 5.7.1 | Routing | [dual_path](traffic_bench/eval/signs/dual_path/README.md) |
+| `one_way/left` | 5.7.2 | Routing | [dual_path](traffic_bench/eval/signs/dual_path/README.md) |
+
+
+## ![](assets/signs/min_speed.png) Repository map
 
 ```text
 traffic_bench/
 ├── signs/               # sign plates, active zones, violation predicates
 ├── envs/                # SUMO/MetaDrive environment and traffic actors
 ├── agents/              # planners and rule-aware wrappers
-├── eval/                # manifest → rollout → metrics
+├── eval/                # manifest → trajectory → metrics
 ├── oracle/              # expert collection, selection, and reports
 └── scene_collection/    # OSM harvesting and scenario materialization
 finetune/                # expert replay → PlanT-2 training frames
@@ -303,26 +253,27 @@ checkpoints/             # downloaded planner weights (gitignored)
 
 
 
-## Citation
+## ![](assets/signs/secondary_road.png) Citation
 
 If TrafficSignBench is useful in your research, please cite:
 
 ```bibtex
 @misc{trafficsignbench2026,
-  title        = {TrafficSignBench: Evaluating Traffic Rule Compliance in Autonomous Driving},
-  year         = {2026},
+  title     = {TrafficSignBench: Evaluating Traffic Rule Compliance in Autonomous Driving},
+  year      = {2026},
   publisher = {\url{https://github.com/emb-ai/traffic-sign-bench}},
+  note      = {Code, scenes, and models}
 }
 ```
 
 
 
-## Acknowledgements
+## ![](assets/signs/one_way.png) Acknowledgements
 
-TrafficSignBench builds on  
-[MetaDrive](https://github.com/metadriverse/metadrive),  
-[SUMO](https://eclipse.dev/sumo/),  
-[CaRL](https://github.com/autonomousvision/CaRL), and  
-[PlanT-2](https://github.com/emb-ai/plant2). Maps are derived from  
-[OpenStreetMap](https://www.openstreetmap.org/) contributors, and scenario  
-distributions are calibrated with [nuPlan](https://www.nuscenes.org/nuplan).
+Built on [MetaDrive](https://github.com/metadriverse/metadrive) and
+[SUMO](https://eclipse.dev/sumo/), with planners from
+[CaRL](https://github.com/autonomousvision/CaRL) and
+[PlanT-2](https://github.com/emb-ai/plant2). Maps come from
+[OpenStreetMap](https://www.openstreetmap.org/) contributors; scenario distributions are
+calibrated on [nuPlan](https://www.nuscenes.org/nuplan). 
+
