@@ -23,6 +23,7 @@ dist/
 *.bak
 *.swp
 *.json
+!icra-video/
 *.pkl
 *lock
 *.lock

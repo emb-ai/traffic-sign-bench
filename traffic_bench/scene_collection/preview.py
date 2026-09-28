@@ -273,6 +273,8 @@ def render_network(
     compliant_edge_ids: Optional[Sequence[str]] = None,
     legend: bool = True,
     crosswalk_xy: tuple[float, float] | None = None,
+    show_spawn_marker: bool = True,
+    view_bounds: tuple[float, float, float, float] | None = None,
 ):
     """Render the road network to an image.
 
@@ -415,7 +417,7 @@ def render_network(
             markeredgewidth=1.5,
             zorder=10,
         )
-    elif baseline_edge_ids or compliant_edge_ids:
+    elif show_spawn_marker and (baseline_edge_ids or compliant_edge_ids):
         spawn_ids = baseline_edge_ids or compliant_edge_ids or []
         if spawn_ids:
             spawn_poly = polyline_for_edge_ids(edges, [spawn_ids[0]])
@@ -443,7 +445,12 @@ def render_network(
             edgecolor="#666666",
         )
 
-    ax.autoscale()
+    if view_bounds is None:
+        ax.autoscale()
+    else:
+        xmin, xmax, ymin, ymax = view_bounds
+        ax.set_xlim(xmin, xmax)
+        ax.set_ylim(ymin, ymax)
     ax.set_aspect("equal")
     ax.axis("off")
 
