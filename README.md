@@ -30,6 +30,7 @@ Rule-Centric Closed-Loop Evaluation of Traffic-Sign Compliance in Autonomous Dri
 - **[2025]** Our paper is now available on arXiv! Check out the [video demo](https://emb-ai.github.io/traffic-sign-bench/).
 
 
+<br>
 
 ## <img src="assets/signs/main_road.png" alt="" height="23"/> Key Results
 
@@ -42,9 +43,7 @@ High driving scores do not imply rule compliance.
   <img src="assets/rollouts/crosswalk_plant2.gif" alt="PlanT-2 crosswalk rollout" width="32%"/>
   <img src="assets/rollouts/ppo_dir_right.gif" alt="PPO direction-right rollout" width="32%"/>
 </p>
-<p align="center">
-  <em>CaRL, PlanT-2, and PPO still break yield, crosswalk, and mandatory-direction rules.</em>
-</p>
+<em>CaRL, PlanT-2, and PPO still break yield, crosswalk, and mandatory-direction rules.</em>
 
 <br>
 
@@ -57,16 +56,12 @@ Rule-supervised fine-tuning raises PlanT-2 from **5.9% to 72.3%** without replac
   <img src="assets/rollouts/plant2/speed/plant2.gif" alt="PlanT-2 speed baseline" width="23%"/>
   <img src="assets/rollouts/plant2/speed/plant2_ft.gif" alt="PlanT-2-FT speed" width="23%"/>
 </p>
-
-<p align="center">
-  <em>
-    <img src="assets/signs/direction_straight_left.png" alt="" height="18"/>
-    PlanT-2 takes the prohibited branch; PlanT-2-FT reroutes.
-    &nbsp;·&nbsp;
-    <img src="assets/signs/speed_limit.png" alt="" height="18"/>
-    PlanT-2 ignores the speed limit; PlanT-2-FT slows down.
-  </em>
-</p>
+<em>
+  <img src="assets/signs/direction_straight_left.png" alt="" height="18"/>
+  PlanT-2 takes the prohibited branch; PlanT-2-FT reroutes.
+  <img src="assets/signs/speed_limit.png" alt="" height="18"/>
+  PlanT-2 ignores the speed limit; PlanT-2-FT slows down.
+</em>
 
 | Planner        | Driving Score ↑ | Destination ↑ | Collision ↓ | SCD ↑     |
 | -------------- | --------------- | ------------- | ----------- | --------- |
