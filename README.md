@@ -1,33 +1,50 @@
-![TrafficSignBench overview](assets/hero.gif)
+<p align="center">
+  <img src="assets/hero.gif" alt="TrafficSignBench overview" width="100%"/>
+</p>
 
+<div align="center">
 
-
-# ![](assets/signs/main_road.png)![](assets/signs/stop.png)![](assets/signs/roundabout.png)  TrafficSignBench  ![](assets/signs/speed_limit.png)![](assets/signs/no_entry.png)![](assets/signs/direction_right.png)
+<h1>
+  <img src="assets/signs/main_road.png" alt="" height="36"/>
+  <img src="assets/signs/stop.png" alt="" height="36"/>
+  <img src="assets/signs/roundabout.png" alt="" height="36"/>
+  &nbsp;TrafficSignBench&nbsp;
+  <img src="assets/signs/speed_limit.png" alt="" height="36"/>
+  <img src="assets/signs/no_entry.png" alt="" height="36"/>
+  <img src="assets/signs/direction_right.png" alt="" height="36"/>
+</h1>
 
 Rule-Centric Closed-Loop Evaluation of Traffic-Sign Compliance in Autonomous Driving
 
-![Paper](https://img.shields.io/badge/Paper-arXiv-B31B1B?style=flat-square&logo=arxiv&logoColor=white)
-![Project](https://img.shields.io/badge/Project-Website-334155?style=flat-square&logo=githubpages&logoColor=white)
-![Dataset](https://img.shields.io/badge/Dataset-Hugging_Face-334155?style=flat-square&logo=huggingface&logoColor=FFD21E)
-![Models](https://img.shields.io/badge/Models-Hugging_Face-334155?style=flat-square&logo=huggingface&logoColor=FFD21E)
+[![Paper](https://img.shields.io/badge/Paper-arXiv-B31B1B?style=flat-square&logo=arxiv&logoColor=white)](https://emb-ai.github.io/traffic-sign-bench/)
+[![Project](https://img.shields.io/badge/Project-Website-334155?style=flat-square&logo=githubpages&logoColor=white)](https://emb-ai.github.io/traffic-sign-bench/)
+[![Dataset](https://img.shields.io/badge/Dataset-Hugging_Face-334155?style=flat-square&logo=huggingface&logoColor=FFD21E)](https://huggingface.co/datasets/emb-ai/traffic-sign-bench)
+[![Models](https://img.shields.io/badge/Models-Hugging_Face-334155?style=flat-square&logo=huggingface&logoColor=FFD21E)](https://huggingface.co/emb-ai/traffic-rule-bench-models)
+
+</div>
 
 
 
-## ![](assets/signs/detour_right.png) News
+## <img src="assets/signs/detour_right.png" alt="" height="23"/> News
 
 - **[2025]** Our paper is now available on arXiv! Check out the [video demo](https://emb-ai.github.io/traffic-sign-bench/).
 
 
 
-## ![](assets/signs/main_road.png) Key Results
+## <img src="assets/signs/main_road.png" alt="" height="23"/> Key Results
 
 On the held-out split, current planners achieve only **2.9–9.0% SCD**
 (Sign-Compliant Destination: obey the sign *and* reach the goal).
 High driving scores do not imply rule compliance.
 
-![CaRL yield rollout](assets/rollouts/yield_carl.gif)![PlanT-2 crosswalk rollout](assets/rollouts/crosswalk_plant2.gif)![PPO direction-right rollout](assets/rollouts/ppo_dir_right.gif)
-
-*CaRL, PlanT-2, and PPO still break yield, crosswalk, and mandatory-direction rules.*
+<p align="center">
+  <img src="assets/rollouts/yield_carl.gif" alt="CaRL yield rollout" width="32%"/>
+  <img src="assets/rollouts/crosswalk_plant2.gif" alt="PlanT-2 crosswalk rollout" width="32%"/>
+  <img src="assets/rollouts/ppo_dir_right.gif" alt="PPO direction-right rollout" width="32%"/>
+</p>
+<p align="center">
+  <em>CaRL, PlanT-2, and PPO still break yield, crosswalk, and mandatory-direction rules.</em>
+</p>
 
 <br>
 
@@ -62,7 +79,7 @@ Rule-supervised fine-tuning raises PlanT-2 from **5.9% to 72.3%** without replac
 
 Held-out test split, 5,800 episodes. Conventional metrics are episode-weighted; SCD is macro-averaged over scenario types. Privileged policies that read the target rule directly are upper references and are not included in this baseline table (you can find them in the paper).
 
-## ![](assets/signs/yield.png) Quick start
+## <img src="assets/signs/yield.png" alt="" height="23"/> Quick start
 
 This smoke test runs one CPU-only IDM episode on a yield-sign scene. It requires no
 GPU and no model checkpoint.
@@ -136,7 +153,7 @@ an offscreen OpenGL context; evaluation itself does not.
 For every CLI option, split semantics, augmentation controls, and recovery
 instructions, read the **[evaluation guide](traffic_bench/eval/README.md)**.
 
-## ![](assets/signs/roundabout.png) Full evaluation
+## <img src="assets/signs/roundabout.png" alt="" height="23"/> Full evaluation
 
 Evaluation has three explicit stages:
 
@@ -175,7 +192,7 @@ python tools/eval_progress.py --watch 30
 
 
 
-## ![](assets/signs/stop.png) Planners and checkpoints
+## <img src="assets/signs/stop.png" alt="" height="23"/> Planners and checkpoints
 
 
 | `policy=`                | Planner       | Rule access        | Checkpoint            |
@@ -196,7 +213,7 @@ hf download emb-ai/traffic-rule-bench-models --local-dir checkpoints
 Privileged `*_rule` planners read the active rule directly. They are useful as
 oracle experts and upper references.
 
-## ![](assets/signs/direction_right.png) Sign registry
+## <img src="assets/signs/direction_right.png" alt="" height="23"/> Sign registry
 
 25 scenario types ship as ready-to-run eval profiles. Use the `sign=` value with every CLI
 verb — `manifest`, `run`, and `metrics` all accept it, as does `sign=all`.
@@ -236,7 +253,7 @@ verb — `manifest`, `run`, and `metrics` all accept it, as does `sign=all`.
 
 
 
-## ![](assets/signs/min_speed.png) Repository map
+## <img src="assets/signs/min_speed.png" alt="" height="23"/> Repository map
 
 ```text
 traffic_bench/
@@ -257,7 +274,7 @@ checkpoints/             # downloaded planner weights (gitignored)
 
 
 
-## ![](assets/signs/secondary_road.png) Citation
+## <img src="assets/signs/secondary_road.png" alt="" height="23"/> Citation
 
 If TrafficSignBench is useful in your research, please cite:
 
@@ -272,7 +289,7 @@ If TrafficSignBench is useful in your research, please cite:
 
 
 
-## ![](assets/signs/one_way.png) Acknowledgements
+## <img src="assets/signs/one_way.png" alt="" height="23"/> Acknowledgements
 
 Built on [MetaDrive](https://github.com/metadriverse/metadrive) and
 [SUMO](https://eclipse.dev/sumo/), with planners from
