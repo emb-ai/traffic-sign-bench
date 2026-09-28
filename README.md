@@ -41,11 +41,11 @@ High driving scores do not imply rule compliance.
 <p align="center">
   <img src="assets/rollouts/yield_carl.gif" alt="CaRL yield rollout" width="32%"/>
   <img src="assets/rollouts/crosswalk_plant2.gif" alt="PlanT-2 crosswalk rollout" width="32%"/>
-  <img src="assets/rollouts/ppo_dir_right.gif" alt="PPO direction-right rollout" width="32%"/>
+  <img src="assets/rollouts/ppo_dir_right.gif" alt="PPO direction-right rollout" width="32%"/><br/>
+  <em>CaRL, PlanT-2, and PPO still break yield, crosswalk, and mandatory-direction rules.</em>
 </p>
-<em>CaRL, PlanT-2, and PPO still break yield, crosswalk, and mandatory-direction rules.</em>
 
-<br>
+<br/><br/>
 
 Rule-supervised fine-tuning raises PlanT-2 from **5.9% to 72.3%** without replacing its backbone.
 
@@ -54,14 +54,15 @@ Rule-supervised fine-tuning raises PlanT-2 from **5.9% to 72.3%** without replac
   <img src="assets/rollouts/plant2/direction_s_l/plant2_ft_n2e8.gif" alt="PlanT-2-FT direction" width="23%"/>
   &nbsp;&nbsp;&nbsp;&nbsp;
   <img src="assets/rollouts/plant2/speed/plant2.gif" alt="PlanT-2 speed baseline" width="23%"/>
-  <img src="assets/rollouts/plant2/speed/plant2_ft.gif" alt="PlanT-2-FT speed" width="23%"/>
+  <img src="assets/rollouts/plant2/speed/plant2_ft.gif" alt="PlanT-2-FT speed" width="23%"/><br/>
+  <em>
+    <img src="assets/signs/direction_straight_left.png" alt="" height="18"/>
+    PlanT-2 takes the prohibited branch; PlanT-2-FT reroutes.
+    &nbsp;·&nbsp;
+    <img src="assets/signs/speed_limit.png" alt="" height="18"/>
+    PlanT-2 ignores the speed limit; PlanT-2-FT slows down.
+  </em>
 </p>
-<em>
-  <img src="assets/signs/direction_straight_left.png" alt="" height="18"/>
-  PlanT-2 takes the prohibited branch; PlanT-2-FT reroutes.
-  <img src="assets/signs/speed_limit.png" alt="" height="18"/>
-  PlanT-2 ignores the speed limit; PlanT-2-FT slows down.
-</em>
 
 | Planner        | Driving Score ↑ | Destination ↑ | Collision ↓ | SCD ↑     |
 | -------------- | --------------- | ------------- | ----------- | --------- |
