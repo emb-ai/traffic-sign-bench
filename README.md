@@ -1,56 +1,29 @@
-<div align="center">
-
-<p>
-  <img src="assets/signs/main_road.png" width="42" alt="Main road sign">
-  <img src="assets/signs/yield.png" width="42" alt="Yield sign">
-  <img src="assets/signs/stop.png" width="42" alt="Stop sign">
-  <img src="assets/signs/roundabout.png" width="42" alt="Roundabout sign">
-  <img src="assets/signs/speed_limit.png" width="42" alt="Speed limit sign">
-  <img src="assets/signs/no_entry.png" width="42" alt="No entry sign">
-  <img src="assets/signs/direction_right.png" width="42" alt="Right turn only sign">
+<p align="center">
+  <img src="assets/hero.gif" alt="TrafficSignBench overview" width="100%"/>
 </p>
 
-# TrafficSignBench
+<div align="center">
+
+<h1>
+  <img src="assets/signs/main_road.png" alt="" height="13"/>
+  TrafficSignBench
+</h1>
 
 Rule-Centric Closed-Loop Evaluation of Traffic-Sign Compliance in Autonomous Driving
 
-![arXiv](https://img.shields.io/badge/arXiv-TODO-B31B1B?style=for-the-badge&logo=arxiv&logoColor=fff)![Project page](https://img.shields.io/badge/Project_page-0F172A?style=for-the-badge&logo=githubpages&logoColor=fff)![Dataset](https://img.shields.io/badge/Dataset-FFD21E?style=for-the-badge&logo=huggingface&logoColor=000)![Models](https://img.shields.io/badge/Models-FFD21E?style=for-the-badge&logo=huggingface&logoColor=000)
-
-<p align="center"><b>Same scene. Same route. Different rule compliance.</b></p>
-
-<table>
-  <thead>
-    <tr>
-      <th width="13%"></th>
-      <th width="29%" align="center"><img src="assets/signs/stop.png" width="40" alt="Stop sign"><br>Stop <sub>2.5</sub></th>
-      <th width="29%" align="center"><img src="assets/signs/detour_right.png" width="40" alt="Pass right sign"><br>Pass right <sub>4.2.1</sub></th>
-      <th width="29%" align="center"><img src="assets/signs/direction_left_right.png" width="40" alt="Left or right sign"><br>Left or right <sub>4.1.6</sub></th>
-    </tr>
-  </thead>
-  <tbody>
-    <tr>
-      <th align="center">PlanT-2<br><sub>baseline · violation</sub></th>
-      <td align="center"><img src="assets/rollouts/stop_base.gif" width="280" alt="PlanT-2 rolls through the stop line"></td>
-      <td align="center"><img src="assets/rollouts/detour_base.gif" width="280" alt="PlanT-2 passes the obstacle on the forbidden side"></td>
-      <td align="center"><img src="assets/rollouts/reroute_base.gif" width="280" alt="PlanT-2 takes the prohibited branch"></td>
-    </tr>
-    <tr>
-      <th align="center">PlanT-2-FT<br><sub>rule-supervised · compliant</sub></th>
-      <td align="center"><img src="assets/rollouts/stop_ft.gif" width="280" alt="PlanT-2-FT stops at the line, then proceeds"></td>
-      <td align="center"><img src="assets/rollouts/detour_ft.gif" width="280" alt="PlanT-2-FT passes the obstacle on the prescribed side"></td>
-      <td align="center"><img src="assets/rollouts/reroute_ft.gif" width="280" alt="PlanT-2-FT reroutes onto the legal branch"></td>
-    </tr>
-  </tbody>
-</table>
-
+![Paper](https://img.shields.io/badge/Paper-arXiv-B31B1B?style=flat-square&logo=arxiv&logoColor=white)
+![Project](https://img.shields.io/badge/Project-Website-334155?style=flat-square&logo=githubpages&logoColor=white)
+![Dataset](https://img.shields.io/badge/Dataset-Hugging_Face-334155?style=flat-square&logo=huggingface&logoColor=FFD21E)
+![Models](https://img.shields.io/badge/Models-Hugging_Face-334155?style=flat-square&logo=huggingface&logoColor=FFD21E)
 
 </div>
 
+<h2>
+  <img src="assets/signs/main_road.png" alt="" height="13"/>
+  News
+</h2>
 
-## News
-
-- **[2025]** Our paper is now available on arXiv! [Check out the video demo →](https://emb-ai.github.io/traffic-sign-bench/)
-
+- **[2025]** Our paper is now available on arXiv! Check out the [video demo](https://emb-ai.github.io/traffic-sign-bench/).
 
 
 
