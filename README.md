@@ -219,6 +219,8 @@ hf download emb-ai/traffic-rule-bench-models --local-dir checkpoints
 Privileged `*_rule` planners read the active rule directly. They are useful as
 oracle experts and upper references.
 
+<br/>
+
 ## <img src="assets/signs/direction_right.png" alt="" height="23"/> Sign registry
 
 25 scenario types ship as ready-to-run eval profiles. Use the `sign=` value with every CLI
