@@ -19,22 +19,22 @@ scene; absolute scene windows match `src/config/timing.ts`.
 | 0:52–1:01       | 0.4       | Across countries, rule meaning overlaps by ninety-two percent.                                                                            |
 |                 | 5.0       | Change the appearance; reuse the same checker.                                                                                            |
 | 1:01–1:20       | 0.3       | Every test begins with real road geometry: twenty-six thousand Moscow road fragments.                                                     |
-|                 | 5.9       | We preserve three structural families: junctions, dual-path maps, and corridors.                                                          |
-|                 | 11.9      | A sign turns each fragment into a simulator scene—and an executable closed-loop rule test.                                                |
+|                 | 6.1       | We preserve three structural families: junctions, dual-path maps, and corridors.                                                          |
+|                 | 12.0      | A sign turns each fragment into a simulator scene—and an executable closed-loop rule test.                                                |
 | 1:20–1:36       | 0.3       | For each map, we sample ten controlled closed-loop variants.                                                                              |
 |                 | 4.9       | We vary spawn lane, route, speed, traffic density, and background dynamics.                                                               |
-|                 | 10.3      | Ten variants per map yield twenty-nine thousand scenarios—and robust evaluation.                                                          |
-| 1:36–1:48       | 0.4       | We next evaluate standard planners. The metric is SCD: obey the sign and reach the destination.                                           |
-|                 | 7.7       | Standard planners score only two point nine to nine percent.                                                                              |
-| 1:48–2:34       | 0.5       | To close the gap, PlanT-2 learns from privileged, rule-compliant experts.                                                                 |
+|                 | 10.6      | Ten variants per map yield twenty-nine thousand scenarios—and robust evaluation.                                                          |
+| 1:36–1:48       | 0.2       | We next evaluate standard planners. The metric is SCD: obey the sign and reach the destination.                                           |
+|                 | 7.8       | Standard planners score only two point nine to nine percent.                                                                              |
+| 1:48–2:34       | 0.3       | To close the gap, PlanT-2 learns from privileged, rule-compliant experts.                                                                 |
 |                 | 5.8       | Eight experts drive each scenario. Failed rollouts are discarded.                                                                         |
-|                 | 11.4      | We retain the top two successful trajectories by speed and comfort: thirty-six thousand eight hundred twenty-eight high-quality examples. |
-|                 | 19.0      | Each frame becomes input: objects, sign, route, and local map.                                                                            |
-|                 | 24.0      | Persistent sign-state and learned speed tokens carry the active rule and vehicle speed.                                                   |
-|                 | 29.2      | We train on expert path, waypoints, and speed, adding just zero point four percent new parameters.                                        |
+|                 | 11.7      | We retain the top two successful trajectories by speed and comfort: thirty-six thousand eight hundred twenty-eight high-quality examples. |
+|                 | 19.8      | Each frame becomes input: objects, sign, route, and local map.                                                                            |
+|                 | 25.0      | Persistent sign-state and learned speed tokens carry the active rule and vehicle speed.                                                   |
+|                 | 30.5      | We train on expert path, waypoints, and speed, adding just zero point four percent new parameters.                                        |
 |                 | 37.2      | On held-out tests, overall SCD rises from five point nine to seventy-two point three percent, with gains in every group.                  |
 | 2:34–2:56       | 0.4       | Therefore, this work shows that traffic-rule compliance must be tested explicitly.                                                        |
-|                 | 5.7       | TrafficSignBench does it at scale: thirty-four signs, twenty-nine thousand closed-loop scenarios.                                         |
+|                 | 6.0       | TrafficSignBench does it at scale: thirty-four signs, twenty-nine thousand closed-loop scenarios.                                         |
 |                 | 12.7      | Safe autonomous driving needs scores that catch rule compliance—not only the destination or comfort.                                      |
 | 2:56–2:59       | —         | Silent end card.                                                                                                                          |
 

@@ -102,10 +102,10 @@ async def main(scene_filter: str | None = None) -> None:
                 current_multiplier = 1 + rate_value(rate) / 100
                 required_multiplier = current_multiplier * duration / target * 1.03
                 required_rate = round((required_multiplier - 1) * 100)
-                if required_rate > 20:
+                if required_rate > 8:
                     raise RuntimeError(
                         f"{cue['id']} needs rate {required_rate:+d}%, "
-                        f"which is too fast for clear narration"
+                        f"which is too fast for calm narration"
                     )
                 rate = format_rate(required_rate)
             else:

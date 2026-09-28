@@ -83,18 +83,18 @@
       {
         "id": "s03_01",
         "from": 0.3,
-        "to": 5.7,
+        "to": 6.0,
         "text": "Every test begins with real road geometry: twenty-six thousand Moscow road fragments."
       },
       {
         "id": "s03_02",
-        "from": 5.9,
-        "to": 11.7,
+        "from": 6.1,
+        "to": 11.9,
         "text": "We preserve three structural families: junctions, dual-path maps, and corridors."
       },
       {
         "id": "s03_03",
-        "from": 11.9,
+        "from": 12.0,
         "to": 18.9,
         "text": "A sign turns each fragment into a simulator scene—and an executable closed-loop rule test."
       }
@@ -109,35 +109,35 @@
       {
         "id": "s16_02",
         "from": 4.9,
-        "to": 10.2,
+        "to": 10.5,
         "text": "We vary spawn lane, route, speed, traffic density, and background dynamics."
       },
       {
         "id": "s16_03",
-        "from": 10.3,
-        "to": 15.9,
+        "from": 10.6,
+        "to": 16.0,
         "text": "Ten variants per map yield twenty-nine thousand scenarios—and robust evaluation."
       }
     ],
     "s09_gap": [
       {
         "id": "s09_01",
-        "from": 0.4,
-        "to": 7.5,
+        "from": 0.2,
+        "to": 7.75,
         "text": "We next evaluate standard planners. The metric is SCD: obey the sign and reach the destination.",
         "tts": "We next evaluate standard planners. The metric is S C D: obey the sign and reach the destination."
       },
       {
         "id": "s09_02",
-        "from": 7.7,
-        "to": 11.9,
+        "from": 7.8,
+        "to": 12.0,
         "text": "Standard planners score only two point nine to nine percent."
       }
     ],
     "s10_architecture": [
       {
         "id": "s10_01",
-        "from": 0.5,
+        "from": 0.3,
         "to": 5.7,
         "text": "To close the gap, PlanT-2 learns from privileged, rule-compliant experts.",
         "tts": "To close the gap, Plan T Two learns from privileged, rule-compliant experts."
@@ -145,31 +145,31 @@
       {
         "id": "s10_02",
         "from": 5.8,
-        "to": 11.3,
+        "to": 11.6,
         "text": "Eight experts drive each scenario. Failed rollouts are discarded."
       },
       {
         "id": "s10_03",
-        "from": 11.4,
-        "to": 18.9,
+        "from": 11.7,
+        "to": 19.7,
         "text": "We retain the top two successful trajectories by speed and comfort: thirty-six thousand eight hundred twenty-eight high-quality examples."
       },
       {
         "id": "s10_04",
-        "from": 19.0,
-        "to": 23.8,
+        "from": 19.8,
+        "to": 24.9,
         "text": "Each frame becomes input: objects, sign, route, and local map."
       },
       {
         "id": "s10_05",
-        "from": 24.0,
-        "to": 29.0,
+        "from": 25.0,
+        "to": 30.4,
         "text": "Persistent sign-state and learned speed tokens carry the active rule and vehicle speed."
       },
       {
         "id": "s10_06",
-        "from": 29.2,
-        "to": 36.8,
+        "from": 30.5,
+        "to": 37.0,
         "text": "We train on expert path, waypoints, and speed, adding just zero point four percent new parameters."
       },
       {
@@ -184,12 +184,12 @@
       {
         "id": "s15_01",
         "from": 0.4,
-        "to": 5.5,
+        "to": 5.8,
         "text": "Therefore, this work shows that traffic-rule compliance must be tested explicitly."
       },
       {
         "id": "s15_02",
-        "from": 5.7,
+        "from": 6.0,
         "to": 12.5,
         "text": "TrafficSignBench does it at scale: thirty-four signs, twenty-nine thousand closed-loop scenarios.",
         "tts": "Traffic Sign Bench does it at scale: thirty-four signs, twenty-nine thousand closed-loop scenarios."
