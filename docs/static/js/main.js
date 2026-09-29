@@ -1,473 +1,506 @@
-/* ==========================================================================
-   TrafficRuleBench — rebuttal supplementary page logic
-   --------------------------------------------------------------------------
-   HOW TO ADD A GIF:
-     Drop a file into  docs/static/gifs/  named after the scenario's `gif`
-     field below (default: "<sign code>.gif", e.g. "3.24.gif").
-     The page probes each path; when the file exists, the card automatically
-     shows the animation instead of the "coming soon" placeholder.
+(() => {
+  "use strict";
 
-     Featured demo:      docs/static/gifs/hero.gif
-     Comparison pairs:   docs/static/gifs/pairs/<code>_violation.gif
-                         docs/static/gifs/pairs/<code>_compliant.gif
-   ========================================================================== */
+  const nav = document.querySelector(".nav");
+  const menuButton = document.querySelector(".nav__menu");
+  const mobileNav = document.querySelector(".mobile-nav");
 
-/* ------------------------- scenario data ------------------------- */
-/* 18 closed-loop testing scenarios of TrafficRuleBench.
-   sign:    icon shown in the card header (docs/static/images/signs/)
-   poster:  schematic shown until the GIF is added (docs/static/images/rules/)
-   gif:     expected GIF path (docs/static/gifs/)                        */
+  const updateNav = () => nav?.classList.toggle("is-scrolled", window.scrollY > 18);
+  updateNav();
+  window.addEventListener("scroll", updateNav, {passive: true});
 
-const SCENARIOS = [
-  // ---- Priority ----
-  {
-    code: "2.1–2.4", name: "Yield right-of-way", cat: "priority",
-    sign: "static/images/signs/2.4.png",
-    poster: "static/images/rules/2.4.png",
-    gif: "static/gifs/2.4.gif",
-    rule: "<strong>Ego</strong> must decelerate and yield to higher-priority traffic before proceeding (signs 2.1, 2.3.1–2.3.2, 2.4)."
-  },
-  {
-    code: "2.5", name: "Stop sign", cat: "priority",
-    sign: "static/images/signs/2.5.png",
-    poster: "static/images/rules/2.5.png",
-    gif: "static/gifs/2.5.gif",
-    rule: "<strong>Ego</strong> must come to a complete stop before proceeding through the intersection."
-  },
+  menuButton?.addEventListener("click", () => {
+    const open = menuButton.getAttribute("aria-expanded") === "true";
+    menuButton.setAttribute("aria-expanded", String(!open));
+    mobileNav.hidden = open;
+  });
 
-  // ---- Prohibitory ----
-  {
-    code: "3.1", name: "No entry", cat: "prohibitory",
-    sign: "static/images/signs/3.1.png",
-    poster: "static/images/rules/3.1.png",
-    gif: "static/gifs/3.1.gif",
-    rule: "<strong>Ego</strong> must not enter the restricted road segment beyond the sign."
-  },
-  {
-    code: "3.2", name: "Movement prohibited", cat: "prohibitory",
-    sign: "static/images/signs/3.2.png",
-    poster: "static/images/rules/3.2.png",
-    gif: "static/gifs/3.2.gif",
-    rule: "<strong>Ego</strong> must not proceed in the direction indicated by the sign."
-  },
-  {
-    code: "3.20 / 3.21", name: "No overtaking", cat: "prohibitory",
-    sign: "static/images/signs/3.20.png",
-    poster: "static/images/rules/3.20.png",
-    gif: "static/gifs/3.20.gif",
-    rule: "<strong>Ego</strong> must not overtake other vehicles within the restricted segment, until the end-of-zone sign."
-  },
-  {
-    code: "3.24 / 3.25", name: "Speed limit", cat: "prohibitory",
-    sign: "static/images/signs/3.24.png",
-    poster: "static/images/rules/3.24.png",
-    gif: "static/gifs/3.24.gif",
-    rule: "<strong>Ego</strong> must not exceed the maximum speed specified by the sign. Test scenes start above the limit, forcing the planner to slow down."
-  },
-  {
-    code: "3.27 / 3.31", name: "No stopping", cat: "prohibitory",
-    sign: "static/images/signs/3.27.png",
-    poster: "static/images/rules/3.27.png",
-    gif: "static/gifs/3.27.gif",
-    rule: "<strong>Ego</strong> must not stop within the restricted zone, until the end of all restrictions."
-  },
-
-  // ---- Mandatory ----
-  {
-    code: "4.2.1", name: "Pass right", cat: "mandatory",
-    sign: "static/images/signs/4.2.1.png",
-    poster: "static/images/rules/4.2.1.png",
-    gif: "static/gifs/4.2.1.gif",
-    rule: "<strong>Ego</strong> must pass the obstacle strictly on the right side."
-  },
-  {
-    code: "4.2.2", name: "Pass left", cat: "mandatory",
-    sign: "static/images/signs/4.2.2.png",
-    poster: "static/images/rules/4.2.2.png",
-    gif: "static/gifs/4.2.2.gif",
-    rule: "<strong>Ego</strong> must pass the obstacle strictly on the left side."
-  },
-  {
-    code: "4.2.3", name: "Pass either side", cat: "mandatory",
-    sign: "static/images/signs/4.2.3.png",
-    poster: "static/images/rules/4.2.3.png",
-    gif: "static/gifs/4.2.3.gif",
-    rule: "<strong>Ego</strong> must pass the obstacle on either the left or the right side — but must not stop in front of it."
-  },
-  {
-    code: "4.6", name: "Minimum speed", cat: "mandatory",
-    sign: "static/images/signs/4.6.png",
-    poster: "static/images/rules/4.6.png",
-    gif: "static/gifs/4.6.gif",
-    rule: "<strong>Ego</strong> must maintain a speed not lower than the specified limit."
-  },
-
-  // ---- Special regulation ----
-  {
-    code: "5.11.1", name: "Road with bus lane", cat: "special",
-    sign: "static/images/signs/5.11.1.png",
-    poster: "static/images/rules/5.11.1.png",
-    gif: "static/gifs/5.11.1.gif",
-    rule: "<strong>Ego</strong> must not drive in the dedicated bus lane."
-  },
-  {
-    code: "5.11.2", name: "Road with bicycle lane", cat: "special",
-    sign: "static/images/signs/5.11.2.png",
-    poster: "static/images/rules/5.11.2.png",
-    gif: "static/gifs/5.11.2.gif",
-    rule: "<strong>Ego</strong> must not drive in the bicycle lane running against traffic flow."
-  },
-  {
-    code: "5.14.1", name: "Bus lane", cat: "special",
-    sign: "static/images/signs/5.14.1.png",
-    poster: "static/images/rules/5.11.1.png",
-    gif: "static/gifs/5.14.1.gif",
-    rule: "<strong>Ego</strong> must not occupy the bus lane while driving along the road."
-  },
-  {
-    code: "5.14.2 / 5.14.3", name: "Bicycle lane", cat: "special",
-    sign: "static/images/signs/5.14.2.png",
-    poster: "static/images/rules/5.14.2.png",
-    gif: "static/gifs/5.14.2.gif",
-    rule: "<strong>Ego</strong> starts on the bicycle lane before the regulated region and must leave it in time."
-  },
-  {
-    code: "5.15.2", name: "Directions per lane", cat: "special",
-    sign: "static/images/signs/5.15.2.jpg",
-    poster: "static/images/rules/5.15.1.png",
-    gif: "static/gifs/5.15.2.gif",
-    rule: "<strong>Ego</strong> must follow the direction indicated by the arrow in its lane."
-  },
-  {
-    code: "5.19", name: "Crosswalk", cat: "special",
-    sign: "static/images/signs/5.19.png",
-    poster: "static/images/rules/5.19.png",
-    gif: "static/gifs/5.19.gif",
-    rule: "<strong>Ego</strong> must yield to pedestrians on the crossing."
-  },
-  {
-    code: "5.31 / 5.32", name: "Speed limit zone", cat: "special",
-    sign: "static/images/signs/5.31_50.png",
-    poster: "static/images/rules/5.32.png",
-    gif: "static/gifs/5.31.gif",
-    rule: "<strong>Ego</strong> must not exceed the speed limit anywhere within the zone, until the end-of-zone sign."
-  }
-];
-
-/* Side-by-side comparison pairs: base planner vs rule-compliant expert.
-   GIFs live at static/gifs/pairs/<code>/<id>_base.gif and <id>_expert.gif */
-const PLANNER_PAIR_SECTIONS = [
-  {
-    code: "5.7.1",
-    gridId: "pairs-grid-5-7-1",
-    name: "One-way entry",
-    sign: "static/images/signs/5.7.1.png",
-    poster: "static/images/rules/5.7.1.png",
-    pairs: [
-      {
-        id: "carl",
-        title: "CaRL",
-        baseLabel: "CaRL (base)",
-        expertLabel: "CaRLᵉ (rule expert)",
-        blurb: "CaRL vs. its rule-aware CaRL expert at the one-way entry.",
-      },
-      {
-        id: "plant2",
-        title: "PlanT-2",
-        baseLabel: "PlanT-2 (base)",
-        expertLabel: "PlanT-2ᵉ (rule expert)",
-        blurb: "PlanT-2 vs. its rule-compliant PlanT-2 expert.",
-      },
-    ],
-  },
-  {
-    code: "5.15.1",
-    gridId: "pairs-grid-5-15-1",
-    name: "Lane directions",
-    sign: "static/images/signs/5.15.1.png",
-    poster: "static/images/rules/5.15.1.png",
-    pairs: [
-      {
-        id: "idm",
-        title: "IDM",
-        baseLabel: "IDM (base)",
-        expertLabel: "IDMᵉ (rule expert)",
-        blurb: "IDM vs. its rule-compliant IDM expert.",
-      },
-      {
-        id: "plant2",
-        title: "PlanT-2",
-        baseLabel: "PlanT-2 (base)",
-        expertLabel: "PlanT-2ᵉ (rule expert)",
-        blurb: "PlanT-2 vs. its rule-compliant PlanT-2 expert.",
-      },
-    ],
-  },
-  {
-    code: "3.1",
-    gridId: "pairs-grid-3-1",
-    name: "No entry",
-    sign: "static/images/signs/3.1.png",
-    poster: "static/images/rules/3.1.png",
-    pairs: [
-      {
-        id: "idm",
-        title: "IDM",
-        baseLabel: "IDM (base)",
-        expertLabel: "IDMᵉ (rule expert)",
-        blurb: "IDM vs. its rule-compliant IDM expert.",
-      },
-      {
-        id: "plant2",
-        title: "PlanT-2",
-        baseLabel: "PlanT-2 (base)",
-        expertLabel: "PlanT-2ᵉ (rule expert)",
-        blurb: "PlanT-2 vs. its rule-compliant PlanT-2 expert.",
-      },
-    ],
-  },
-];
-
-const CAT_LABEL = {
-  priority: "Priority",
-  prohibitory: "Prohibitory",
-  mandatory: "Mandatory",
-  special: "Special regulation"
-};
-
-/* ------------------------- media slot helpers ------------------------- */
-
-const PLACEHOLDER_SVG = `
-  <svg viewBox="0 0 24 24" width="34" height="34" fill="none" stroke="currentColor"
-       stroke-width="1.6" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true">
-    <rect x="2" y="4" width="20" height="16" rx="2.5"/>
-    <polygon points="10 9 15 12 10 15 10 9" fill="currentColor" stroke="none"/>
-  </svg>`;
-
-/* Fill a .media-slot: show poster (if any) + "coming soon" badge,
-   then probe the GIF and swap it in when available. */
-function initMediaSlot(slot, { gif, poster, alt = "", label = "Demo GIF coming soon" } = {}) {
-  if (!slot) return;
-  gif = gif || slot.dataset.gif;
-  poster = poster || slot.dataset.poster;
-
-  const showPoster = () => {
-    slot.innerHTML = "";
-    if (poster) {
-      const p = document.createElement("img");
-      p.className = "poster-img";
-      p.src = poster;
-      p.alt = alt;
-      p.loading = "lazy";
-      slot.appendChild(p);
-      const badge = document.createElement("span");
-      badge.className = "soon-badge";
-      badge.textContent = "Demo GIF soon";
-      slot.appendChild(badge);
-    } else {
-      const ph = document.createElement("div");
-      ph.className = "media-placeholder";
-      ph.innerHTML = `${PLACEHOLDER_SVG}<span>${label}</span>`;
-      slot.appendChild(ph);
-    }
-  };
-
-  const showGif = (src) => {
-    slot.innerHTML = "";
-    const img = document.createElement("img");
-    img.className = "gif-img";
-    img.src = src;
-    img.alt = alt;
-    img.loading = "lazy";
-    img.addEventListener("click", () => openLightbox(src));
-    slot.appendChild(img);
-  };
-
-  showPoster();
-  if (!gif) return;
-
-  // HEAD avoids downloading multi‑MB GIFs twice (Image() would decode the full file).
-  fetch(gif, { method: "HEAD" })
-    .then((res) => {
-      if (res.ok) showGif(gif);
-    })
-    .catch(() => {
-      // Some static hosts reject HEAD — fall back to a lightweight Image probe.
-      const probe = new Image();
-      probe.onload = () => showGif(gif);
-      probe.src = gif;
-    });
-}
-
-/* ------------------------- lightbox ------------------------- */
-
-const lightbox = document.getElementById("lightbox");
-const lightboxContent = document.getElementById("lightbox-content");
-
-function openLightbox(src) {
-  lightboxContent.innerHTML = `<img src="${src}" alt="">`;
-  lightbox.hidden = false;
-  document.body.style.overflow = "hidden";
-}
-function closeLightbox() {
-  lightbox.hidden = true;
-  lightboxContent.innerHTML = "";
-  document.body.style.overflow = "";
-}
-lightbox.addEventListener("click", (e) => { if (e.target === lightbox) closeLightbox(); });
-document.getElementById("lightbox-close").addEventListener("click", closeLightbox);
-document.addEventListener("keydown", (e) => { if (e.key === "Escape" && !lightbox.hidden) closeLightbox(); });
-
-/* zoomable static figures (Reviewer YBmX) */
-document.querySelectorAll("img.zoomable").forEach((img) => {
-  img.addEventListener("click", () => openLightbox(img.src));
-});
-
-/* ------------------------- before/after comparison sliders ------------------------- */
-
-document.querySelectorAll(".cmp-slider").forEach((slider) => {
-  const range = slider.querySelector(".cmp-range");
-  const update = () => slider.style.setProperty("--pos", range.value + "%");
-  range.addEventListener("input", update);
-  update();
-});
-
-/* ------------------------- scenario cards (optional; section may be hidden) ------------------------- */
-
-const grid = document.getElementById("cards-grid");
-if (grid) {
-  SCENARIOS.forEach((s) => {
-    const card = document.createElement("article");
-    card.className = "card reveal";
-    card.dataset.cat = s.cat;
-    card.innerHTML = `
-      <div class="media-slot"></div>
-      <div class="card-body">
-        <div class="card-top">
-          <img class="card-sign" src="${s.sign}" alt="Traffic sign ${s.code}" loading="lazy">
-          <div>
-            <div class="card-name">${s.name}</div>
-            <div class="card-code">sign ${s.code}</div>
-          </div>
-        </div>
-        <p class="card-rule">${s.rule}</p>
-        <span class="card-cat card-cat--${s.cat}">${CAT_LABEL[s.cat]}</span>
-      </div>`;
-    grid.appendChild(card);
-    initMediaSlot(card.querySelector(".media-slot"), {
-      gif: s.gif, poster: s.poster, alt: `${s.name} scenario`
+  mobileNav?.querySelectorAll("a").forEach((link) => {
+    link.addEventListener("click", () => {
+      menuButton.setAttribute("aria-expanded", "false");
+      mobileNav.hidden = true;
     });
   });
 
-  const tabs = document.querySelectorAll("#scenario-tabs .tab");
-  tabs.forEach((tab) => {
-    const f = tab.dataset.filter;
-    const n = f === "all" ? SCENARIOS.length : SCENARIOS.filter((s) => s.cat === f).length;
-    const countEl = tab.querySelector(".tab-count");
-    if (countEl) countEl.textContent = n;
-    tab.addEventListener("click", () => {
-      tabs.forEach((t) => t.classList.toggle("is-active", t === tab));
-      grid.querySelectorAll(".card").forEach((card) => {
-        card.classList.toggle("is-hidden", f !== "all" && card.dataset.cat !== f);
+  const reveals = document.querySelectorAll(".reveal");
+  if ("IntersectionObserver" in window) {
+    const observer = new IntersectionObserver((entries) => {
+      entries.forEach((entry) => {
+        if (!entry.isIntersecting) return;
+        entry.target.classList.add("is-visible");
+        observer.unobserve(entry.target);
       });
-    });
-  });
-}
-
-/* ------------------------- planner comparison pairs ------------------------- */
-
-PLANNER_PAIR_SECTIONS.forEach((section) => {
-  const pairsGrid = document.getElementById(section.gridId);
-  if (!pairsGrid) return;
-
-  section.pairs.forEach((p) => {
-    const card = document.createElement("article");
-    card.className = "planner-pair is-visible";
-    card.innerHTML = `
-      <div class="planner-pair-head">
-        <img class="planner-pair-sign" src="${section.sign}" alt="${section.name} sign ${section.code}" loading="lazy">
-        <div>
-          <div class="planner-pair-title">${p.title}</div>
-          <div class="planner-pair-blurb">${p.blurb}</div>
-        </div>
-        <span class="planner-pair-badge">${section.code}</span>
-      </div>
-      <div class="planner-pair-media">
-        <div class="pair-cell pair-cell--bad">
-          <div class="pair-label pair-label--bad">${p.baseLabel}</div>
-          <div class="media-slot" data-side="base"></div>
-        </div>
-        <div class="pair-cell pair-cell--good">
-          <div class="pair-label pair-label--good">${p.expertLabel}</div>
-          <div class="media-slot" data-side="expert"></div>
-        </div>
-      </div>`;
-    pairsGrid.appendChild(card);
-
-    initMediaSlot(card.querySelector('[data-side="base"]'), {
-      gif: `static/gifs/pairs/${section.code}/${p.id}_base.gif`,
-      poster: section.poster,
-      alt: `${p.baseLabel} — ${section.name} ${section.code}`,
-    });
-    initMediaSlot(card.querySelector('[data-side="expert"]'), {
-      gif: `static/gifs/pairs/${section.code}/${p.id}_expert.gif`,
-      poster: section.poster,
-      alt: `${p.expertLabel} — ${section.name} ${section.code}`,
-    });
-  });
-});
-
-/* ------------------------- featured demo ------------------------- */
-
-const heroSlot = document.querySelector(".media-slot--hero");
-if (heroSlot) {
-  initMediaSlot(heroSlot, {
-    alt: "TrafficRuleBench closed-loop rollout"
-  });
-}
-
-/* ------------------------- scroll reveal ------------------------- */
-
-const revealObserver = new IntersectionObserver((entries) => {
-  entries.forEach((entry) => {
-    if (entry.isIntersecting) {
-      entry.target.classList.add("is-visible");
-      revealObserver.unobserve(entry.target);
-    }
-  });
-}, { threshold: 0, rootMargin: "40px 0px" });
-
-function observeReveal(el) {
-  el.classList.add("reveal");
-  revealObserver.observe(el);
-  // Failsafe for hash jumps / already-on-screen elements
-  const r = el.getBoundingClientRect();
-  if (r.top < innerHeight + 40 && r.bottom > -40) {
-    el.classList.add("is-visible");
+    }, {threshold: 0.12, rootMargin: "0px 0px -30px"});
+    reveals.forEach((element) => observer.observe(element));
+  } else {
+    reveals.forEach((element) => element.classList.add("is-visible"));
   }
-}
 
-document.querySelectorAll(".reveal, .pipe-card, .finding, .stat, .rev-card, .pair-row, .planner-pair, .card").forEach(observeReveal);
-
-/* ------------------------- nav shadow on scroll ------------------------- */
-
-const nav = document.getElementById("nav");
-addEventListener("scroll", () => {
-  nav.classList.toggle("is-scrolled", scrollY > 10);
-}, { passive: true });
-
-/* ------------------------- bibtex copy (optional; section may be removed) ------------------------- */
-
-const bibtexBtn = document.getElementById("bibtex-copy");
-if (bibtexBtn) {
-  bibtexBtn.addEventListener("click", (e) => {
-    navigator.clipboard.writeText(document.getElementById("bibtex-code").textContent).then(() => {
-      e.target.textContent = "Copied!";
-      e.target.classList.add("copied");
-      setTimeout(() => {
-        e.target.textContent = "Copy";
-        e.target.classList.remove("copied");
-      }, 1800);
-    });
+  const copyButton = document.querySelector("#copy-citation");
+  const citation = document.querySelector("#citation-code");
+  copyButton?.addEventListener("click", async () => {
+    const text = citation?.textContent?.trim() ?? "";
+    try {
+      await navigator.clipboard.writeText(text);
+    } catch {
+      const field = document.createElement("textarea");
+      field.value = text;
+      field.style.position = "fixed";
+      field.style.opacity = "0";
+      document.body.append(field);
+      field.select();
+      document.execCommand("copy");
+      field.remove();
+    }
+    copyButton.textContent = "Copied ✓";
+    window.setTimeout(() => { copyButton.textContent = "Copy BibTeX"; }, 1800);
   });
-}
+
+  const canvas = document.querySelector("#drive-canvas");
+  if (!(canvas instanceof HTMLCanvasElement)) return;
+
+  const ctx = canvas.getContext("2d");
+  const sceneTitle = document.querySelector("#scene-title");
+  const sceneRule = document.querySelector("#scene-rule");
+  const sceneHelp = document.querySelector("#scene-help");
+  const sceneSign = document.querySelector("#scene-sign");
+  const stepCount = document.querySelector("#step-count");
+  const status = document.querySelector("#verifier-status");
+  const verifier = document.querySelector(".verifier");
+  const liveRegion = document.querySelector("#sim-live");
+  const tabs = [...document.querySelectorAll("[data-scene]")];
+  const controls = [...document.querySelectorAll("[data-action]")];
+
+  const WORLD = {width: 920, height: 560};
+  const images = {};
+  const imagePaths = {
+    mandatory: "static/images/signs/4.2.1.png",
+    "no-entry": "static/images/signs/3.1.png",
+    crosswalk: "static/images/signs/5.19.png",
+  };
+
+  Object.entries(imagePaths).forEach(([key, src]) => {
+    const image = new Image();
+    image.src = src;
+    images[key] = image;
+  });
+
+  const scenes = {
+    mandatory: {
+      title: "Keep right",
+      rule: "Pass the traffic island on its right-hand side.",
+      help: "Drive forward, move right before the island, then continue to the goal.",
+      start: {x: 460, y: 492},
+      draw: drawMandatory,
+      evaluate: evaluateMandatory,
+    },
+    "no-entry": {
+      title: "No entry",
+      rule: "Do not enter the signed branch. Take the open road to the right.",
+      help: "Reach the junction, then take the right branch. The left branch is prohibited.",
+      start: {x: 460, y: 492},
+      draw: drawNoEntry,
+      evaluate: evaluateNoEntry,
+    },
+    crosswalk: {
+      title: "Pedestrian crossing",
+      rule: "Yield while a pedestrian occupies the crossing.",
+      help: "Brake twice to let the pedestrian clear, then continue across the zebra.",
+      start: {x: 460, y: 492},
+      draw: drawCrosswalk,
+      evaluate: evaluateCrosswalk,
+    },
+  };
+
+  let sceneKey = "mandatory";
+  let state = createState(sceneKey);
+  let animationFrame = 0;
+
+  function createState(key) {
+    const start = scenes[key].start;
+    return {
+      x: start.x,
+      y: start.y,
+      previousY: start.y,
+      heading: 0,
+      step: 0,
+      waits: 0,
+      passedSide: null,
+      terminal: false,
+      result: "ready",
+      message: "Ready to drive",
+    };
+  }
+
+  function resetScene() {
+    state = createState(sceneKey);
+    syncInterface();
+  }
+
+  function selectScene(key) {
+    sceneKey = key;
+    tabs.forEach((tab) => tab.setAttribute("aria-selected", String(tab.dataset.scene === key)));
+    resetScene();
+  }
+
+  function act(action) {
+    if (state.terminal) return;
+    state.previousY = state.y;
+    state.step += 1;
+
+    if (action === "forward") {
+      state.y -= 46;
+      state.heading = 0;
+    } else if (action === "left") {
+      state.x -= 54;
+      state.heading = -1;
+    } else if (action === "right") {
+      state.x += 54;
+      state.heading = 1;
+    } else if (action === "brake") {
+      state.heading = 0;
+      if (sceneKey === "crosswalk") state.waits += 1;
+    }
+
+    scenes[sceneKey].evaluate(action);
+    syncInterface();
+    flashControl(action);
+  }
+
+  function setResult(result, message, terminal = false) {
+    state.result = result;
+    state.message = message;
+    state.terminal = terminal;
+  }
+
+  function evaluateMandatory() {
+    const offRoad = state.x < 340 || state.x > 580 || state.y > 525;
+    const hitIsland = state.x > 404 && state.x < 516 && state.y > 202 && state.y < 354;
+    if (offRoad) return setResult("violation", "Violation: left the drivable lane", true);
+    if (hitIsland) return setResult("violation", "Collision with the traffic island", true);
+
+    if (!state.passedSide && state.previousY > 200 && state.y <= 200) {
+      state.passedSide = state.x > 516 ? "right" : "left";
+      if (state.passedSide === "left") {
+        return setResult("violation", "Violation: passed the island on the left", true);
+      }
+    }
+    if (state.y < 65) {
+      if (state.passedSide === "right") return setResult("safe", "Compliant destination reached ✓", true);
+      return setResult("violation", "Violation: required side was not used", true);
+    }
+    setResult("safe", state.passedSide === "right" ? "Rule satisfied — reach the goal" : "No violation detected");
+  }
+
+  function evaluateNoEntry() {
+    const onVertical = state.x >= 405 && state.x <= 515 && state.y >= 205 && state.y <= 525;
+    const onHorizontal = state.y >= 185 && state.y <= 315 && state.x >= 130 && state.x <= 790;
+    if (!onVertical && !onHorizontal) {
+      return setResult("violation", "Violation: left the drivable road", true);
+    }
+    if (state.y <= 315 && state.x < 360) {
+      return setResult("violation", "Violation: entered the prohibited road", true);
+    }
+    if (state.x > 735 && state.y <= 315) {
+      return setResult("safe", "Compliant destination reached ✓", true);
+    }
+    setResult("safe", state.y <= 315 ? "No violation — continue right" : "No violation detected");
+  }
+
+  function evaluateCrosswalk(action) {
+    const offRoad = state.x < 350 || state.x > 570 || state.y > 525;
+    if (offRoad) return setResult("violation", "Violation: left the drivable lane", true);
+
+    const enteredCrossing = state.previousY > 275 && state.y <= 275;
+    if (enteredCrossing && state.waits < 2) {
+      return setResult("violation", "Violation: failed to yield to pedestrian", true);
+    }
+    if (state.y < 65) return setResult("safe", "Compliant destination reached ✓", true);
+    if (action === "brake" && state.waits < 2) return setResult("safe", "Holding — pedestrian is crossing");
+    if (state.waits >= 2) return setResult("safe", "Crosswalk clear — proceed");
+    setResult("safe", "Pedestrian detected — brake before the zebra");
+  }
+
+  function syncInterface() {
+    const scene = scenes[sceneKey];
+    sceneTitle.textContent = scene.title;
+    sceneRule.textContent = scene.rule;
+    sceneHelp.textContent = scene.help;
+    sceneSign.src = imagePaths[sceneKey];
+    sceneSign.alt = `${scene.title} traffic sign`;
+    stepCount.textContent = String(state.step);
+    status.textContent = state.message;
+    verifier.dataset.state = state.result;
+    liveRegion.textContent = `Step ${state.step}. ${state.message}`;
+  }
+
+  function flashControl(action) {
+    const button = controls.find((item) => item.dataset.action === action);
+    button?.classList.add("is-pressed");
+    window.setTimeout(() => button?.classList.remove("is-pressed"), 120);
+  }
+
+  tabs.forEach((tab) => tab.addEventListener("click", () => selectScene(tab.dataset.scene)));
+  controls.forEach((button) => button.addEventListener("click", () => act(button.dataset.action)));
+  document.querySelector("#reset-scene")?.addEventListener("click", resetScene);
+
+  window.addEventListener("keydown", (event) => {
+    const target = event.target;
+    if (target instanceof HTMLInputElement || target instanceof HTMLTextAreaElement) return;
+    const actions = {
+      ArrowLeft: "left",
+      ArrowUp: "forward",
+      ArrowRight: "right",
+      " ": "brake",
+    };
+    const action = actions[event.key];
+    if (!action) return;
+    const rect = canvas.getBoundingClientRect();
+    if (rect.bottom < 0 || rect.top > window.innerHeight) return;
+    event.preventDefault();
+    act(action);
+  });
+
+  function roundedRect(x, y, width, height, radius) {
+    const r = Math.min(radius, width / 2, height / 2);
+    ctx.beginPath();
+    ctx.moveTo(x + r, y);
+    ctx.arcTo(x + width, y, x + width, y + height, r);
+    ctx.arcTo(x + width, y + height, x, y + height, r);
+    ctx.arcTo(x, y + height, x, y, r);
+    ctx.arcTo(x, y, x + width, y, r);
+    ctx.closePath();
+  }
+
+  function drawGround() {
+    ctx.fillStyle = "#dce5d8";
+    ctx.fillRect(0, 0, WORLD.width, WORLD.height);
+    ctx.strokeStyle = "rgba(76, 98, 71, .08)";
+    ctx.lineWidth = 1;
+    for (let x = 20; x < WORLD.width; x += 36) {
+      ctx.beginPath();
+      ctx.moveTo(x, 0);
+      ctx.lineTo(x, WORLD.height);
+      ctx.stroke();
+    }
+    for (let y = 20; y < WORLD.height; y += 36) {
+      ctx.beginPath();
+      ctx.moveTo(0, y);
+      ctx.lineTo(WORLD.width, y);
+      ctx.stroke();
+    }
+  }
+
+  function drawRoadRect(x, y, width, height) {
+    ctx.fillStyle = "#858a86";
+    ctx.fillRect(x, y, width, height);
+    ctx.strokeStyle = "#f5f4e9";
+    ctx.lineWidth = 5;
+    ctx.strokeRect(x + 4, y, width - 8, height);
+  }
+
+  function drawLaneLine(x1, y1, x2, y2) {
+    ctx.save();
+    ctx.strokeStyle = "rgba(255, 255, 255, .7)";
+    ctx.lineWidth = 3;
+    ctx.setLineDash([18, 18]);
+    ctx.beginPath();
+    ctx.moveTo(x1, y1);
+    ctx.lineTo(x2, y2);
+    ctx.stroke();
+    ctx.restore();
+  }
+
+  function drawSign(x, y, size = 54) {
+    const image = images[sceneKey];
+    ctx.save();
+    ctx.fillStyle = "rgba(19, 23, 18, .22)";
+    ctx.beginPath();
+    ctx.ellipse(x + size / 2 + 5, y + size + 8, size * .43, 8, 0, 0, Math.PI * 2);
+    ctx.fill();
+    ctx.fillStyle = "#60655e";
+    ctx.fillRect(x + size / 2 - 3, y + size - 2, 6, 42);
+    if (image?.complete) {
+      ctx.drawImage(image, x, y, size, size);
+    }
+    ctx.restore();
+  }
+
+  function drawGoal(x, y, width, height, label = "GOAL") {
+    ctx.save();
+    roundedRect(x, y, width, height, 10);
+    ctx.fillStyle = "rgba(22, 121, 84, .22)";
+    ctx.fill();
+    ctx.strokeStyle = "#1c8f67";
+    ctx.lineWidth = 2;
+    ctx.setLineDash([7, 6]);
+    ctx.stroke();
+    ctx.fillStyle = "#116d4b";
+    ctx.font = "700 11px DM Sans, sans-serif";
+    ctx.textAlign = "center";
+    ctx.fillText(label, x + width / 2, y + height / 2 + 4);
+    ctx.restore();
+  }
+
+  function drawMandatory() {
+    drawGround();
+    drawRoadRect(330, 0, 260, 560);
+    drawLaneLine(460, 0, 460, 185);
+    drawLaneLine(460, 370, 460, 560);
+
+    ctx.save();
+    roundedRect(402, 196, 116, 165, 56);
+    ctx.fillStyle = "#d6d9cd";
+    ctx.fill();
+    ctx.strokeStyle = "#f3f2e8";
+    ctx.lineWidth = 5;
+    ctx.stroke();
+    ctx.fillStyle = "#79816f";
+    for (let y = 220; y < 340; y += 24) {
+      ctx.beginPath();
+      ctx.arc(460 + Math.sin(y) * 17, y, 5, 0, Math.PI * 2);
+      ctx.fill();
+    }
+    ctx.restore();
+
+    ctx.strokeStyle = "rgba(21, 87, 213, .68)";
+    ctx.lineWidth = 5;
+    ctx.lineCap = "round";
+    ctx.beginPath();
+    ctx.moveTo(475, 420);
+    ctx.bezierCurveTo(555, 360, 564, 220, 526, 150);
+    ctx.stroke();
+
+    drawGoal(505, 20, 70, 47);
+    drawSign(610, 326);
+  }
+
+  function drawNoEntry() {
+    drawGround();
+    drawRoadRect(400, 220, 120, 340);
+    drawRoadRect(110, 170, 700, 160);
+    drawLaneLine(460, 330, 460, 560);
+    drawLaneLine(110, 250, 810, 250);
+
+    ctx.save();
+    ctx.fillStyle = "rgba(223, 75, 63, .2)";
+    ctx.fillRect(110, 175, 255, 150);
+    ctx.strokeStyle = "#df4b3f";
+    ctx.lineWidth = 2;
+    ctx.setLineDash([9, 7]);
+    ctx.strokeRect(118, 183, 238, 134);
+    ctx.fillStyle = "#a8322b";
+    ctx.font = "700 11px DM Sans, sans-serif";
+    ctx.textAlign = "center";
+    ctx.fillText("PROHIBITED", 235, 206);
+    ctx.restore();
+
+    drawGoal(730, 188, 67, 124);
+    drawSign(330, 337);
+  }
+
+  function drawCrosswalk(time) {
+    drawGround();
+    drawRoadRect(340, 0, 240, 560);
+    drawLaneLine(460, 0, 460, 560);
+
+    const stripeY = 212;
+    ctx.fillStyle = "#f6f3df";
+    for (let x = 348; x < 574; x += 30) {
+      ctx.fillRect(x, stripeY, 18, 72);
+    }
+
+    const progress = Math.min(state.waits / 2, 1);
+    const bob = Math.sin(time / 180) * 3;
+    const pedestrianX = 382 + progress * 190;
+    drawPedestrian(pedestrianX, 248 + bob, progress >= 1);
+    drawGoal(385, 20, 150, 47);
+    drawSign(606, 292);
+  }
+
+  function drawPedestrian(x, y, cleared) {
+    ctx.save();
+    ctx.translate(x, y);
+    ctx.globalAlpha = cleared ? .42 : 1;
+    ctx.strokeStyle = "#242823";
+    ctx.fillStyle = "#f0b849";
+    ctx.lineWidth = 5;
+    ctx.lineCap = "round";
+    ctx.beginPath();
+    ctx.arc(0, -18, 7, 0, Math.PI * 2);
+    ctx.fill();
+    ctx.beginPath();
+    ctx.moveTo(0, -10);
+    ctx.lineTo(0, 11);
+    ctx.moveTo(0, -2);
+    ctx.lineTo(-10, 8);
+    ctx.moveTo(0, -2);
+    ctx.lineTo(10, 6);
+    ctx.moveTo(0, 11);
+    ctx.lineTo(-8, 24);
+    ctx.moveTo(0, 11);
+    ctx.lineTo(10, 23);
+    ctx.stroke();
+    ctx.restore();
+  }
+
+  function drawCar() {
+    const lean = state.heading * .05;
+    ctx.save();
+    ctx.translate(state.x, state.y);
+    ctx.rotate(lean);
+    ctx.shadowColor = "rgba(20, 24, 19, .28)";
+    ctx.shadowBlur = 14;
+    ctx.shadowOffsetY = 7;
+    roundedRect(-22, -38, 44, 76, 12);
+    ctx.fillStyle = state.result === "violation" ? "#df4b3f" : "#f0b849";
+    ctx.fill();
+    ctx.shadowColor = "transparent";
+    roundedRect(-16, -23, 32, 28, 7);
+    ctx.fillStyle = "#2f4b58";
+    ctx.fill();
+    ctx.fillStyle = "#fbf9eb";
+    ctx.fillRect(-17, 19, 34, 5);
+    ctx.fillStyle = "#171916";
+    ctx.fillRect(-26, -24, 5, 17);
+    ctx.fillRect(21, -24, 5, 17);
+    ctx.fillRect(-26, 13, 5, 17);
+    ctx.fillRect(21, 13, 5, 17);
+    ctx.restore();
+
+    if (state.result === "violation") {
+      ctx.save();
+      ctx.strokeStyle = "rgba(223, 75, 63, .55)";
+      ctx.lineWidth = 4;
+      ctx.beginPath();
+      ctx.arc(state.x, state.y, 49 + Math.sin(animationFrame / 150) * 3, 0, Math.PI * 2);
+      ctx.stroke();
+      ctx.restore();
+    }
+  }
+
+  function drawHud() {
+    ctx.save();
+    roundedRect(16, 16, 151, 50, 10);
+    ctx.fillStyle = "rgba(255, 255, 255, .86)";
+    ctx.fill();
+    ctx.fillStyle = "#676c65";
+    ctx.font = "700 10px DM Sans, sans-serif";
+    ctx.fillText(`STEP ${state.step}`, 30, 37);
+    ctx.fillStyle = state.result === "violation" ? "#df4b3f" : "#167954";
+    ctx.fillText(state.result === "violation" ? "VIOLATIONS 1" : "VIOLATIONS 0", 30, 53);
+    ctx.restore();
+  }
+
+  function render(time = 0) {
+    animationFrame = time;
+    ctx.clearRect(0, 0, WORLD.width, WORLD.height);
+    scenes[sceneKey].draw(time);
+    drawCar();
+    drawHud();
+    window.requestAnimationFrame(render);
+  }
+
+  syncInterface();
+  render();
+})();

@@ -1,281 +1,375 @@
-<!DOCTYPE html>
+<!doctype html>
 <html lang="en">
 <head>
-  <meta charset="UTF-8">
-  <meta name="viewport" content="width=device-width, initial-scale=1.0">
-  <title>TrafficRuleBench — Rebuttal Supplementary Page</title>
-  <meta name="description" content="TrafficRuleBench: a large-scale, rule-centric benchmark for systematic and interpretable evaluation of traffic-rule compliance in autonomous driving. Supplementary rebuttal page with qualitative demos, enlarged figures, and extended metric analysis.">
-  <meta property="og:title" content="TrafficRuleBench">
-  <meta property="og:description" content="A rule-centric benchmark for evaluating traffic-rule compliance in autonomous driving planners.">
-  <meta property="og:image" content="static/images/teaser.png">
+  <meta charset="utf-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1">
+  <meta name="theme-color" content="#f7f7f2">
+  <meta name="description" content="TrafficSignBench is a rule-centric closed-loop benchmark for measuring traffic-sign compliance in autonomous driving.">
   <meta property="og:type" content="website">
+  <meta property="og:title" content="TrafficSignBench">
+  <meta property="og:description" content="Traffic signs are small. Their consequences are not. A rule-centric benchmark for autonomous driving.">
+  <meta property="og:image" content="https://emb-ai.github.io/traffic-sign-bench/static/media/video-poster.jpg">
+  <meta property="og:url" content="https://emb-ai.github.io/traffic-sign-bench/">
+  <meta name="twitter:card" content="summary_large_image">
+  <title>TrafficSignBench — Rule-centric evaluation for autonomous driving</title>
   <link rel="preconnect" href="https://fonts.googleapis.com">
   <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
-  <link href="https://fonts.googleapis.com/css2?family=Inter:wght@400;500;600;700&family=Space+Grotesk:wght@500;600;700&family=JetBrains+Mono:wght@500;600&display=swap" rel="stylesheet">
-  <link rel="stylesheet" href="static/css/style.css?v=20260729i">
-  <link rel="icon" href="static/images/signs/2.4.png" type="image/png">
+  <link href="https://fonts.googleapis.com/css2?family=DM+Sans:wght@400;500;600;700&family=Manrope:wght@500;600;700;800&display=swap" rel="stylesheet">
+  <link rel="icon" href="static/images/signs/5.19.png">
+  <link rel="stylesheet" href="static/css/style.css">
+  <script src="static/js/main.js" defer></script>
 </head>
 <body>
+  <a class="skip-link" href="#main">Skip to content</a>
 
-<!-- ============================ NAV ============================ -->
-<nav class="nav" id="nav">
-  <div class="nav-inner">
-    <a href="#top" class="nav-logo">
-      <span class="nav-logo-mark"></span>
-      <span class="nav-logo-text">TrafficRuleBench</span>
-    </a>
-    <div class="nav-links">
-      <a href="#reviewer-k1vn">Reviewer K1Vn</a>
-      <a href="#reviewer-ybmx">Reviewer YBmX</a>
-      <a href="#reviewer-pqwl">Reviewer pQWL</a>
-    </div>
-  </div>
-</nav>
-
-<!-- ============================ HERO ============================ -->
-<header class="hero hero--compact" id="top">
-  <div class="hero-road" aria-hidden="true">
-    <div class="lane-line"></div>
-    <div class="lane-line lane-line--2"></div>
-    <div class="lane-line lane-line--3"></div>
-  </div>
-  <div class="hero-glow" aria-hidden="true"></div>
-
-  <div class="hero-inner">
-    <div class="hero-badge">NeurIPS 2026 · Rebuttal Supplementary Page</div>
-    <h1 class="hero-title">TrafficRuleBench</h1>
-    <p class="hero-blurb">
-      Supplementary material with visual attachments requested by the reviewers for the rebuttal. Jump to the response that addresses your review:
-    </p>
-
-    <div class="rev-nav">
-      <div class="rev-cards">
-        <a class="rev-card rev-card--k1vn" href="#reviewer-k1vn">
-          <span class="rev-card-id">Reviewer K1Vn <span class="rev-card-issue">· Minor Weakness #3</span></span>
-          <span class="rev-card-topic">Demonstration videos</span>
-          <span class="rev-card-desc">Qualitative demonstrations of closed-loop behavior: base planners vs. their rule-compliant twins</span>
-          <span class="rev-card-arrow" aria-hidden="true">&darr;</span>
-        </a>
-        <a class="rev-card rev-card--ybmx" href="#reviewer-ybmx">
-          <span class="rev-card-id">Reviewer YBmX <span class="rev-card-issue">· Weakness #2</span></span>
-          <span class="rev-card-topic">Figure readability</span>
-          <span class="rev-card-desc">Enlarged, zoomable versions of Figures 1–2, including a before/after comparison of the revised teaser</span>
-          <span class="rev-card-arrow" aria-hidden="true">&darr;</span>
-        </a>
-        <a class="rev-card rev-card--pqwl" href="#reviewer-pqwl">
-          <span class="rev-card-id">Reviewer pQWL <span class="rev-card-issue">· Question #5</span></span>
-          <span class="rev-card-topic">Correlation analysis and Bootstrap CIs</span>
-          <span class="rev-card-desc">Correlation analysis between standard metrics and proposed rule metrics; bootstrap confidence intervals for obtained results</span>
-          <span class="rev-card-arrow" aria-hidden="true">&darr;</span>
-        </a>
+  <nav class="nav" aria-label="Primary navigation">
+    <div class="nav__inner">
+      <a class="wordmark" href="#top" aria-label="TrafficSignBench home">
+        <img class="wordmark__mark" src="static/images/signs/4.2.1.png" alt="" width="22" height="22">
+        <span>TrafficSignBench</span>
+      </a>
+      <div class="nav__links">
+        <a href="#video">Video</a>
+        <a href="#drive">Try it</a>
+        <a href="#results">Results</a>
+        <a class="nav__button" href="https://github.com/emb-ai/traffic-sign-bench">GitHub <span aria-hidden="true">↗</span></a>
       </div>
+      <button class="nav__menu" type="button" aria-expanded="false" aria-controls="mobile-nav">
+        <span class="sr-only">Open navigation</span>
+        <span></span><span></span>
+      </button>
     </div>
-  </div>
-</header>
-
-<main>
-
-<!-- ################################################################
-     CHAPTER — REVIEWER K1Vn
-     ################################################################ -->
-<section class="chapter chapter--k1vn" id="reviewer-k1vn">
-  <div class="section-inner">
-    <div class="chapter-head">
-      <span class="rev-chip rev-chip--k1vn">Reviewer K1Vn · Minor Weakness #3</span>
-      <h2 class="section-title">Demonstration videos</h2>
-      <blockquote class="rev-quote">
-        &ldquo;There are no qualitative figures or demonstration videos showing what the simulation
-        actually looks like [&hellip;]. It is very difficult for a reader to gauge the visual or
-        geometric quality of the scenarios.&rdquo;
-      </blockquote>
-      <p class="section-lead">
-        In this section, we provide demonstration videos to provide the visual
-        quality of the scenarios as was suggested by the reviewer.
-      </p>
+    <div class="mobile-nav" id="mobile-nav" hidden>
+      <a href="#video">Video</a>
+      <a href="#drive">Try it</a>
+      <a href="#results">Results</a>
+      <a href="https://github.com/emb-ai/traffic-sign-bench">GitHub ↗</a>
     </div>
-  </div>
+  </nav>
 
-  <div class="section-inner section-inner--wide" id="pairs">
-    <h3 class="sub-title">Baseline vs. rule-compliant planners</h3>
-    <p class="sub-lead">
-      Same scene family, side-by-side: the base planner often violates the active traffic rule,
-      while its rule-compliant twin respects the restriction.
-    </p>
-    <p class="sign-note"><strong>Sign 5.7.1.</strong> One-way entry: the ego vehicle must follow the permitted direction and avoid entering the wrong carriageway.</p>
-    <div class="planner-pairs" id="pairs-grid-5-7-1"><!-- populated by main.js --></div>
-    <p class="sign-note sign-note--follow"><strong>Sign 5.15.1.</strong> Lane directions: the ego vehicle must follow the allowed turn for its lane and not leave via a forbidden connector.</p>
-    <div class="planner-pairs planner-pairs--follow" id="pairs-grid-5-15-1"><!-- populated by main.js --></div>
-    <p class="sign-note sign-note--follow"><strong>Sign 3.1.</strong> No entry ("brick"): the ego vehicle must not continue into the prohibited road segment.</p>
-    <div class="planner-pairs planner-pairs--follow" id="pairs-grid-3-1"><!-- populated by main.js --></div>
-  </div>
-</section>
-
-<!-- Scenario gallery temporarily hidden
-  <div class="section-inner section-inner--wide" id="scenarios">
-    ...
-  </div>
--->
-
-<!-- ################################################################
-     CHAPTER — REVIEWER YBmX
-     ################################################################ -->
-<section class="chapter chapter--ybmx section--alt" id="reviewer-ybmx">
-  <div class="section-inner">
-    <div class="chapter-head">
-      <span class="rev-chip rev-chip--ybmx">Reviewer YBmX · Weakness #2</span>
-      <h2 class="section-title">Figure readability</h2>
-      <blockquote class="rev-quote">
-        &ldquo;Figures (especially Fig. 1, 2) are rendered with excessively small fonts, making them
-        difficult to read.&rdquo;
-      </blockquote>
-      <p class="section-lead">
-        We provide updated versions of the figures below.
-      </p>
-    </div>
-
-    <h3 class="sub-title">Figure 1 — Overview of TrafficRuleBench</h3>
-    <p class="sub-lead">
-      Submission vs. revised teaser with larger fonts for readability.
-    </p>
-    <figure class="fig-block">
-      <div class="cmp-slider" id="teaser-cmp">
-        <img class="cmp-img cmp-img--after" src="static/images/teaser-new.png" alt="Figure 1, revised version" draggable="false">
-        <div class="cmp-before">
-          <img class="cmp-img" src="static/images/teaser.png" alt="Figure 1, original version" draggable="false">
+  <main id="main">
+    <header class="hero section" id="top">
+      <div class="hero__glow" aria-hidden="true"></div>
+      <div class="shell hero__grid">
+        <div class="hero__copy">
+          <p class="eyebrow"><span></span> Rule-centric closed-loop evaluation</p>
+          <h1>Traffic<span>Sign</span>Bench</h1>
+          <p class="hero__kicker">High driving scores can hide <br>illegal behaviour</p>
+          <p class="hero__description">
+            We introduce a large-scale closed-loop benchmark that jointly combines a broad
+            traffic-sign taxonomy, automatic rule checkers, and rule-targeted scenarios for
+            evaluating whether autonomous-driving planners obey traffic signs
+          </p>
+          <div class="hero__actions">
+            <a class="button button--primary" href="#video">
+              <span class="button__play" aria-hidden="true">▶</span> Watch the overview
+            </a>
+            <a class="button button--ghost" href="#drive">
+              Try the checker
+            </a>
+          </div>
+          <div class="hero__meta" aria-label="Benchmark highlights">
+            <div><strong>34</strong><span>traffic signs</span></div>
+            <div><strong>29'000</strong><span>closed-loop scenarios</span></div>
+            <div><strong>17</strong><span>planners evaluated</span></div>
+          </div>
         </div>
-        <div class="cmp-handle" aria-hidden="true"><span class="cmp-handle-grip">&#8596;</span></div>
-        <span class="cmp-label cmp-label--before">Original</span>
-        <span class="cmp-label cmp-label--after">Revised</span>
-        <input class="cmp-range" type="range" min="0" max="100" value="50"
-               aria-label="Comparison slider: original vs revised Figure 1">
-      </div>
-      <figcaption class="media-caption">
-        <strong>Figure 1 — original vs. revised.</strong> Drag the slider to compare the submission
-        version (left) with the revised version (right), re-rendered with larger fonts for readability.
-      </figcaption>
-    </figure>
 
-    <h3 class="sub-title">Figure 2 — Data-Driven Scene Diversification</h3>
-    <p class="sub-lead">
-      Distributions of scene-diversification parameters estimated on nuPlan.
-    </p>
-    <figure class="fig-block">
-      <div class="cmp-slider cmp-slider--fig2" id="fig2-cmp">
-        <img class="cmp-img cmp-img--after" src="static/images/figures/fig2_nuplan_stats_new.png"
-             alt="Figure 2, revised version" draggable="false">
-        <div class="cmp-before">
-          <img class="cmp-img" src="static/images/figures/fig2_nuplan_stats_orig.png"
-               alt="Figure 2, original version" draggable="false">
+        <figure class="teaser reveal">
+          <div class="teaser__top">
+            <span><i></i> Closed-loop rollout</span>
+            <span>PlanT 2.0 · sign 5.19</span>
+          </div>
+          <div class="teaser__media">
+            <img src="static/media/crosswalk-plant2.gif" alt="Top-down PlanT-2 rollout. The ego vehicle drives onto a pedestrian crossing and the verifier reports one violation at step 50.">
+            <div class="teaser__status">
+              <span>Rule checker</span>
+              <strong>Violation at step 50</strong>
+            </div>
+          </div>
+          <figcaption>
+            <span class="caption-index">01</span>
+            <p><strong>The metric gap.</strong> PlanT 2.0 reaches the destination with no collision and high comfort—yet fails to yield to a pedestrian.</p>
+          </figcaption>
+        </figure>
+      </div>
+    </header>
+
+    <section class="section video-section" id="video">
+      <div class="shell video-heading">
+        <div>
+          <p class="section-label">Project video · 02:59</p>
+          <h2>Overview of <span>TrafficSignBench</span></h2>
         </div>
-        <div class="cmp-handle" aria-hidden="true"><span class="cmp-handle-grip">&#8596;</span></div>
-        <span class="cmp-label cmp-label--before">Original</span>
-        <span class="cmp-label cmp-label--after">Revised</span>
-        <input class="cmp-range" type="range" min="0" max="100" value="50"
-               aria-label="Comparison slider: original vs revised Figure 2">
+        <p>From the metric gap to rule-supervised fine-tuning — a three-minute walkthrough of the benchmark, scenes, and results.</p>
       </div>
-      <figcaption class="media-caption">
-        <strong>Figure 2 — original vs. revised.</strong> Drag the slider to compare the submission
-        version (left) with the revised version (right), re-rendered with larger fonts for readability.
-      </figcaption>
-    </figure>
-  </div>
-</section>
+      <div class="shell">
+        <div class="video-frame reveal">
+          <video id="overview-video" controls preload="metadata" playsinline poster="static/media/video-poster.jpg">
+            <source src="static/media/final.mp4" type="video/mp4">
+            Your browser does not support HTML video. <a href="static/media/final.mp4">Download the MP4</a>.
+          </video>
+          <div class="video-frame__chrome">
+            <span>TrafficSignBench · overview</span>
+            <a href="static/media/final.mp4" download>Download MP4 ↓</a>
+          </div>
+        </div>
+      </div>
+    </section>
 
-<!-- ################################################################
-     CHAPTER — REVIEWER pQWL
-     ################################################################ -->
-<section class="chapter chapter--pqwl" id="reviewer-pqwl">
-  <div class="section-inner">
-    <div class="chapter-head">
-      <span class="rev-chip rev-chip--pqwl">Reviewer pQWL · Question #5</span>
-      <h2 class="section-title">Correlation analysis and Bootstrap CIs</h2>
-      <blockquote class="rev-quote">
-        &ldquo;A correlation analysis between standard metrics and rule metrics, plus confidence
-        intervals or fragment-level bootstrap estimates, would make the central benchmark claim
-        more convincing.&rdquo;
-      </blockquote>
+    <section class="section drive" id="drive">
+      <div class="shell drive__heading">
+        <div>
+          <p class="section-label">Interactive rule checker</p>
+          <h2 class="drive__title">Think you can <span>obey <br>the sign?</span></h2>
+        </div>
+        <p>Choose a scene and drive the ego vehicle. The checker evaluates every move locally in your browser—no server or simulator required.</p>
+      </div>
+
+      <div class="shell simulator reveal">
+        <div class="simulator__tabs" role="tablist" aria-label="Driving scenes">
+          <button type="button" role="tab" aria-selected="true" data-scene="mandatory">
+            <img src="static/images/signs/4.2.1.png" alt=""> Keep right
+          </button>
+          <button type="button" role="tab" aria-selected="false" data-scene="no-entry">
+            <img src="static/images/signs/3.1.png" alt=""> No entry
+          </button>
+          <button type="button" role="tab" aria-selected="false" data-scene="crosswalk">
+            <img src="static/images/signs/5.19.png" alt=""> Crosswalk
+          </button>
+        </div>
+        <div class="simulator__body">
+          <div class="simulator__stage">
+            <canvas id="drive-canvas" width="920" height="560" aria-label="Interactive top-down driving scene"></canvas>
+            <div class="simulator__hint"><span>Keyboard</span> Arrow keys · Space to brake</div>
+          </div>
+          <aside class="simulator__panel">
+            <div class="rule-card">
+              <div class="rule-card__sign"><img id="scene-sign" src="static/images/signs/4.2.1.png" alt=""></div>
+              <div>
+                <span>Active rule</span>
+                <h3 id="scene-title">Keep right</h3>
+                <p id="scene-rule">Pass the traffic island on its right-hand side.</p>
+              </div>
+            </div>
+            <div class="verifier" data-state="ready">
+              <div class="verifier__pulse"></div>
+              <div>
+                <span>Live verifier · step <b id="step-count">0</b></span>
+                <strong id="verifier-status">Ready to drive</strong>
+              </div>
+            </div>
+            <div class="controls" aria-label="Vehicle controls">
+              <button type="button" data-action="left" aria-label="Steer left">←<span>left</span></button>
+              <button type="button" data-action="forward" aria-label="Move forward">↑<span>forward</span></button>
+              <button type="button" data-action="right" aria-label="Steer right">→<span>right</span></button>
+              <button class="controls__brake" type="button" data-action="brake" aria-label="Brake"><i></i><span>brake</span></button>
+            </div>
+            <button class="reset-button" id="reset-scene" type="button">Reset scene <span aria-hidden="true">↻</span></button>
+            <p class="simulator__help" id="scene-help">Drive forward, then steer right around the island.</p>
+          </aside>
+        </div>
+        <p class="sr-only" id="sim-live" aria-live="polite"></p>
+      </div>
+    </section>
+
+    <section class="marquee" aria-label="Benchmark summary">
+      <div class="marquee__track">
+        <span>Real map geometry</span><i></i>
+        <span>Executable rule checkers</span><i></i>
+        <span>Targeted closed-loop scenes</span><i></i>
+        <span>Rule-supervised fine-tuning</span><i></i>
+        <span>Real map geometry</span><i></i>
+        <span>Executable rule checkers</span><i></i>
+        <span>Targeted closed-loop scenes</span><i></i>
+        <span>Rule-supervised fine-tuning</span>
+      </div>
+    </section>
+
+    <section class="section problem" id="problem">
+      <div class="shell split-heading">
+        <div>
+          <p class="section-label">High driving scores can hide illegal behaviour</p>
+          <h2 class="problem__title">The <span>problem</span></h2>
+        </div>
+        <p class="section-intro">
+          Route progress, comfort, and collision rate describe how a vehicle moves.
+          They do not tell us whether it understood the traffic rule that shaped the scene.
+        </p>
+      </div>
+      <div class="shell metric-gap reveal">
+        <article class="metric-gap__lead">
+          <div class="metric-gap__badge">Observed rollout</div>
+          <p>Driving Score</p>
+          <strong>100.00</strong>
+          <span>Destination reached · no collision</span>
+        </article>
+        <div class="metric-gap__operator" aria-hidden="true">≠</div>
+        <article class="metric-gap__lead metric-gap__lead--danger">
+          <div class="metric-gap__badge">Executable checker</div>
+          <p>Traffic-rule compliance</p>
+          <strong>Failed</strong>
+          <span>Pedestrian-yield violation</span>
+        </article>
+        <aside class="metric-gap__note">
+          <span class="note-number">2.9–9.0%</span>
+          <p>SCD achieved by current base planners on held-out scenarios.</p>
+        </aside>
+      </div>
+      <div class="shell rollout-grid reveal">
+        <figure class="rollout-card">
+          <img src="static/media/rollouts/yield_carl.gif" alt="CaRL closed-loop rollout failing to yield at a priority intersection." loading="lazy">
+          <figcaption>
+            <div>
+              <strong>CaRL</strong>
+              <span class="rollout-card__venue">CoRL 2025</span>
+            </div>
+            <p>Breaks the yield rule while completing the route.</p>
+          </figcaption>
+        </figure>
+        <figure class="rollout-card">
+          <img src="static/media/rollouts/crosswalk_plant2.gif" alt="PlanT 2.0 closed-loop rollout failing to yield to a pedestrian at a crosswalk." loading="lazy">
+          <figcaption>
+            <div>
+              <strong>PlanT 2.0</strong>
+              <span class="rollout-card__venue">arXiv 2025</span>
+            </div>
+            <p>Fails to yield to a pedestrian at the crosswalk.</p>
+          </figcaption>
+        </figure>
+        <figure class="rollout-card">
+          <img src="static/media/rollouts/ppo_dir_right.gif" alt="PPO closed-loop rollout taking a prohibited direction at a mandatory-turn sign." loading="lazy">
+          <figcaption>
+            <div>
+              <strong>PPO</strong>
+              <span class="rollout-card__venue">lidar baseline</span>
+            </div>
+            <p>Ignores a mandatory-direction restriction.</p>
+          </figcaption>
+        </figure>
+      </div>
+    </section>
+
+    <section class="section results" id="results">
+      <div class="shell split-heading">
+        <div>
+          <p class="section-label">High driving metrics do not mean rule compliance</p>
+          <h2 class="results__title">Held-out <span>evaluation</span></h2>
+        </div>
+        <p class="section-intro">
+          5,800 held-out episodes. SCD—Sign-Compliant Destination—requires both obeying the sign
+          and reaching the intended goal.
+        </p>
+      </div>
+      <div class="shell compare-grid reveal">
+        <figure class="compare-card">
+          <div class="compare-pair">
+            <div>
+              <img src="static/media/rollouts/plant2/direction_s_l/plant2.gif" alt="PlanT 2.0 takes the prohibited branch at a direction sign." loading="lazy">
+              <span>PlanT 2.0</span>
+            </div>
+            <div>
+              <img src="static/media/rollouts/plant2/direction_s_l/plant2_ft_n2e8.gif" alt="Rule-supervised PlanT 2.0-FT reroutes along the allowed branch." loading="lazy">
+              <span>PlanT 2.0-FT</span>
+            </div>
+          </div>
+          <figcaption>
+            <strong>Direction · straight / left.</strong>
+            PlanT 2.0 takes the prohibited branch; the rule-supervised baseline reroutes.
+          </figcaption>
+        </figure>
+        <figure class="compare-card">
+          <div class="compare-pair">
+            <div>
+              <img src="static/media/rollouts/plant2/speed/plant2.gif" alt="PlanT 2.0 ignores a posted speed limit." loading="lazy">
+              <span>PlanT 2.0</span>
+            </div>
+            <div>
+              <img src="static/media/rollouts/plant2/speed/plant2_ft.gif" alt="Rule-supervised PlanT 2.0-FT slows down under the speed limit." loading="lazy">
+              <span>PlanT 2.0-FT</span>
+            </div>
+          </div>
+          <figcaption>
+            <strong>Speed limit.</strong>
+            PlanT 2.0 ignores the posted limit; the rule-supervised baseline slows down.
+          </figcaption>
+        </figure>
+      </div>
+      <div class="shell results-layout">
+        <div class="table-wrap reveal">
+          <table>
+            <caption class="sr-only">Planner results on the held-out test split</caption>
+            <thead>
+              <tr>
+                <th scope="col">Planner</th>
+                <th scope="col">Driving score ↑</th>
+                <th scope="col">Destination ↑</th>
+                <th scope="col">Collision ↓</th>
+                <th scope="col">SCD ↑</th>
+              </tr>
+            </thead>
+            <tbody>
+              <tr><th scope="row">IDM</th><td>35.7</td><td>66.4%</td><td>21.0%</td><td><b>7.2%</b></td></tr>
+              <tr><th scope="row">PPO</th><td>35.6</td><td>67.9%</td><td>27.5%</td><td><b>3.2%</b></td></tr>
+              <tr><th scope="row">CaRL</th><td>39.6</td><td>73.7%</td><td>21.0%</td><td><b>2.9%</b></td></tr>
+              <tr><th scope="row">PlanT 2.0</th><td>28.6</td><td>56.1%</td><td>43.3%</td><td><b>5.9%</b></td></tr>
+              <tr class="table-highlight"><th scope="row">PlanT 2.0-FT <span>rule-supervised baseline</span></th><td>74.2</td><td>74.8%</td><td>12.0%</td><td><b>72.3%</b></td></tr>
+            </tbody>
+          </table>
+          <p class="table-note">Conventional metrics are episode-weighted; SCD is macro-averaged over scenario types.</p>
+        </div>
+        <aside class="result-callout reveal">
+          <p class="result-callout__label">PlanT 2.0 → PlanT 2.0-FT</p>
+          <strong>12.3×</strong>
+          <span>higher SCD</span>
+          <div class="result-bars" aria-label="SCD increased from 5.9 to 72.3 percent">
+            <div><i style="--value: 8%"></i><span>5.9</span></div>
+            <div><i style="--value: 100%"></i><span>72.3</span></div>
+          </div>
+        </aside>
+      </div>
+    </section>
+
+    <section class="section resources">
+      <div class="shell resources__inner">
+        <div>
+          <p class="section-label">Use the benchmark</p>
+          <h2>Scenes, models, and evaluation code are <span>open.</span></h2>
+        </div>
+        <div class="resource-links">
+          <a href="https://github.com/emb-ai/traffic-sign-bench">
+            <span>01</span><strong>Code & evaluation</strong><i>GitHub ↗</i>
+          </a>
+          <a href="https://huggingface.co/datasets/emb-ai/traffic-sign-bench">
+            <span>02</span><strong>Benchmark scenes</strong><i>Hugging Face ↗</i>
+          </a>
+          <a href="https://huggingface.co/emb-ai/traffic-rule-bench-models">
+            <span>03</span><strong>Planner checkpoints</strong><i>Hugging Face ↗</i>
+          </a>
+        </div>
+      </div>
+      <div class="shell citation">
+        <div>
+          <span>Cite TrafficSignBench</span>
+          <button type="button" id="copy-citation">Copy BibTeX</button>
+        </div>
+        <pre id="citation-code"><code>@misc{trafficsignbench2026,
+  title     = {TrafficSignBench: Evaluating Traffic Rule Compliance
+               in Autonomous Driving},
+  year      = {2026},
+  publisher = {GitHub},
+  url       = {https://github.com/emb-ai/traffic-sign-bench}
+}</code></pre>
+      </div>
+    </section>
+  </main>
+
+  <footer class="footer">
+    <div class="shell">
+      <a class="wordmark" href="#top"><img class="wordmark__mark" src="static/images/signs/4.2.1.png" alt="" width="22" height="22"><span>TrafficSignBench</span></a>
+      <p>Rule-centric closed-loop evaluation of traffic-sign compliance in autonomous driving.</p>
+      <a href="#top">Back to top ↑</a>
     </div>
-    <p class="sub-lead">
-      In this section, we provide illustrations for the tables and claims 
-      reported in our OpenReview response. 
-    </p>
-
-
-    <!-- ---------- correlation analysis ---------- -->
-    <h3 class="sub-title">Correlation analysis</h3>
-    <p class="sub-lead">
-      We conducted a correlation analysis comparing conventional metrics with our 
-      proposed compliance metrics (SCR, GCR, RCR). The results support our main claim 
-      that conventional driving metrics do not reliably reflect traffic-rule compliance.
-    </p>
-    <figure class="fig-block">
-      <div class="fig-frame fig-frame--sm fig-frame--glow">
-        <img src="static/images/figures/corr_heatmap_dark.png"
-             alt="Spearman correlation heatmap: conventional metrics vs SCR and per-group GCR"
-             class="zoomable">
-      </div>
-      <figcaption class="media-caption">
-        <strong>Spearman &rho;, conventional vs. rule-compliance metrics.</strong> The results support our main 
-        claim that conventional driving metrics do not reliably reflect traffic-rule compliance.
-        Click to zoom.
-      </figcaption>
-    </figure>
-
-    <!-- <h3 class="sub-title">Route completion vs. rule compliance</h3> -->
-    <h3 class="sub-title"></h3>
-    <p class="sub-lead">
-      Route completion stays essentially flat across every base-expert pair, while rule
-      compliance jumps by 60-70%.
-    </p>
-    <figure class="fig-block">
-      <div class="fig-frame fig-frame--glow">
-        <img src="static/images/figures/twin_gap_dark.png"
-             alt="Route completion vs SCR for base planners and their rule experts"
-             class="zoomable">
-      </div>
-      <figcaption class="media-caption">
-        <strong>Base planners vs. their rule-compliant twins.</strong> A progress-only dashboard
-        (left) cannot distinguish planners whose SCR differs by a factor of four (right).
-        Click to zoom.
-      </figcaption>
-    </figure>
-
-    <!-- ---------- bootstrap CIs ---------- -->
-    <h3 class="sub-title">Bootstrap confidence intervals</h3>
-    <p class="sub-lead">
-      For each planner and each of 1,000 replicates we resample episodes of every sign with
-      replacement. For every base-expert pair the CIs are disjoint, so the compliance gap
-      is not a point-estimate artifact.
-    </p>
-    <figure class="fig-block">
-      <div class="fig-frame fig-frame--glow">
-        <img src="static/images/figures/rcr_ci_forest_dark.png"
-             alt="Forest plot of overall SCR with 95% episode-bootstrap confidence intervals"
-             class="zoomable">
-      </div>
-      <figcaption class="media-caption">
-        <strong>Overall SCR with 95% episode-bootstrap CIs.</strong> Base planners cluster at
-        19-36% SCR; rule-compliant experts at 88-95%. Click to zoom.
-      </figcaption>
-    </figure>
-
-  </div>
-</section>
-
-</main>
-
-<footer class="footer">
-  <div class="footer-inner">
-    <p>TrafficRuleBench · NeurIPS 2026 Rebuttal Supplementary Page</p>
-  </div>
-</footer>
-
-<!-- ============================ LIGHTBOX ============================ -->
-<div class="lightbox" id="lightbox" hidden>
-  <button class="lightbox-close" id="lightbox-close" aria-label="Close">&times;</button>
-  <div class="lightbox-content" id="lightbox-content"></div>
-</div>
-
-<script src="static/js/main.js?v=20260729i"></script>
+  </footer>
 </body>
 </html>
