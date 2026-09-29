@@ -14,3 +14,4 @@ python -m traffic_bench.scene_collection publish
 python -m traffic_bench.scene_collection pack --all
 ```
 
+The dataset card includes four geometry example crops under **Examples**.

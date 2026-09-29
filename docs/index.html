@@ -18,6 +18,7 @@
   <link rel="icon" href="static/images/signs/5.19.png">
   <link rel="stylesheet" href="static/css/style.css">
   <script src="static/js/main.js" defer></script>
+  <script src="static/js/simulator.js" defer></script>
 </head>
 <body>
   <a class="skip-link" href="#main">Skip to content</a>
@@ -120,53 +121,54 @@
     <section class="section drive" id="drive">
       <div class="shell drive__heading">
         <div>
-          <p class="section-label">Interactive rule checker</p>
+          <p class="section-label">Interactive stop-sign scenario</p>
           <h2 class="drive__title">Think you can <span>obey <br>the sign?</span></h2>
         </div>
-        <p>Choose a scene and drive the ego vehicle. The checker evaluates every move locally in your browser—no server or simulator required.</p>
+        <p>Take control of the ego vehicle with continuous steering, throttle, and braking. The benchmark checker runs alongside you, entirely in your browser.</p>
       </div>
 
       <div class="shell simulator reveal">
-        <div class="simulator__tabs" role="tablist" aria-label="Driving scenes">
-          <button type="button" role="tab" aria-selected="true" data-scene="mandatory">
-            <img src="static/images/signs/4.2.1.png" alt=""> Keep right
-          </button>
-          <button type="button" role="tab" aria-selected="false" data-scene="no-entry">
-            <img src="static/images/signs/3.1.png" alt=""> No entry
-          </button>
-          <button type="button" role="tab" aria-selected="false" data-scene="crosswalk">
-            <img src="static/images/signs/5.19.png" alt=""> Crosswalk
-          </button>
+        <div class="simulator__bar">
+          <div><span class="simulator__live-dot"></span> Browser simulation</div>
+          <span>Stop sign · junction scene</span>
         </div>
         <div class="simulator__body">
           <div class="simulator__stage">
-            <canvas id="drive-canvas" width="920" height="560" aria-label="Interactive top-down driving scene"></canvas>
-            <div class="simulator__hint"><span>Keyboard</span> Arrow keys · Space to brake</div>
+            <canvas id="sim-canvas" width="920" height="560" tabindex="0" aria-label="Interactive driving simulation. Use arrow keys to control the ego vehicle."></canvas>
+            <div class="simulator__hint"><span>Drive</span> ↑ throttle · ↓ brake / reverse · ← → steer</div>
+            <div class="simulator__start" id="sim-start">
+              <strong>Take control</strong>
+              <span>Click here or press an arrow key to drive</span>
+            </div>
           </div>
           <aside class="simulator__panel">
             <div class="rule-card">
-              <div class="rule-card__sign"><img id="scene-sign" src="static/images/signs/4.2.1.png" alt=""></div>
+              <div class="rule-card__sign"><img src="static/images/signs/2.5.png" alt="Stop sign"></div>
               <div>
                 <span>Active rule</span>
-                <h3 id="scene-title">Keep right</h3>
-                <p id="scene-rule">Pass the traffic island on its right-hand side.</p>
+                <h3>Stop sign</h3>
+                <p>Come to a complete stop before the line, then yield to main-road traffic.</p>
               </div>
             </div>
             <div class="verifier" data-state="ready">
               <div class="verifier__pulse"></div>
               <div>
-                <span>Live verifier · step <b id="step-count">0</b></span>
-                <strong id="verifier-status">Ready to drive</strong>
+                <span>Live checker · <b id="sim-speed">0.0</b> m/s</span>
+                <strong id="verifier-status">Approach the stop line</strong>
               </div>
             </div>
-            <div class="controls" aria-label="Vehicle controls">
-              <button type="button" data-action="left" aria-label="Steer left">←<span>left</span></button>
-              <button type="button" data-action="forward" aria-label="Move forward">↑<span>forward</span></button>
-              <button type="button" data-action="right" aria-label="Steer right">→<span>right</span></button>
-              <button class="controls__brake" type="button" data-action="brake" aria-label="Brake"><i></i><span>brake</span></button>
+            <div class="simulator__telemetry" aria-label="Simulation telemetry">
+              <div><span>Distance to line</span><strong id="line-distance">—</strong></div>
+              <div><span>Full stop</span><strong id="stop-state">Not yet</strong></div>
             </div>
-            <button class="reset-button" id="reset-scene" type="button">Reset scene <span aria-hidden="true">↻</span></button>
-            <p class="simulator__help" id="scene-help">Drive forward, then steer right around the island.</p>
+            <div class="controls" aria-label="Vehicle controls">
+              <button type="button" data-control="left" aria-label="Steer left">←<span>steer</span></button>
+              <button type="button" data-control="up" aria-label="Accelerate">↑<span>throttle</span></button>
+              <button type="button" data-control="right" aria-label="Steer right">→<span>steer</span></button>
+              <button class="controls__brake" type="button" data-control="down" aria-label="Brake or reverse">↓<span>brake / reverse</span></button>
+            </div>
+            <button class="reset-button" id="reset-scene" type="button">Restart scenario <span aria-hidden="true">↻</span></button>
+            <p class="simulator__help">The checker uses the benchmark threshold: speed below 0.5 m/s before crossing the stop line.</p>
           </aside>
         </div>
         <p class="sr-only" id="sim-live" aria-live="polite"></p>

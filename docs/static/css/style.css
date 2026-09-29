@@ -1295,41 +1295,38 @@ tbody td b {
   box-shadow: var(--shadow);
 }
 
-.simulator__tabs {
+.simulator__bar {
   display: flex;
-  padding: 10px;
-  gap: 8px;
+  min-height: 58px;
+  padding: 0 18px;
+  align-items: center;
+  justify-content: space-between;
   border-bottom: 1px solid var(--line);
   background: #f4f5f0;
+  color: var(--ink);
+  font-size: 11px;
+  font-weight: 700;
+  letter-spacing: .07em;
+  text-transform: uppercase;
 }
 
-.simulator__tabs button {
+.simulator__bar div {
   display: flex;
-  min-height: 48px;
-  padding: 7px 15px 7px 8px;
   align-items: center;
   gap: 9px;
-  border: 1px solid transparent;
-  border-radius: 12px;
+}
+
+.simulator__bar > span {
   color: var(--muted);
-  background: transparent;
-  font-size: 12px;
-  font-weight: 700;
-  cursor: pointer;
+  font-size: 9px;
 }
 
-.simulator__tabs button[aria-selected="true"] {
-  border-color: var(--line);
-  color: var(--ink);
-  background: var(--white);
-  box-shadow: 0 4px 12px rgba(27, 32, 25, .06);
-}
-
-.simulator__tabs img {
-  width: 34px;
-  height: 34px;
-  padding: 3px;
-  object-fit: contain;
+.simulator__live-dot {
+  width: 8px;
+  height: 8px;
+  border-radius: 50%;
+  background: var(--green);
+  box-shadow: 0 0 0 4px rgba(22, 121, 84, .12);
 }
 
 .simulator__body {
@@ -1340,15 +1337,21 @@ tbody td b {
 .simulator__stage {
   position: relative;
   min-width: 0;
-  background: #dde3d8;
+  overflow: hidden;
+  background: #20272c;
 }
 
-#drive-canvas {
+#sim-canvas {
+  display: block;
   width: 100%;
   height: auto;
   aspect-ratio: 920 / 560;
-  background: #dde3d8;
+  background: #20272c;
   touch-action: none;
+}
+
+#sim-canvas:focus {
+  outline: 0;
 }
 
 .simulator__hint {
@@ -1361,12 +1364,57 @@ tbody td b {
   background: rgba(24, 28, 23, .72);
   font-size: 9px;
   backdrop-filter: blur(7px);
+  pointer-events: none;
 }
 
 .simulator__hint span {
   margin-right: 6px;
   color: var(--white);
   font-weight: 700;
+}
+
+.simulator__start {
+  position: absolute;
+  inset: 0;
+  display: grid;
+  align-content: center;
+  justify-items: center;
+  color: var(--white);
+  background: rgba(17, 22, 25, .26);
+  backdrop-filter: blur(2px);
+  cursor: pointer;
+  transition: opacity .2s ease, visibility .2s ease;
+}
+
+.simulator__start::before {
+  width: 58px;
+  height: 58px;
+  margin-bottom: 13px;
+  border: 1px solid rgba(255, 255, 255, .35);
+  border-radius: 50%;
+  background: rgba(17, 22, 25, .58);
+  content: "↑";
+  font-family: var(--display);
+  font-size: 26px;
+  line-height: 58px;
+  text-align: center;
+}
+
+.simulator__start strong {
+  font-family: var(--display);
+  font-size: 21px;
+}
+
+.simulator__start span {
+  margin-top: 4px;
+  color: rgba(255, 255, 255, .76);
+  font-size: 10px;
+}
+
+.simulator__start.is-hidden {
+  visibility: hidden;
+  opacity: 0;
+  pointer-events: none;
 }
 
 .simulator__panel {
@@ -1478,6 +1526,39 @@ tbody td b {
   box-shadow: 0 0 0 3px rgba(223, 75, 63, .18);
 }
 
+.simulator__telemetry {
+  display: grid;
+  grid-template-columns: repeat(2, 1fr);
+  margin-top: 12px;
+  border: 1px solid var(--line);
+  border-radius: 12px;
+}
+
+.simulator__telemetry div {
+  padding: 11px 12px;
+}
+
+.simulator__telemetry div + div {
+  border-left: 1px solid var(--line);
+}
+
+.simulator__telemetry span,
+.simulator__telemetry strong {
+  display: block;
+}
+
+.simulator__telemetry span {
+  color: var(--muted);
+  font-size: 8px;
+  letter-spacing: .05em;
+  text-transform: uppercase;
+}
+
+.simulator__telemetry strong {
+  margin-top: 3px;
+  font-size: 12px;
+}
+
 .controls {
   display: grid;
   grid-template-columns: repeat(3, 1fr);
@@ -1498,6 +1579,8 @@ tbody td b {
   font-size: 24px;
   font-weight: 700;
   cursor: pointer;
+  user-select: none;
+  -webkit-user-select: none;
   transition: transform .12s ease, border-color .12s ease, background-color .12s ease;
 }
 
@@ -1527,14 +1610,8 @@ tbody td b {
   min-height: 42px !important;
   flex-direction: row !important;
   gap: 8px;
-  font-size: 11px !important;
-}
-
-.controls__brake i {
-  width: 10px;
-  height: 10px;
-  border: 2px solid var(--red);
-  border-radius: 50%;
+  color: var(--red);
+  font-size: 20px !important;
 }
 
 .controls__brake span {
@@ -2032,12 +2109,13 @@ tbody td b {
     border-radius: 18px;
   }
 
-  .simulator__tabs {
-    overflow-x: auto;
+  .simulator__bar {
+    min-height: 52px;
+    padding-inline: 14px;
   }
 
-  .simulator__tabs button {
-    flex: 0 0 auto;
+  .simulator__bar > span {
+    display: none;
   }
 
   .simulator__hint {

@@ -27,19 +27,16 @@ from traffic_bench.scene_collection.sign_scenes.filter.selection import is_reser
 
 KEEP_FILES = ("map.net.xml", "meta.json", "custom_cropped.png")
 SKIP_NAMES = {"moscow_pool.json", "scene_selection.json", "center.json"}
-EXAMPLE_SIGNS = (
-    "yield",
-    "stop",
-    "roundabout",
-    "crosswalk",
-    "no_entry",
-    "detour_right",
-    "speed_limit",
-    "one_way_right",
+# Geometry crops shown under ## Examples on the dataset card.
+EXAMPLE_CROPS = (
+    ("roundabout", "roundabout", "rb_03153c858f05", "Roundabout"),
+    ("curved_segment", "detour_left", "seg_m134424386_3", "Curved segment"),
+    ("straight_segment", "speed_limit", "seg_1011196718", "Straight segment"),
+    ("junction", "stop", "junc_541404346", "Junction"),
 )
 DEFAULT_STAGING = REPO_ROOT / "dist" / "hf-traffic-sign-bench"
 HF_REPO = "emb-ai/traffic-sign-bench"
-GITHUB = "https://github.com/emb-ai/traffic-rule-bench"
+GITHUB = "https://github.com/emb-ai/traffic-sign-bench"
 
 
 def _load_json(path: Path) -> Any:
@@ -136,31 +133,105 @@ def _sign_table_rows(catalog: Sequence[dict], profiles: Sequence[SignProfile]) -
         if row.get("crop_kind"):
             kinds[sid] = str(row["crop_kind"])
     lines = [
-        "| Sign | PDD | Family | Train | Test | Total |",
-        "| --- | --- | --- | ---: | ---: | ---: |",
+        "| Sign | Family | Train | Test | Total |",
+        "| --- | --- | ---: | ---: | ---: |",
     ]
-    by_id = {p.id: p for p in profiles}
-    for sign_id in sorted(counts):
-        profile = by_id.get(sign_id)
-        pdd = profile.pdd_code if profile else ""
+    # Stable family order, then sign id within each family.
+    family_order = {"junction": 0, "dual_path": 1, "segment": 2}
+    ordered = sorted(
+        counts,
+        key=lambda sid: (family_order.get(kinds.get(sid, ""), 99), kinds.get(sid, ""), sid),
+    )
+    for sign_id in ordered:
         family = kinds.get(sign_id, "")
         n_train = counts[sign_id].get("train", 0)
         n_test = counts[sign_id].get("test", 0)
         total = sum(counts[sign_id].values())
         lines.append(
-            f"| `{sign_id}` | {pdd} | {family} | {n_train} | {n_test} | {total} |"
+            f"| `{sign_id}` | {family} | {n_train} | {n_test} | {total} |"
         )
     return lines
 
 
-def _gallery_md(example_rel: Sequence[str]) -> str:
+def _examples_md(example_rel: Sequence[tuple[str, str]]) -> str:
+    """One row of geometry crops with captions under each image."""
     if not example_rel:
         return ""
     cells = []
-    for rel in example_rel:
-        stem = Path(rel).stem
-        cells.append(f'<img src="{rel}" alt="{stem}" width="220"/>')
-    return "<p align=\"center\">\n  " + "\n  ".join(cells) + "\n</p>\n"
+    for rel, caption in example_rel:
+        cells.append(
+            f'<td align="center" width="25%">'
+            f'<img src="{rel}" alt="{caption}" width="180"/><br/>'
+            f"<sub>{caption}</sub></td>"
+        )
+    return (
+        '<p align="center">\n'
+        "<table>\n<tr>\n"
+        + "\n".join(cells)
+        + "\n</tr>\n</table>\n"
+        "</p>\n"
+    )
+
+
+def _write_example_crop(src: Path, dest: Path, *, size: int = 640) -> bool:
+    """Square-pad a preview PNG onto a white canvas for the dataset card."""
+    if not src.is_file():
+        return False
+    try:
+        from PIL import Image
+        import numpy as np
+    except ImportError:
+        shutil.copy2(src, dest)
+        return True
+    im = Image.open(src).convert("RGB")
+    arr = np.array(im)
+    green = (
+        (arr[:, :, 1] > 100)
+        & (arr[:, :, 0] < 120)
+        & (arr[:, :, 2] < 120)
+        & (arr[:, :, 1] > arr[:, :, 0] + 20)
+    )
+    blue = (
+        (arr[:, :, 2] > 100)
+        & (arr[:, :, 0] < 110)
+        & (arr[:, :, 1] < 130)
+        & (arr[:, :, 2] > arr[:, :, 0] + 25)
+    )
+    mask = green | blue
+    if mask.any():
+        road = (
+            (~mask)
+            & (arr[:, :, 0] < 170)
+            & (arr[:, :, 0] > 40)
+            & (np.abs(arr[:, :, 0].astype(int) - arr[:, :, 1]) < 25)
+        )
+        road_color = (
+            np.median(arr[road], axis=0).astype(np.uint8)
+            if road.any()
+            else np.array([90, 90, 90], np.uint8)
+        )
+        pad = (~mask) & (arr[:, :, 0] > 190) & (arr[:, :, 0] < 245)
+        pad_color = (
+            np.median(arr[pad], axis=0).astype(np.uint8)
+            if pad.any()
+            else np.array([210, 210, 210], np.uint8)
+        )
+        arr[green] = road_color
+        arr[blue] = pad_color
+    h, w = arr.shape[:2]
+    tr = arr[: h // 3, w * 55 // 100 :]
+    if ((tr.mean(axis=2) < 100).mean() > 0.001) and ((tr.mean(axis=2) > 230).mean() > 0.05):
+        wipe = (tr.mean(axis=2) > 220) | (tr.mean(axis=2) < 100)
+        tr[wipe] = (255, 255, 255)
+        arr[: h // 3, w * 55 // 100 :] = tr
+    im = Image.fromarray(arr)
+    side = max(im.size)
+    canvas = Image.new("RGB", (side, side), (255, 255, 255))
+    canvas.paste(im, ((side - im.size[0]) // 2, (side - im.size[1]) // 2))
+    canvas = canvas.resize((size, size), Image.Resampling.LANCZOS)
+    dest.parent.mkdir(parents=True, exist_ok=True)
+    canvas.save(dest, optimize=True)
+    return True
 
 
 def render_dataset_card(
@@ -169,10 +240,12 @@ def render_dataset_card(
     n_signs: int,
     catalog_file: str,
     sign_table: Sequence[str],
-    gallery: str,
+    examples: str,
 ) -> str:
     size = _size_category(n_scenes)
     table = "\n".join(sign_table)
+    examples_block = f"\n## Examples\n\n{examples}" if examples else ""
+
     return f"""---
 pretty_name: Traffic Sign Bench
 license: odbl
@@ -196,15 +269,13 @@ configs:
 
 # Traffic Sign Bench
 
-Official per-sign SUMO maps for [TrafficRuleBench]({GITHUB}): real Moscow OSM
+Official per-sign SUMO maps for [TrafficSignBench]({GITHUB}): real Moscow OSM
 layouts, **{n_signs} signs**, **{n_scenes} maps**. Protocol size is
 **80 train + 20 test** maps per sign.
 
 Road geometry is derived from [OpenStreetMap](https://www.openstreetmap.org/copyright)
 © OpenStreetMap contributors and is released under **ODbL 1.0**.
-
-{gallery}
-
+{examples_block}
 ## Download
 
 All scenes land under `data/scenes/<sign>/<scene_id>/`, which is what eval
@@ -242,7 +313,7 @@ metadata/
   catalog.parquet
 ```
 
-`sign` is the eval id (`yield`, not `2.4`). Train/test is in
+`sign` is the eval id (folder name under `scenes/`). Train/test is in
 `sign_allocations.json` and the catalog, not in the folder name.
 
 ## Signs
@@ -253,7 +324,7 @@ metadata/
 
 Moscow OSM → city SUMO net → junction / dual-path / segment crops → each sign
 **queries** that shared pool (`signs.yaml`) → materialize into
-`data/scenes/<sign>/`. Pedestrian crossings (PDD 5.19) get a mid-block zebra
+`data/scenes/<sign>/`. Pedestrian-crossing scenes get a mid-block zebra
 injected after copy.
 
 Split is stamped on **place identity** before allocation:
@@ -267,8 +338,8 @@ assign policy (same behavioral family, or same semantic group).
 ## Limitations
 
 - Geography is Moscow only.
-- On some 5.19 segments SUMO omits the `crossing` edge; the split node and
-  sidewalks are still there.
+- On some pedestrian-crossing segments SUMO omits the `crossing` edge; the split
+  node and sidewalks are still there.
 - These folders are maps, not closed-loop eval manifests.
 
 ## Citation
@@ -313,7 +384,6 @@ def pack_hf_dataset(
 
     catalog: List[dict] = []
     packed_signs: List[str] = []
-    examples: List[str] = []
 
     for profile in list_profiles():
         src = (scenes_root / profile.data_subdir) if scenes_root else profile_scenes_dir(profile)
@@ -352,12 +422,16 @@ def pack_hf_dataset(
         if n_here:
             packed_signs.append(profile.id)
             print(f"[pack] {profile.id}: {n_here} → {dest_sign}")
-            if profile.id in EXAMPLE_SIGNS:
-                png = next(dest_sign.glob("*/custom_cropped.png"), None)
-                if png and png.is_file():
-                    rel = f"assets/examples/{profile.id}.png"
-                    shutil.copy2(png, out / rel)
-                    examples.append(rel)
+
+    examples: List[tuple[str, str]] = []
+    for stem, sign_id, scene_id, caption in EXAMPLE_CROPS:
+        src = scenes_out / sign_id / scene_id / "custom_cropped.png"
+        rel = f"assets/examples/{stem}.png"
+        if _write_example_crop(src, out / rel):
+            examples.append((rel, caption))
+            print(f"[pack] example {stem} ← {sign_id}/{scene_id}")
+        else:
+            print(f"[pack] WARN missing example crop: {src}", file=sys.stderr)
 
     catalog_jsonl = meta_out / "catalog.jsonl"
     with catalog_jsonl.open("w", encoding="utf-8") as handle:
@@ -371,7 +445,7 @@ def pack_hf_dataset(
         n_signs=len(packed_signs),
         catalog_file=catalog_file,
         sign_table=_sign_table_rows(catalog, list_profiles()),
-        gallery=_gallery_md(examples),
+        examples=_examples_md(examples),
     )
     (out / "README.md").write_text(card, encoding="utf-8")
 
@@ -382,6 +456,7 @@ def pack_hf_dataset(
         "n_signs": len(packed_signs),
         "catalog": catalog_file,
         "parquet": wrote_parquet,
+        "examples": len(examples),
     }
     print(
         f"[pack] HF layout: {len(catalog)} scenes / {len(packed_signs)} signs → {out}"
