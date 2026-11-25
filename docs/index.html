@@ -3,11 +3,11 @@
 <head>
   <meta charset="utf-8">
   <meta name="viewport" content="width=device-width, initial-scale=1">
-  <meta name="theme-color" content="#f7f7f2">
+  <meta name="theme-color" content="#fbfbfa">
   <meta name="description" content="TrafficSignBench is a rule-centric closed-loop benchmark for measuring traffic-sign compliance in autonomous driving.">
   <meta property="og:type" content="website">
   <meta property="og:title" content="TrafficSignBench">
-  <meta property="og:description" content="Traffic signs are small. Their consequences are not. A rule-centric benchmark for autonomous driving.">
+  <meta property="og:description" content="High driving scores can hide illegal behaviour. A rule-centric closed-loop benchmark for autonomous driving.">
   <meta property="og:image" content="https://emb-ai.github.io/traffic-sign-bench/static/media/video-poster.jpg">
   <meta property="og:url" content="https://emb-ai.github.io/traffic-sign-bench/">
   <meta name="twitter:card" content="summary_large_image">
@@ -17,10 +17,10 @@
   <title>TrafficSignBench — Rule-centric evaluation for autonomous driving</title>
   <link rel="preconnect" href="https://fonts.googleapis.com">
   <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
-  <link href="https://fonts.googleapis.com/css2?family=DM+Sans:wght@400;500;600;700&family=Manrope:wght@500;600;700;800&display=swap" rel="stylesheet">
+  <link href="https://fonts.googleapis.com/css2?family=Inter:wght@400;500;600;700&family=Inter+Tight:wght@500;600;700;800&family=JetBrains+Mono:wght@500;600&display=swap" rel="stylesheet">
   <link rel="icon" href="static/images/signs/5.19.png">
-  <link rel="stylesheet" href="static/css/style.css">
-  <script src="static/js/main.js" defer></script>
+  <link rel="stylesheet" href="static/css/style.css?v=readme-gifs-3">
+  <script src="static/js/main.js?v=readme-gifs-1" defer></script>
   <script src="static/js/live-simulator.js" defer></script>
 </head>
 <body>
@@ -29,13 +29,15 @@
   <nav class="nav" aria-label="Primary navigation">
     <div class="nav__inner">
       <a class="wordmark" href="#top" aria-label="TrafficSignBench home">
-        <img class="wordmark__mark" src="static/images/signs/4.2.1.png" alt="" width="22" height="22">
+        <img class="wordmark__mark" src="static/site/signs/crosswalk.png" alt="" width="24" height="24">
         <span>TrafficSignBench</span>
       </a>
       <div class="nav__links">
-        <a href="#video">Video</a>
+        <a href="#inside">Benchmark</a>
+        <a href="#evaluation">Evaluation</a>
         <a href="#drive">Try it</a>
-        <a href="#results">Results</a>
+        <a href="#video">Video</a>
+        <a href="https://arxiv.org/abs/2609.38463">Paper</a>
         <a class="nav__button" href="https://github.com/emb-ai/traffic-sign-bench">GitHub <span aria-hidden="true">↗</span></a>
       </div>
       <button class="nav__menu" type="button" aria-expanded="false" aria-controls="mobile-nav">
@@ -44,90 +46,518 @@
       </button>
     </div>
     <div class="mobile-nav" id="mobile-nav" hidden>
-      <a href="#video">Video</a>
+      <a href="#inside">Benchmark</a>
+      <a href="#evaluation">Evaluation</a>
       <a href="#drive">Try it</a>
-      <a href="#results">Results</a>
+      <a href="#video">Video</a>
+      <a href="https://arxiv.org/abs/2609.38463">Paper ↗</a>
       <a href="https://github.com/emb-ai/traffic-sign-bench">GitHub ↗</a>
     </div>
   </nav>
 
   <main id="main">
-    <header class="hero section" id="top">
-      <div class="hero__glow" aria-hidden="true"></div>
+    <!-- Hero: scroll-scrubbed intro (title → violation → zoom-out into the scenario mosaic) -->
+    <div class="hero-scroll" id="top" data-hero-scroll>
+    <header class="hero" data-stage="0">
+      <div class="hero__backdrop" aria-hidden="true"></div>
       <div class="shell hero__grid">
         <div class="hero__copy">
-          <p class="eyebrow"><span></span> Rule-centric closed-loop evaluation</p>
-          <h1>Traffic<span>Sign</span>Bench</h1>
-          <p class="hero__kicker">High driving scores can hide <br>illegal behaviour</p>
-          <p class="hero__description">
-            We introduce a large-scale closed-loop benchmark that jointly combines a broad
-            traffic-sign taxonomy, automatic rule checkers, and rule-targeted scenarios for
-            evaluating whether autonomous-driving planners obey traffic signs
-          </p>
-          <div class="hero__actions">
-            <a class="button button--primary" href="#video">
-              <span class="button__play" aria-hidden="true">▶</span> Watch the overview
-            </a>
-            <a class="button button--ghost" href="#drive">
-              Try the checker
-            </a>
-          </div>
-          <div class="hero__meta" aria-label="Benchmark highlights">
-            <div><strong>34</strong><span>traffic signs</span></div>
-            <div><strong>29'000</strong><span>closed-loop scenarios</span></div>
-            <div><strong>17</strong><span>planners evaluated</span></div>
-          </div>
-        </div>
+          <h1 class="hero__title" aria-label="TrafficSignBench">
+            <span class="split" data-split>Traffic</span><span class="split split--blue" data-split>Sign</span><span class="split" data-split>Bench</span>
+          </h1>
+          <p class="hero__tagline" data-type aria-label="High driving scores can hide illegal behaviour.">High driving scores can hide <em>illegal behaviour.</em></p>
 
-        <figure class="teaser reveal">
-          <div class="teaser__top">
-            <span><i></i> Closed-loop rollout</span>
-            <span>PlanT 2.0 · sign 5.19</span>
-          </div>
-          <div class="teaser__media">
-            <img src="static/media/crosswalk-plant2.gif" alt="Top-down PlanT-2 rollout. The ego vehicle drives onto a pedestrian crossing and the verifier reports one violation at step 50.">
-            <div class="teaser__status">
-              <span>Rule checker</span>
-              <strong>Violation at step 50</strong>
+          <div class="hero__more">
+            <p class="hero__lead">
+              We introduce a large-scale closed-loop benchmark that jointly combines a broad traffic-sign
+              taxonomy, automatic rule checkers, and rule-targeted scenarios on real road maps
+              — to test whether autonomous-driving planners actually obey traffic signs.
+            </p>
+            <ul class="hero__stats" aria-label="Benchmark highlights">
+              <li>
+                <span class="stat-icon" aria-hidden="true">
+                  <svg viewBox="0 0 24 24"><path d="M12 2 2 7l10 5 10-5-10-5Z"/><path d="m2 17 10 5 10-5"/><path d="m2 12 10 5 10-5"/></svg>
+                </span>
+                <strong><span data-count="20.6" data-decimals="1">20.6</span>K</strong>
+                <span>closed-loop scenes</span>
+              </li>
+              <li>
+                <span class="stat-icon" aria-hidden="true">
+                  <svg viewBox="0 0 24 24"><path d="M7.9 2h8.2L22 7.9v8.2L16.1 22H7.9L2 16.1V7.9Z"/><path d="M8 12h8"/></svg>
+                </span>
+                <strong><span data-count="34">34</span></strong>
+                <span>traffic signs</span>
+              </li>
+              <li>
+                <span class="stat-icon" aria-hidden="true">
+                  <svg viewBox="0 0 24 24"><path d="m3 6 6-3 6 3 6-3v15l-6 3-6-3-6 3Z"/><path d="M9 3v15"/><path d="M15 6v15"/></svg>
+                </span>
+                <strong>Real maps</strong>
+                <span>of Moscow</span>
+              </li>
+            </ul>
+            <div class="hero__actions">
+              <a class="btn btn--primary" href="#inside">Explore the Benchmark <span class="btn__arrow" aria-hidden="true">→</span></a>
+              <a class="btn btn--ghost" href="https://arxiv.org/abs/2609.38463">Paper</a>
+              <a class="btn btn--ghost" href="https://github.com/emb-ai/traffic-sign-bench">Code</a>
             </div>
           </div>
-          <figcaption>
-            <span class="caption-index">01</span>
-            <p><strong>The metric gap.</strong> PlanT 2.0 reaches the destination with no collision and high comfort—yet fails to yield to a pedestrian.</p>
-          </figcaption>
-        </figure>
+        </div>
+
+        <div class="hero__stage">
+          <div class="mosaic" aria-label="Closed-loop rollouts from TrafficSignBench scenarios">
+            <figure class="tile" data-sign="Turn right · 4.1.2">
+              <video muted loop playsinline preload="none" poster="static/site/tiles/direction-right.jpg" src="static/site/tiles/direction-right.mp4"></video>
+              <img class="tile__sign" src="static/site/signs/direction_right.png" alt="Turn right sign">
+            </figure>
+            <figure class="tile" data-sign="Stop · 2.5">
+              <video muted loop playsinline preload="none" poster="static/site/tiles/stop-a.jpg" src="static/site/tiles/stop-a.mp4"></video>
+              <img class="tile__sign" src="static/site/signs/stop.png" alt="Stop sign">
+            </figure>
+            <figure class="tile" data-sign="Roundabout · 4.3">
+              <video muted loop playsinline preload="none" poster="static/site/tiles/roundabout.jpg" src="static/site/tiles/roundabout.mp4"></video>
+              <img class="tile__sign" src="static/site/signs/roundabout.png" alt="Roundabout sign">
+            </figure>
+            <figure class="tile" data-sign="Turn left or right · 4.1.6">
+              <video muted loop playsinline preload="none" poster="static/site/tiles/direction-left-right.jpg" src="static/site/tiles/direction-left-right.mp4"></video>
+              <img class="tile__sign" src="static/site/signs/direction_left_right.png" alt="Turn left or right sign">
+            </figure>
+            <figure class="tile" data-sign="No right turn · 3.18.1">
+              <video muted loop playsinline preload="none" poster="static/site/tiles/no-right-turn.jpg" src="static/site/tiles/no-right-turn.mp4"></video>
+              <img class="tile__sign" src="static/site/signs/no_right_turn.png" alt="No right turn sign">
+            </figure>
+            <figure class="tile tile--hero" data-sign="Pedestrian crossing · 5.19">
+              <video id="hero-video" muted playsinline preload="none" poster="static/site/hero/crosswalk.jpg" src="static/site/hero/crosswalk.mp4"></video>
+              <img class="tile__sign" src="static/site/signs/crosswalk.png" alt="Pedestrian crossing sign">
+              <span class="tile__planner">PlanT-2 <i>state-of-the-art planner</i></span>
+              <span class="tile__violation"><b></b> Violation · step 50</span>
+            </figure>
+            <figure class="tile" data-sign="Maximum speed · 3.24">
+              <video muted loop playsinline preload="none" poster="static/site/tiles/speed-30.jpg" src="static/site/tiles/speed-30.mp4"></video>
+              <img class="tile__sign" src="static/site/signs/speed_limit_30.png" alt="Speed limit sign">
+            </figure>
+            <figure class="tile" data-sign="Yield · 2.4">
+              <video muted loop playsinline preload="none" poster="static/site/tiles/yield.jpg" src="static/site/tiles/yield.mp4"></video>
+              <img class="tile__sign" src="static/site/signs/yield.png" alt="Yield sign">
+            </figure>
+            <figure class="tile" data-sign="Movement prohibited · 3.2">
+              <video muted loop playsinline preload="none" poster="static/site/tiles/blocked-road.jpg" src="static/site/tiles/blocked-road.mp4"></video>
+              <img class="tile__sign" src="static/site/signs/no_traffic.png" alt="Movement prohibited sign">
+            </figure>
+            <figure class="tile" data-sign="Exit to one-way road · 5.7.1">
+              <video muted loop playsinline preload="none" poster="static/site/tiles/one-way-right.jpg" src="static/site/tiles/one-way-right.mp4"></video>
+              <img class="tile__sign" src="static/site/signs/one_way_right.png" alt="One-way road sign">
+            </figure>
+            <figure class="tile" data-sign="Straight or right · 4.1.4">
+              <video muted loop playsinline preload="none" poster="static/site/tiles/direction-straight-right.jpg" src="static/site/tiles/direction-straight-right.mp4"></video>
+              <img class="tile__sign" src="static/site/signs/direction_straight_right.png" alt="Straight or right sign">
+            </figure>
+            <figure class="tile" data-sign="Stop · 2.5">
+              <video muted loop playsinline preload="none" poster="static/site/tiles/stop-b.jpg" src="static/site/tiles/stop-b.mp4"></video>
+              <img class="tile__sign" src="static/site/signs/stop.png" alt="Stop sign">
+            </figure>
+          </div>
+
+          <aside class="scorecard" aria-label="Closed-loop metrics for the PlanT-2 rollout">
+            <div class="scorecard__head">
+              <img src="static/site/signs/crosswalk.png" alt="">
+              <div><span>Example</span><strong>Pedestrian crossing</strong></div>
+            </div>
+            <div class="scorecard__metrics">
+              <div class="metric"><span>Driving score</span><strong data-score="100" data-decimals="2">0.00</strong></div>
+              <div class="metric"><span>Comfort</span><strong><i data-score="88" data-decimals="1">0.0</i>%</strong></div>
+              <div class="metric"><span>Efficiency</span><strong data-score="295.3" data-decimals="1">0.0</strong></div>
+              <div class="metric"><span>Collisions</span><strong>0%</strong></div>
+            </div>
+            <div class="scorecard__rule">
+              <span class="scorecard__rule-icon" aria-hidden="true"></span>
+              <div>
+                <span>Traffic-rule compliance</span>
+                <strong class="is-checking">Checking…</strong>
+                <strong class="is-failed">Failed</strong>
+                <p>Ego does not yield to the pedestrian on the crosswalk.</p>
+              </div>
+            </div>
+          </aside>
+        </div>
+      </div>
+      <div class="hero__progress" aria-hidden="true">
+        <span class="hero__mouse"><span></span></span>
+        <span class="hero__progress-label">Scroll to play</span>
+        <span class="hero__progress-track"><i></i></span>
       </div>
     </header>
+    </div>
+    <div class="shell hero-after" data-hero-after></div>
 
-    <section class="section video-section" id="video">
-      <div class="shell video-heading">
-        <div>
-          <p class="section-label">Project video · 02:59</p>
-          <h2>Overview of <span>TrafficSignBench</span></h2>
-        </div>
-        <p>From the metric gap to rule-supervised fine-tuning — a three-minute walkthrough of the benchmark, scenes, and results.</p>
-      </div>
+    <!-- What is inside -->
+    <section class="section inside" id="inside">
       <div class="shell">
-        <div class="video-frame reveal">
-          <video id="overview-video" controls preload="metadata" playsinline poster="static/media/video-poster.jpg">
-            <source src="static/media/final.mp4" type="video/mp4">
-            Your browser does not support HTML video. <a href="static/media/final.mp4">Download the MP4</a>.
-          </video>
-          <div class="video-frame__chrome">
-            <span>TrafficSignBench · overview</span>
-            <a href="static/media/final.mp4" download>Download MP4 ↓</a>
+        <div class="section-head reveal">
+          <p class="kicker">The benchmark</p>
+          <h2>What is inside <span>TrafficSignBench</span>?</h2>
+          <p class="section-head__intro">Three ingredients turn a traffic sign into a measurable closed-loop test: an executable rule for every sign, real road geometry to place it in, and semantics that carry over to other countries.</p>
+          <nav class="chapter-nav" aria-label="Benchmark chapters">
+            <a href="#signs"><span>01</span> Traffic signs</a>
+            <a href="#maps"><span>02</span> Real maps</a>
+            <a href="#generalize"><span>03</span> Generalizability</a>
+          </nav>
+        </div>
+
+        <!-- 01 Signs -->
+        <article class="chapter" id="signs">
+          <div class="chapter__head reveal">
+            <div>
+              <span class="chapter__num">01</span>
+              <h3><span data-count="34">34</span> traffic signs, sorted by what they ask of the driver</h3>
+            </div>
+            <p>Every sign is a simulator object with its own <strong>executable rule checker</strong>. The checker watches the closed-loop rollout and flags a violation the moment the ego vehicle breaks the rule — no human labelling required.</p>
           </div>
+
+          <div class="sign-board" data-sort>
+            <div class="sign-board__count" aria-hidden="true"><strong>34</strong></div>
+
+            <section class="sign-group" style="--accent: var(--amber)">
+              <header>
+                <span class="sign-group__dot"></span>
+                <h4>Speed</h4>
+                <span class="sign-group__n">4</span>
+              </header>
+              <p>Keep speed inside the signed limit, zone, or minimum.</p>
+              <div class="sign-group__icons">
+                <img src="static/site/signs/speed_limit_50.png" alt="Maximum speed · 3.24" data-tip="Maximum speed · 3.24">
+                <img src="static/site/signs/min_speed.png" alt="Minimum speed · 4.6" data-tip="Minimum speed · 4.6">
+                <img src="static/site/signs/zone_speed_40.png" alt="Zone speed limit · 5.31" data-tip="Zone speed limit · 5.31">
+                <img src="static/site/signs/residential_zone.png" alt="Residential zone · 5.21" data-tip="Residential zone · 5.21">
+              </div>
+              <figure class="sign-group__checker">
+                <img src="static/site/checkers/speed.png" alt="Speed checker: verified zone and ego velocity" loading="lazy">
+                <figcaption>Checker · verified zone + ego velocity</figcaption>
+              </figure>
+            </section>
+
+            <section class="sign-group" style="--accent: var(--red)">
+              <header>
+                <span class="sign-group__dot"></span>
+                <h4>Priority</h4>
+                <span class="sign-group__n">8</span>
+              </header>
+              <p>Yield, stop, and give way at junctions and crossings.</p>
+              <div class="sign-group__icons">
+                <img src="static/site/signs/main_road.png" alt="Main road · 2.1" data-tip="Main road · 2.1">
+                <img src="static/site/signs/end_main_road.png" alt="End of main road · 2.2" data-tip="End of main road · 2.2">
+                <img src="static/site/signs/secondary_road.png" alt="Crossing a secondary road · 2.3.1" data-tip="Crossing a secondary road · 2.3.1">
+                <img src="static/site/signs/secondary_road_right.png" alt="Secondary road junction · 2.3.2" data-tip="Secondary road junction · 2.3.2">
+                <img src="static/site/signs/yield.png" alt="Yield · 2.4" data-tip="Yield · 2.4">
+                <img src="static/site/signs/stop.png" alt="Stop · 2.5" data-tip="Stop · 2.5">
+                <img src="static/site/signs/crosswalk.png" alt="Pedestrian crossing · 5.19" data-tip="Pedestrian crossing · 5.19">
+                <img src="static/site/signs/roundabout.png" alt="Roundabout · 4.3" data-tip="Roundabout · 4.3">
+              </div>
+              <figure class="sign-group__checker">
+                <img src="static/site/checkers/priority.png" alt="Priority checker: verifier zone and occupied crossing" loading="lazy">
+                <figcaption>Checker · verifier zone + occupied crossing</figcaption>
+              </figure>
+            </section>
+
+            <section class="sign-group" style="--accent: var(--blue)">
+              <header>
+                <span class="sign-group__dot"></span>
+                <h4>Routing</h4>
+                <span class="sign-group__n">13</span>
+              </header>
+              <p>Take only the permitted direction, turn, or branch.</p>
+              <div class="sign-group__icons">
+                <img src="static/site/signs/direction_straight.png" alt="Proceed straight · 4.1.1" data-tip="Proceed straight · 4.1.1">
+                <img src="static/site/signs/direction_right.png" alt="Turn right · 4.1.2" data-tip="Turn right · 4.1.2">
+                <img src="static/site/signs/direction_left.png" alt="Turn left · 4.1.3" data-tip="Turn left · 4.1.3">
+                <img src="static/site/signs/direction_straight_right.png" alt="Straight or right · 4.1.4" data-tip="Straight or right · 4.1.4">
+                <img src="static/site/signs/direction_straight_left.png" alt="Straight or left · 4.1.5" data-tip="Straight or left · 4.1.5">
+                <img src="static/site/signs/direction_left_right.png" alt="Left or right · 4.1.6" data-tip="Left or right · 4.1.6">
+                <img src="static/site/signs/no_right_turn.png" alt="No right turn · 3.18.1" data-tip="No right turn · 3.18.1">
+                <img src="static/site/signs/no_left_turn.png" alt="No left turn · 3.18.2" data-tip="No left turn · 3.18.2">
+                <img src="static/site/signs/no_uturn.png" alt="No U-turn · 3.19" data-tip="No U-turn · 3.19">
+                <img src="static/site/signs/no_entry.png" alt="No entry · 3.1" data-tip="No entry · 3.1">
+                <img src="static/site/signs/one_way.png" alt="One-way road · 5.5" data-tip="One-way road · 5.5">
+                <img src="static/site/signs/one_way_right.png" alt="Exit to one-way road · 5.7.1" data-tip="Exit to one-way road · 5.7.1">
+                <img src="static/site/signs/one_way_left.png" alt="Exit to one-way road · 5.7.2" data-tip="Exit to one-way road · 5.7.2">
+              </div>
+              <figure class="sign-group__checker">
+                <img src="static/site/checkers/routing.png" alt="Routing checker: allowed and forbidden exits" loading="lazy">
+                <figcaption>Checker · allowed vs. forbidden exit</figcaption>
+              </figure>
+            </section>
+
+            <section class="sign-group" style="--accent: var(--green)">
+              <header>
+                <span class="sign-group__dot"></span>
+                <h4>Obstacles &amp; lanes</h4>
+                <span class="sign-group__n">9</span>
+              </header>
+              <p>Pass obstacles on the signed side and keep to permitted lanes.</p>
+              <div class="sign-group__icons">
+                <img src="static/site/signs/detour_right.png" alt="Pass on the right · 4.2.1" data-tip="Pass on the right · 4.2.1">
+                <img src="static/site/signs/detour_left.png" alt="Pass on the left · 4.2.2" data-tip="Pass on the left · 4.2.2">
+                <img src="static/site/signs/detour_either.png" alt="Pass on either side · 4.2.3" data-tip="Pass on either side · 4.2.3">
+                <img src="static/site/signs/no_traffic.png" alt="Movement prohibited · 3.2" data-tip="Movement prohibited · 3.2">
+                <img src="static/site/signs/no_overtaking.png" alt="No overtaking · 3.20" data-tip="No overtaking · 3.20">
+                <img src="static/site/signs/no_stopping.png" alt="No stopping · 3.27" data-tip="No stopping · 3.27">
+                <img src="static/site/signs/bus_lane_road.png" alt="Road with a bus lane · 5.11.1" data-tip="Road with a bus lane · 5.11.1">
+                <img src="static/site/signs/bike_lane_road.png" alt="Road with a bike lane · 5.11.2" data-tip="Road with a bike lane · 5.11.2">
+                <img src="static/site/signs/only_auto.png" alt="Road for motor vehicles · 5.3" data-tip="Road for motor vehicles · 5.3">
+              </div>
+              <figure class="sign-group__checker">
+                <img src="static/site/checkers/obstacles.png" alt="Obstacle checker: allowed lanes and obstacle" loading="lazy">
+                <figcaption>Checker · allowed lanes + obstacle</figcaption>
+              </figure>
+            </section>
+          </div>
+        </article>
+
+        <!-- 02 Real maps -->
+        <article class="chapter" id="maps">
+          <div class="chapter__head reveal">
+            <div>
+              <span class="chapter__num">02</span>
+              <h3>Built on the real road network of Moscow</h3>
+            </div>
+            <p>We crop <strong><span data-count="26020" data-group>26,020</span> candidate locations</strong> from the OpenStreetMap road network, convert them with SUMO, and place the sign exactly where its rule applies. Every crop becomes an executable closed-loop test.</p>
+          </div>
+
+          <div class="maps" data-maps>
+            <svg class="maps__links" aria-hidden="true"></svg>
+            <figure class="map-card reveal">
+              <div class="map-card__chrome">
+                <span><b>Moscow road network</b> OpenStreetMap → SUMO → MetaDrive</span>
+                <span class="chip"><span data-count="26020" data-group>26,020</span> crops</span>
+              </div>
+              <div class="map-card__canvas">
+                <img src="static/site/maps/moscow.jpg" alt="Moscow road network with the extracted map crops highlighted" loading="lazy">
+                <span class="map-pin" style="--x: .15; --y: .27; --c: var(--blue)" data-pin="junction"></span>
+                <span class="map-pin" style="--x: .74; --y: .43; --c: var(--amber)" data-pin="dual"></span>
+                <span class="map-pin" style="--x: .27; --y: .77; --c: var(--green)" data-pin="corridor"></span>
+              </div>
+            </figure>
+
+            <div class="scenario-cards">
+              <article class="scenario-card reveal" style="--c: var(--blue)" data-card="junction">
+                <div class="scenario-card__media" data-cycle>
+                  <img src="static/site/maps/junction-crop.jpg" alt="Junction crop from the Moscow road network" loading="lazy">
+                  <video muted loop playsinline preload="none" poster="static/site/maps/junction.jpg" src="static/site/maps/junction.mp4"></video>
+                  <span class="scenario-card__step"></span>
+                </div>
+                <div class="scenario-card__body">
+                  <span class="scenario-card__type">Junction</span>
+                  <h4>Priority interactions</h4>
+                  <p>Yield, stop, main-road and roundabout rules at real intersections.</p>
+                  <span class="scenario-card__n"><strong data-count="6457" data-group>6,457</strong> maps in the source pool</span>
+                </div>
+              </article>
+              <article class="scenario-card reveal" style="--c: var(--amber)" data-card="dual">
+                <div class="scenario-card__media" data-cycle>
+                  <img src="static/site/maps/dual_path-crop.jpg" alt="Dual-path crop from the Moscow road network" loading="lazy">
+                  <video muted loop playsinline preload="none" poster="static/site/maps/dual_path.jpg" src="static/site/maps/dual_path.mp4"></video>
+                  <span class="scenario-card__step"></span>
+                </div>
+                <div class="scenario-card__body">
+                  <span class="scenario-card__type">Dual-path</span>
+                  <h4>Route restrictions</h4>
+                  <p>Two reachable exits — the sign decides which one is legal.</p>
+                  <span class="scenario-card__n"><strong data-count="6507" data-group>6,507</strong> maps in the source pool</span>
+                </div>
+              </article>
+              <article class="scenario-card reveal" style="--c: var(--green)" data-card="corridor">
+                <div class="scenario-card__media" data-cycle>
+                  <img src="static/site/maps/corridor-crop.jpg" alt="Corridor crop from the Moscow road network" loading="lazy">
+                  <video muted loop playsinline preload="none" poster="static/site/maps/corridor.jpg" src="static/site/maps/corridor.mp4"></video>
+                  <span class="scenario-card__step"></span>
+                </div>
+                <div class="scenario-card__body">
+                  <span class="scenario-card__type">Corridor</span>
+                  <h4>Speed · obstacles · crosswalks</h4>
+                  <p>Road segments for speed zones, detours, lanes, and pedestrians.</p>
+                  <span class="scenario-card__n"><strong data-count="13056" data-group>13,056</strong> maps in the source pool</span>
+                </div>
+              </article>
+            </div>
+          </div>
+
+          <div class="variants reveal">
+            <div class="variants__lead">
+              <strong>1 map → 10 variants</strong>
+              <span>Each real map expands into controlled closed-loop variants along five axes.</span>
+            </div>
+            <ol class="variants__axes">
+              <li><span>01</span>Ego spawn lane</li>
+              <li><span>02</span>Route length</li>
+              <li><span>03</span>Initial speed <em>3.6 · 7.8 · 11.1 m/s</em></li>
+              <li><span>04</span>Traffic density <em>nuPlan p25 · p50 · p75</em></li>
+              <li><span>05</span>Background-agent dynamics <em>IDM profiles</em></li>
+            </ol>
+          </div>
+        </article>
+
+        <!-- 03 Generalizability -->
+        <article class="chapter" id="generalize">
+          <div class="chapter__head reveal">
+            <div>
+              <span class="chapter__num">03</span>
+              <h3>Rule semantics generalize internationally</h3>
+            </div>
+            <p>The 34 implemented signs have direct semantic equivalents in other Vienna-Convention countries — and beyond it. A planner that passes TrafficSignBench is tested on rules that drivers meet across the world.</p>
+          </div>
+
+          <div class="geo">
+            <div class="geo__overlap reveal">
+              <strong><span data-count="92">92</span>%</strong>
+              <span>average semantic overlap with the analysed countries</span>
+            </div>
+            <ul class="geo__countries">
+              <li class="reveal" style="--v: 91%"><img src="static/site/flags/germany.png" alt=""><span>Germany <i>Vienna</i></span><b><span data-count="91">91</span>%</b><em></em></li>
+              <li class="reveal" style="--v: 84%"><img src="static/site/flags/france.png" alt=""><span>France <i>Vienna</i></span><b><span data-count="84">84</span>%</b><em></em></li>
+              <li class="reveal" style="--v: 94%"><img src="static/site/flags/italy.png" alt=""><span>Italy <i>Vienna</i></span><b><span data-count="94">94</span>%</b><em></em></li>
+              <li class="reveal" style="--v: 100%"><img src="static/site/flags/turkey.png" alt=""><span>Turkey <i>Vienna</i></span><b><span data-count="100">100</span>%</b><em></em></li>
+              <li class="reveal" style="--v: 97%"><img src="static/site/flags/uk.png" alt=""><span>UK <i>non-Vienna</i></span><b><span data-count="97">97</span>%</b><em></em></li>
+              <li class="reveal" style="--v: 91%"><img src="static/site/flags/china.png" alt=""><span>China <i>non-Vienna</i></span><b><span data-count="91">91</span>%</b><em></em></li>
+            </ul>
+          </div>
+
+          <div class="equivalents reveal" data-equivalents>
+            <div class="equivalents__bar">
+              <span>Same rule, different countries</span>
+              <div class="toggle" role="tablist" aria-label="Sign type">
+                <button type="button" role="tab" aria-selected="true" data-eq="yield">Yield</button>
+                <button type="button" role="tab" aria-selected="false" data-eq="direction_left">Turn left</button>
+              </div>
+            </div>
+            <div class="equivalents__row">
+              <figure class="is-ref"><img src="static/site/countries/yield/russia.png" alt="Yield sign in Russia" data-country="russia"><figcaption>Russia <i>reference</i></figcaption></figure>
+              <figure><img src="static/site/countries/yield/germany.png" alt="Yield sign in Germany" data-country="germany"><figcaption>Germany</figcaption></figure>
+              <figure><img src="static/site/countries/yield/france.png" alt="Yield sign in France" data-country="france"><figcaption>France</figcaption></figure>
+              <figure><img src="static/site/countries/yield/italy.png" alt="Yield sign in Italy" data-country="italy"><figcaption>Italy</figcaption></figure>
+              <figure><img src="static/site/countries/yield/turkey.png" alt="Yield sign in Turkey" data-country="turkey"><figcaption>Turkey</figcaption></figure>
+              <figure><img src="static/site/countries/yield/uk.png" alt="Yield sign in the UK" data-country="uk"><figcaption>UK</figcaption></figure>
+              <figure><img src="static/site/countries/yield/china.png" alt="Yield sign in China" data-country="china"><figcaption>China</figcaption></figure>
+            </div>
+          </div>
+        </article>
+      </div>
+    </section>
+
+    <!-- Evaluation -->
+    <section class="section evaluation" id="evaluation">
+      <div class="shell">
+        <div class="section-head reveal">
+          <p class="kicker">Evaluation</p>
+          <h2>Current planners fall short on <span>rule compliance</span></h2>
+          <p class="section-head__intro"><strong>SCD</strong> — Sign-Compliant Destination — counts an episode as a success only if the ego vehicle obeys the sign <em>and</em> reaches its goal. 5,800 held-out episodes across 29 scenario types.</p>
+        </div>
+
+        <div class="lineup reveal">
+          <div class="lineup__bar">
+            <span class="chip chip--red">Failure cases from the paper</span>
+            <span>CaRL, PlanT-2, and PPO still break yield, crosswalk, and mandatory-direction rules</span>
+          </div>
+          <div class="lineup__grid">
+            <figure class="planner-card">
+              <img src="static/site/eval/carl.gif" alt="CaRL violating a yield sign" width="800" height="800" loading="lazy" decoding="async">
+              <figcaption>
+                <div><strong>CaRL</strong><span class="planner-card__sign">Yield</span></div>
+                <span class="scd">SCD <b data-count="2.9" data-decimals="1">2.9</b>%</span>
+              </figcaption>
+            </figure>
+            <figure class="planner-card">
+              <img src="static/site/eval/plant2.gif" alt="PlanT-2 violating a pedestrian crosswalk" width="800" height="800" loading="lazy" decoding="async">
+              <figcaption>
+                <div><strong>PlanT-2</strong><span class="planner-card__sign">Crosswalk</span></div>
+                <span class="scd">SCD <b data-count="5.9" data-decimals="1">5.9</b>%</span>
+              </figcaption>
+            </figure>
+            <figure class="planner-card">
+              <img src="static/site/eval/ppo.gif" alt="PPO violating a mandatory direction sign" width="800" height="800" loading="lazy" decoding="async">
+              <figcaption>
+                <div><strong>PPO</strong><span class="planner-card__sign">Direction</span></div>
+                <span class="scd">SCD <b data-count="3.2" data-decimals="1">3.2</b>%</span>
+              </figcaption>
+            </figure>
+          </div>
+        </div>
+
+        <div class="gap reveal">
+          <div class="gap__callout">
+            <span class="kicker kicker--light">Held-out test split</span>
+            <strong><span data-count="2.9" data-decimals="1">2.9</span>–<span data-count="9.0" data-decimals="1">9.0</span>%</strong>
+            <p>SCD across standard planners. Even the strongest one obeys the sign and reaches the goal in fewer than one episode in ten.</p>
+          </div>
+          <div class="bars" aria-label="Driving score and SCD per planner">
+            <div class="bars__legend"><span><i class="is-ds"></i> Driving score</span><span><i class="is-scd"></i> SCD</span></div>
+            <div class="bars__row"><span class="bars__name">IDM</span><div class="bars__track"><i class="is-ds" style="--v: 35.7%"></i><i class="is-scd" style="--v: 7.2%"></i></div><span class="bars__vals">35.7 <b>7.2%</b></span></div>
+            <div class="bars__row"><span class="bars__name">PPO</span><div class="bars__track"><i class="is-ds" style="--v: 35.6%"></i><i class="is-scd" style="--v: 3.2%"></i></div><span class="bars__vals">35.6 <b>3.2%</b></span></div>
+            <div class="bars__row"><span class="bars__name">CaRL</span><div class="bars__track"><i class="is-ds" style="--v: 39.6%"></i><i class="is-scd" style="--v: 2.9%"></i></div><span class="bars__vals">39.6 <b>2.9%</b></span></div>
+            <div class="bars__row"><span class="bars__name">PlanT-2</span><div class="bars__track"><i class="is-ds" style="--v: 28.6%"></i><i class="is-scd" style="--v: 5.9%"></i></div><span class="bars__vals">28.6 <b>5.9%</b></span></div>
+            <div class="bars__row bars__row--ft"><span class="bars__name">PlanT-2-FT <em>rule-supervised</em></span><div class="bars__track"><i class="is-ds" style="--v: 74.2%"></i><i class="is-scd" style="--v: 72.3%"></i></div><span class="bars__vals">74.2 <b>72.3%</b></span></div>
+            <div class="bars__axis"><span>0</span><span>25</span><span>50</span><span>75</span><span>100</span></div>
+          </div>
+        </div>
+
+        <div class="closing reveal" data-ft>
+          <div class="closing__head">
+            <div>
+              <span class="kicker kicker--light">Can the gap be closed?</span>
+              <h3>Rule-supervised fine-tuning lifts PlanT-2 from <b class="is-red">5.9%</b> to <b class="is-green">72.3%</b> SCD</h3>
+              <p>A learned sign token and speed token on the unchanged PlanT-2 backbone (+0.4% parameters), supervised by rule-compliant oracle trajectories.</p>
+            </div>
+            <div class="closing__mult"><strong><span data-count="12.3" data-decimals="1">12.3</span>×</strong><span>higher SCD</span></div>
+          </div>
+          <div class="toggle toggle--dark" role="tablist" aria-label="Fine-tuning example">
+            <button type="button" role="tab" aria-selected="true" data-ft-tab="direction">Direction</button>
+            <button type="button" role="tab" aria-selected="false" data-ft-tab="speed">Speed zone</button>
+          </div>
+          <div class="pair">
+            <figure class="pair__side pair__side--bad">
+              <img src="static/site/ft/direction-base.gif" alt="PlanT-2 violating a direction sign" width="800" height="800" data-ft-image="base" decoding="async">
+              <figcaption><strong>PlanT-2</strong><span>Violates the rule</span></figcaption>
+            </figure>
+            <figure class="pair__side pair__side--good">
+              <img src="static/site/ft/direction-ft.gif" alt="PlanT-2-FT complying with a direction sign" width="800" height="800" data-ft-image="ft" decoding="async">
+              <figcaption><strong>PlanT-2-FT</strong><span>Complies</span></figcaption>
+            </figure>
+            <p class="pair__caption" data-ft-caption>PlanT-2 takes the prohibited branch; PlanT-2-FT reroutes.</p>
+          </div>
+        </div>
+
+        <div class="table-wrap reveal">
+          <table>
+            <caption class="sr-only">Planner results on the held-out test split</caption>
+            <thead>
+              <tr>
+                <th scope="col">Planner</th>
+                <th scope="col">Driving score ↑</th>
+                <th scope="col">Destination ↑</th>
+                <th scope="col">Collision ↓</th>
+                <th scope="col">SCD ↑</th>
+              </tr>
+            </thead>
+            <tbody>
+              <tr><th scope="row">IDM</th><td>35.7</td><td>66.4%</td><td>21.0%</td><td><b>7.2%</b></td></tr>
+              <tr><th scope="row">PPO</th><td>35.6</td><td>67.9%</td><td>27.5%</td><td><b>3.2%</b></td></tr>
+              <tr><th scope="row">CaRL</th><td>39.6</td><td>73.7%</td><td>21.0%</td><td><b>2.9%</b></td></tr>
+              <tr><th scope="row">PlanT-2</th><td>28.6</td><td>56.1%</td><td>43.3%</td><td><b>5.9%</b></td></tr>
+              <tr class="table-highlight"><th scope="row">PlanT-2-FT <span>rule-supervised</span></th><td>74.2</td><td>74.8%</td><td>12.0%</td><td><b>72.3%</b></td></tr>
+            </tbody>
+          </table>
+          <p class="table-note">Held-out test split, 5,800 episodes. Conventional metrics are episode-weighted; SCD is macro-averaged over scenario types.</p>
         </div>
       </div>
     </section>
 
+    <!-- Live demo -->
     <section class="section drive" id="drive">
-      <div class="shell drive__heading">
+      <div class="shell section-head section-head--split reveal">
         <div>
-          <p class="section-label">Live MetaDrive · 4 Moscow challenges</p>
-          <h2 class="drive__title">Think you can <span>obey <br>the sign?</span></h2>
+          <p class="kicker">Live MetaDrive · 4 Moscow challenges</p>
+          <h2>Think you can <span>obey the sign?</span></h2>
         </div>
-        <p>Pick a sign, take the wheel, and see whether the benchmark agrees with your interpretation of the rule. Every challenge runs in a real Moscow scene with an executable checker.</p>
+        <p class="section-head__intro">Pick a sign, take the wheel, and see whether the benchmark agrees with your interpretation of the rule. Every challenge runs in a real Moscow scene with an executable checker.</p>
       </div>
 
       <div class="shell simulator reveal">
@@ -190,178 +620,48 @@
       </div>
     </section>
 
-    <section class="marquee" aria-label="Benchmark summary">
-      <div class="marquee__track">
-        <span>Real map geometry</span><i></i>
-        <span>Executable rule checkers</span><i></i>
-        <span>Targeted closed-loop scenes</span><i></i>
-        <span>Rule-supervised fine-tuning</span><i></i>
-        <span>Real map geometry</span><i></i>
-        <span>Executable rule checkers</span><i></i>
-        <span>Targeted closed-loop scenes</span><i></i>
-        <span>Rule-supervised fine-tuning</span>
-      </div>
-    </section>
-
-    <section class="section problem" id="problem">
-      <div class="shell split-heading">
+    <!-- Video -->
+    <section class="section video-section" id="video">
+      <div class="shell section-head section-head--split reveal">
         <div>
-          <p class="section-label">High driving scores can hide illegal behaviour</p>
-          <h2 class="problem__title">The <span>problem</span></h2>
+          <p class="kicker">Project video · 02:59</p>
+          <h2>Overview of <span>TrafficSignBench</span></h2>
         </div>
-        <p class="section-intro">
-          Route progress, comfort, and collision rate describe how a vehicle moves.
-          They do not tell us whether it understood the traffic rule that shaped the scene.
-        </p>
+        <p class="section-head__intro">From the metric gap to rule-supervised fine-tuning — a three-minute walkthrough of the benchmark, scenes, and results.</p>
       </div>
-      <div class="shell metric-gap reveal">
-        <article class="metric-gap__lead">
-          <div class="metric-gap__badge">Observed rollout</div>
-          <p>Driving Score</p>
-          <strong>100.00</strong>
-          <span>Destination reached · no collision</span>
-        </article>
-        <div class="metric-gap__operator" aria-hidden="true">≠</div>
-        <article class="metric-gap__lead metric-gap__lead--danger">
-          <div class="metric-gap__badge">Executable checker</div>
-          <p>Traffic-rule compliance</p>
-          <strong>Failed</strong>
-          <span>Pedestrian-yield violation</span>
-        </article>
-        <aside class="metric-gap__note">
-          <span class="note-number">2.9–9.0%</span>
-          <p>SCD achieved by current base planners on held-out scenarios.</p>
-        </aside>
-      </div>
-      <div class="shell rollout-grid reveal">
-        <figure class="rollout-card">
-          <img src="static/media/rollouts/yield_carl.gif" alt="CaRL closed-loop rollout failing to yield at a priority intersection." loading="lazy">
-          <figcaption>
-            <div>
-              <strong>CaRL</strong>
-              <span class="rollout-card__venue">CoRL 2025</span>
-            </div>
-            <p>Breaks the yield rule while completing the route.</p>
-          </figcaption>
-        </figure>
-        <figure class="rollout-card">
-          <img src="static/media/rollouts/crosswalk_plant2.gif" alt="PlanT 2.0 closed-loop rollout failing to yield to a pedestrian at a crosswalk." loading="lazy">
-          <figcaption>
-            <div>
-              <strong>PlanT 2.0</strong>
-              <span class="rollout-card__venue">arXiv 2025</span>
-            </div>
-            <p>Fails to yield to a pedestrian at the crosswalk.</p>
-          </figcaption>
-        </figure>
-        <figure class="rollout-card">
-          <img src="static/media/rollouts/ppo_dir_right.gif" alt="PPO closed-loop rollout taking a prohibited direction at a mandatory-turn sign." loading="lazy">
-          <figcaption>
-            <div>
-              <strong>PPO</strong>
-              <span class="rollout-card__venue">lidar baseline</span>
-            </div>
-            <p>Ignores a mandatory-direction restriction.</p>
-          </figcaption>
-        </figure>
+      <div class="shell">
+        <div class="video-frame reveal">
+          <video id="overview-video" controls preload="metadata" playsinline poster="static/media/video-poster.jpg">
+            <source src="static/media/final.mp4" type="video/mp4">
+            Your browser does not support HTML video. <a href="static/media/final.mp4">Download the MP4</a>.
+          </video>
+          <div class="video-frame__chrome">
+            <span>TrafficSignBench · overview</span>
+            <a href="static/media/final.mp4" download>Download MP4 ↓</a>
+          </div>
+        </div>
       </div>
     </section>
 
-    <section class="section results" id="results">
-      <div class="shell split-heading">
-        <div>
-          <p class="section-label">High driving metrics do not mean rule compliance</p>
-          <h2 class="results__title">Held-out <span>evaluation</span></h2>
-        </div>
-        <p class="section-intro">
-          5,800 held-out episodes. SCD—Sign-Compliant Destination—requires both obeying the sign
-          and reaching the intended goal.
-        </p>
-      </div>
-      <div class="shell compare-grid reveal">
-        <figure class="compare-card">
-          <div class="compare-pair">
-            <div>
-              <img src="static/media/rollouts/plant2/direction_s_l/plant2.gif" alt="PlanT 2.0 takes the prohibited branch at a direction sign." loading="lazy">
-              <span>PlanT 2.0</span>
-            </div>
-            <div>
-              <img src="static/media/rollouts/plant2/direction_s_l/plant2_ft_n2e8.gif" alt="Rule-supervised PlanT 2.0-FT reroutes along the allowed branch." loading="lazy">
-              <span>PlanT 2.0-FT</span>
-            </div>
-          </div>
-          <figcaption>
-            <strong>Direction · straight / left.</strong>
-            PlanT 2.0 takes the prohibited branch; the rule-supervised baseline reroutes.
-          </figcaption>
-        </figure>
-        <figure class="compare-card">
-          <div class="compare-pair">
-            <div>
-              <img src="static/media/rollouts/plant2/speed/plant2.gif" alt="PlanT 2.0 ignores a posted speed limit." loading="lazy">
-              <span>PlanT 2.0</span>
-            </div>
-            <div>
-              <img src="static/media/rollouts/plant2/speed/plant2_ft.gif" alt="Rule-supervised PlanT 2.0-FT slows down under the speed limit." loading="lazy">
-              <span>PlanT 2.0-FT</span>
-            </div>
-          </div>
-          <figcaption>
-            <strong>Speed limit.</strong>
-            PlanT 2.0 ignores the posted limit; the rule-supervised baseline slows down.
-          </figcaption>
-        </figure>
-      </div>
-      <div class="shell results-layout">
-        <div class="table-wrap reveal">
-          <table>
-            <caption class="sr-only">Planner results on the held-out test split</caption>
-            <thead>
-              <tr>
-                <th scope="col">Planner</th>
-                <th scope="col">Driving score ↑</th>
-                <th scope="col">Destination ↑</th>
-                <th scope="col">Collision ↓</th>
-                <th scope="col">SCD ↑</th>
-              </tr>
-            </thead>
-            <tbody>
-              <tr><th scope="row">IDM</th><td>35.7</td><td>66.4%</td><td>21.0%</td><td><b>7.2%</b></td></tr>
-              <tr><th scope="row">PPO</th><td>35.6</td><td>67.9%</td><td>27.5%</td><td><b>3.2%</b></td></tr>
-              <tr><th scope="row">CaRL</th><td>39.6</td><td>73.7%</td><td>21.0%</td><td><b>2.9%</b></td></tr>
-              <tr><th scope="row">PlanT 2.0</th><td>28.6</td><td>56.1%</td><td>43.3%</td><td><b>5.9%</b></td></tr>
-              <tr class="table-highlight"><th scope="row">PlanT 2.0-FT <span>rule-supervised baseline</span></th><td>74.2</td><td>74.8%</td><td>12.0%</td><td><b>72.3%</b></td></tr>
-            </tbody>
-          </table>
-          <p class="table-note">Conventional metrics are episode-weighted; SCD is macro-averaged over scenario types.</p>
-        </div>
-        <aside class="result-callout reveal">
-          <p class="result-callout__label">PlanT 2.0 → PlanT 2.0-FT</p>
-          <strong>12.3×</strong>
-          <span>higher SCD</span>
-          <div class="result-bars" aria-label="SCD increased from 5.9 to 72.3 percent">
-            <div><i style="--value: 8%"></i><span>5.9</span></div>
-            <div><i style="--value: 100%"></i><span>72.3</span></div>
-          </div>
-        </aside>
-      </div>
-    </section>
-
+    <!-- Resources -->
     <section class="section resources">
       <div class="shell resources__inner">
         <div>
-          <p class="section-label">Use the benchmark</p>
+          <p class="kicker kicker--light">Use the benchmark</p>
           <h2>Scenes, models, and evaluation code are <span>open.</span></h2>
         </div>
         <div class="resource-links">
+          <a href="https://arxiv.org/abs/2609.38463">
+            <span>01</span><strong>Paper</strong><i>arXiv ↗</i>
+          </a>
           <a href="https://github.com/emb-ai/traffic-sign-bench">
-            <span>01</span><strong>Code & evaluation</strong><i>GitHub ↗</i>
+            <span>02</span><strong>Code &amp; evaluation</strong><i>GitHub ↗</i>
           </a>
           <a href="https://huggingface.co/datasets/emb-ai/traffic-sign-bench">
-            <span>02</span><strong>Benchmark scenes</strong><i>Hugging Face ↗</i>
+            <span>03</span><strong>Benchmark scenes</strong><i>Hugging Face ↗</i>
           </a>
           <a href="https://huggingface.co/emb-ai/traffic-rule-bench-models">
-            <span>03</span><strong>Planner checkpoints</strong><i>Hugging Face ↗</i>
+            <span>04</span><strong>Planner checkpoints</strong><i>Hugging Face ↗</i>
           </a>
         </div>
       </div>
@@ -388,7 +688,7 @@
 
   <footer class="footer">
     <div class="shell">
-      <a class="wordmark" href="#top"><img class="wordmark__mark" src="static/images/signs/4.2.1.png" alt="" width="22" height="22"><span>TrafficSignBench</span></a>
+      <a class="wordmark" href="#top"><img class="wordmark__mark" src="static/site/signs/crosswalk.png" alt="" width="24" height="24"><span>TrafficSignBench</span></a>
       <p>Rule-centric closed-loop evaluation of traffic-sign compliance in autonomous driving.</p>
       <a href="#top">Back to top ↑</a>
     </div>

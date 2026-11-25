@@ -44,10 +44,15 @@ python -m traffic_bench.demo.server --smoke-test
 ## Structure
 
 - `index.html` — semantic page content and metadata
-- `static/css/style.css` — responsive light-theme design
-- `static/js/main.js` — navigation, reveal effects, and citation copy
+- `static/css/style.css` — responsive design (light page, dark evaluation section)
+- `static/js/main.js` — hero intro timeline, sign-sorting animation, map links,
+  counters, toggles, in-view video playback, and citation copy
 - `static/js/live-simulator.js` — WebSocket video, telemetry, and controls
-- `static/media/` — teaser GIF, project video, and video poster
+- `static/site/` — page media exported from `video/` (rollout loops, posters,
+  sign icons, Moscow map, country examples)
+- `static/media/` — project video and video poster
+- `tools/build_site_assets.py` — reproducible export of `static/site/` from the
+  video materials (`python docs/tools/build_site_assets.py`)
 - `tools/build_site_media.sh` — reproducible media export from
   `video/out/final.mp4`
 
