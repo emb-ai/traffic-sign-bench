@@ -753,28 +753,42 @@
     const pair = $(".pair", ft);
     const caption = $("[data-ft-caption]", ft);
     const images = $$("[data-ft-image]", ft);
+    let ftRequest = 0;
 
-    tabs.forEach((tab) => tab.addEventListener("click", () => {
-      const name = tab.dataset.ftTab;
-      tabs.forEach((other) => other.setAttribute("aria-selected", String(other === tab)));
+    const showFt = (name) => {
+      const request = ++ftRequest;
+      tabs.forEach((other) => other.setAttribute("aria-selected", String(other.dataset.ftTab === name)));
       pair.classList.add("is-switching");
       caption.textContent = captions[name];
       let pending = images.length;
+
       images.forEach((image) => {
         const variant = image.dataset.ftImage;
         const next = `static/site/ft/${name}-${variant}.gif`;
-        const swap = () => {
+        const finish = () => {
+          if (request !== ftRequest) return;
           pending -= 1;
-          if (pending === 0) pair.classList.remove("is-switching");
+          if (pending <= 0) pair.classList.remove("is-switching");
         };
-        if (image.getAttribute("src") === next) {
-          swap();
+
+        // Drop any in-flight load from a previous tab click.
+        image.onload = null;
+        image.onerror = null;
+
+        if (image.getAttribute("src") === next && image.complete) {
+          finish();
           return;
         }
-        image.addEventListener("load", swap, {once: true});
+
+        image.onload = finish;
+        image.onerror = finish;
+        // Clear first so a slow previous GIF cannot paint over the new tab.
+        image.removeAttribute("src");
         image.src = next;
       });
-    }));
+    };
+
+    tabs.forEach((tab) => tab.addEventListener("click", () => showFt(tab.dataset.ftTab)));
   }
 
   /* ---------------- Citation ---------------- */

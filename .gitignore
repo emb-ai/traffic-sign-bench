@@ -39,6 +39,9 @@ checkpoints/
 database_signs
 scenes.zip
 maps/
+# Keep the project-page Moscow map assets (the rule above ignores any maps/ folder).
+!docs/static/site/maps/
+!docs/static/site/maps/**
 osm_fragments/
 outputs/
 eval_results/
